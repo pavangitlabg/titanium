@@ -1,0 +1,658 @@
+﻿@page "/import"
+@using Services
+@using Data.Models
+@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Notifications
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.Spinner
+
+<PageTitle>EU Data Import</PageTitle>
+
+<SfToast ID="toast_default" @ref="ToastObj" Title="@toastTitle" Content="@toastMessage" CssClass="e-toast-container">
+    <ToastPosition X="Right" Y="Bottom"></ToastPosition>
+</SfToast>
+
+<h3>Import Filters</h3>
+
+@if (!IsLocked)
+{
+    <SfTab @bind-SelectedItem="SelectedPage">
+        <TabItems>
+            <TabItem Disabled="bCountryList">
+                <ChildContent>
+                    <TabHeader Text="Country List">
+                    </TabHeader>
+                </ChildContent>
+                <ContentTemplate>
+                    <SfGrid @ref="Grid"
+                            DataSource="countryList"
+                            TValue="EuroImportModel"
+                            AllowPaging="false"
+                            AllowSorting="true"
+                            AllowFiltering="true"
+                            AllowExcelExport="true"
+                            AllowPdfExport="true"
+                            AllowSelection="true"
+                            Height="450"
+                            Width="30%">
+                        @*<GridPageSettings PageCount="10" PageSize="15"></GridPageSettings>*@
+                        <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Excel"></GridFilterSettings>
+                        <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Single" CheckboxOnly="false" PersistSelection="true"></GridSelectionSettings>
+                        <GridEvents DataBound="OnDataBound" RowSelected="GetSelectedRecords" TValue="EuroImportModel"></GridEvents>
+                        <GridColumns>
+                            @*<GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>*@
+                            <GridColumn Field=@nameof(EuroImportModel._id) HeaderText="_id" IsPrimaryKey="true" Visible="false" TextAlign="TextAlign.Left" AutoFit="true" Width="120"></GridColumn>
+                            <GridColumn Field=@nameof(EuroImportModel.Code) HeaderText="Code" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(EuroImportModel.Legend) HeaderText="Legend" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(EuroImportModel.GeoCode) HeaderText="Geo Code" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        </GridColumns>
+                    </SfGrid>
+                    <div style="padding-top:1%">
+                        <SfButton @ref="BtnBack" @onclick="Back" CssClass="e-flat" IsPrimary="true" Content="Back"></SfButton>
+                        <SfButton @ref="BtnNext" @onclick="Next" CssClass="e-flat" IsPrimary="true" Content="Next"></SfButton>
+                    </div>
+                </ContentTemplate>
+            </TabItem>
+            <TabItem Disabled="bChapterList">
+                <ChildContent>
+                    <TabHeader Text="Chapter List">
+                    </TabHeader>
+                </ChildContent>
+                <ContentTemplate>
+                    <SfGrid @ref="GridChapter"
+                            DataSource="chapterList"
+                            TValue="ChaptersModel"
+                            AllowPaging="false"
+                            AllowSorting="true"
+                            AllowFiltering="true"
+                            AllowExcelExport="true"
+                            AllowPdfExport="true"
+                            AllowSelection="true"
+                            Height="450"
+                            Width="40%">
+                        @*<GridPageSettings PageCount="10" PageSize="15"></GridPageSettings>*@
+                        <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Excel"></GridFilterSettings>
+                        <GridSelectionSettings CheckboxOnly="true" PersistSelection="true"></GridSelectionSettings>
+                        <GridEvents DataBound="OnChapterDataBound" RowSelected="GetSelectedChapterRecords" TValue="ChaptersModel"></GridEvents>
+                        <GridColumns>
+                            <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
+                            <GridColumn Field=@nameof(ChaptersModel._id) HeaderText="_id" IsPrimaryKey="true" Visible="false" TextAlign="TextAlign.Left" AutoFit="true" Width="120"></GridColumn>
+                            <GridColumn Field=@nameof(ChaptersModel.Code) HeaderText="Code" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(ChaptersModel.Description) HeaderText="Description" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+
+                        </GridColumns>
+                    </SfGrid>
+                    <div style="padding-top:1%">
+                        <SfButton @ref="BtnBack" @onclick="Back" CssClass="e-flat" IsPrimary="true" Content="Back"></SfButton>
+                        <SfButton @ref="BtnNext" @onclick="Next" CssClass="e-flat" IsPrimary="true" Content="Next"></SfButton>
+                    </div>
+                </ContentTemplate>
+            </TabItem>
+            <TabItem Disabled="bPeriod">
+                <ChildContent>
+                    <TabHeader Text="Period Selection">
+                    </TabHeader>
+                </ChildContent>
+                <ContentTemplate>
+                    <div style="padding-top:2%">
+                        <SfDatePicker TValue="DateTime" @bind-Value="DateValue" Placeholder="Choose a Month" Format="MMMM yyyy" Start="CalendarView.Year" Depth="CalendarView.Year" ShowClearButton="true" FullScreen="true" Width="15%"></SfDatePicker>
+                    </div>
+                    <div style="padding-top:1%">
+                        <SfDropDownList TValue="string" TItem="string" @bind-Value="sideOfTradeItem" Placeholder="Side of Trade" DataSource="sideOfTrade" Width="15%"></SfDropDownList>
+                    </div>
+                    <div style="padding-top:1%">
+                        <SfButton @ref="BtnBack" @onclick="Back" CssClass="e-flat" IsPrimary="true" Content="Back"></SfButton>
+                        <SfButton @ref="BtnRun" @onclick="GetData" CssClass="e-flat" Disabled="IsLoading" IsPrimary="true" Content="Run"></SfButton>
+                        <p style="color:red">Products Imported @ProductImported of @ProductCount</p>
+
+                    </div>
+                </ContentTemplate>
+            </TabItem>
+            <TabItem Disabled="bDataList">
+                <ChildContent>
+                    <TabHeader Text="Data Output">
+                    </TabHeader>
+                </ChildContent>
+                <ContentTemplate>
+                    <SfGrid @ref="GridData"
+                            DataSource="finalList"
+                            TValue="FinalImportModel"
+                            Toolbar="@toolBar"
+                            ShowColumnChooser="true"
+                            AllowPaging="true"
+                            AllowSorting="true"
+                            AllowFiltering="true"
+                            AllowExcelExport="true"
+                            AllowPdfExport="false"
+                            AllowSelection="true"
+                            AllowGrouping="true"
+                            Height="450"
+                            Width="Auto">
+                        @*<GridPageSettings PageCount="10" PageSize="15"></GridPageSettings>*@
+                        <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Excel"></GridFilterSettings>
+                        <GridPageSettings PageCount="10"></GridPageSettings>
+                        <GridEvents OnToolbarClick="ToolbarClickHandler" TValue="FinalImportModel"></GridEvents>
+                        @*<GridEvents DataBound="OnChapterDataBound" RowSelected="GetSelectedChapterRecords" TValue="ChaptersModel"></GridEvents>*@
+                        <GridColumns>
+
+                            <GridColumn Field=@nameof(FinalImportModel.Id1) HeaderText="Id" IsPrimaryKey="true" Visible="true" TextAlign="TextAlign.Left" AutoFit="true" Width="120"></GridColumn>
+                            @*<GridColumn Field=@nameof(FinalImportModel.DataFlow) HeaderText="Data Flow" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>*@
+                            <GridColumn Field=@nameof(FinalImportModel.IMPORT_TARIFF) HeaderText="Product" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            @*<GridColumn Field=@nameof(FinalImportModel.LastUpdate) HeaderText="Last Update" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>*@
+                            <GridColumn Field=@nameof(FinalImportModel.Freq) HeaderText="Freq" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(FinalImportModel.Reporter) HeaderText="Reporter" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(FinalImportModel.Partner) HeaderText="Partner" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(FinalImportModel.SIDE_OF_TRADE) HeaderText="Flow" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(FinalImportModel.Qty) HeaderText="Qty KG" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(FinalImportModel.Value) HeaderText="Value Euro" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+
+                            <GridColumn Field=@nameof(FinalImportModel.TimePeriod) HeaderText="Time Period" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+
+                        </GridColumns>
+                        <SfSpinner @bind-Visible="@IsLoading"></SfSpinner>
+                    </SfGrid>
+                    <div style="padding-top:1%">
+                        <SfButton @ref="BtnBack" @onclick="Back" CssClass="e-flat" IsPrimary="true" Content="Back"></SfButton>
+                        <SfButton @ref="BtnPost" @onclick="PostData" CssClass="e-flat" Disabled="IsLoading" IsPrimary="true" Content="Post to Database"></SfButton>
+                    </div>
+                </ContentTemplate>
+            </TabItem>
+            <TabItem Disabled="bDataList">
+                <ChildContent>
+                    <TabHeader Text="Data not Submitted">
+                    </TabHeader>
+                </ChildContent>
+                <ContentTemplate>
+                    <SfGrid @ref="GridDataPosted"
+                            DataSource="unpostedList"
+                            TValue="FinalImportModel"
+                            Toolbar="@toolBar"
+                            ShowColumnChooser="true"
+                            AllowPaging="true"
+                            AllowSorting="true"
+                            AllowFiltering="true"
+                            AllowExcelExport="true"
+                            AllowPdfExport="false"
+                            AllowSelection="true"
+                            AllowGrouping="true"
+                            Height="450"
+                            Width="Auto">
+                        @*<GridPageSettings PageCount="10" PageSize="15"></GridPageSettings>*@
+                        <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Excel"></GridFilterSettings>
+                        <GridPageSettings PageCount="10"></GridPageSettings>
+                        <GridEvents OnToolbarClick="DataToolbarClickHandler" TValue="FinalImportModel"></GridEvents>
+                        @*<GridEvents DataBound="OnChapterDataBound" RowSelected="GetSelectedChapterRecords" TValue="ChaptersModel"></GridEvents>*@
+                        <GridColumns>
+
+                            <GridColumn Field=@nameof(FinalImportModel.Id1) HeaderText="Id" IsPrimaryKey="true" Visible="true" TextAlign="TextAlign.Left" AutoFit="true" Width="120"></GridColumn>
+                            @*<GridColumn Field=@nameof(FinalImportModel.DataFlow) HeaderText="Data Flow" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>*@
+                            <GridColumn Field=@nameof(FinalImportModel.IMPORT_TARIFF) HeaderText="Product" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            @*<GridColumn Field=@nameof(FinalImportModel.LastUpdate) HeaderText="Last Update" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>*@
+                            <GridColumn Field=@nameof(FinalImportModel.Freq) HeaderText="Freq" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(FinalImportModel.Reporter) HeaderText="Reporter" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(FinalImportModel.Partner) HeaderText="Partner" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(FinalImportModel.SIDE_OF_TRADE) HeaderText="Flow" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(FinalImportModel.Qty) HeaderText="Qty KG" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(FinalImportModel.Value) HeaderText="Value Euro" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+
+                            <GridColumn Field=@nameof(FinalImportModel.TimePeriod) HeaderText="Time Period" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(FinalImportModel.BATCH_NO) HeaderText="Batch No" TextAlign="TextAlign.Right" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.Integer"></GridColumn>
+                        </GridColumns>
+                        <SfSpinner @bind-Visible="@IsLoading"></SfSpinner>
+                    </SfGrid>
+                    <div style="padding-top:1%">
+                        <SfButton @ref="BtnBack" @onclick="Back" CssClass="e-flat" IsPrimary="true" Content="Back"></SfButton>
+                        <SfButton @ref="BtnRefresh" @onclick="RefreshData" CssClass="e-flat" IsPrimary="true" Content="Refresh Grid"></SfButton>
+                        <SfButton @ref="BtnClear" @onclick="ClearData" CssClass="e-flat" IsPrimary="true" Content="Clear Grid"></SfButton>
+                        <SfButton @ref="BtnPost" @onclick="PostData" CssClass="e-flat" Disabled="IsLoading" IsPrimary="true" Content="Post to Staging Data"></SfButton>
+                    </div>
+                </ContentTemplate>
+            </TabItem>
+        </TabItems>
+    </SfTab>
+}
+else
+{
+    <h5 style="color:Red">System is Processing, try again later.</h5>
+}
+@code {
+    SfToast ToastObj;
+    SfGrid<EuroImportModel> Grid;
+    SfGrid<ChaptersModel> GridChapter;
+    SfGrid<FinalImportModel> GridData;
+    SfGrid<FinalImportModel> GridDataPosted;
+
+    private string toastTitle { get; set; }
+    private string toastMessage { get; set; }
+
+    SfButton BtnBack;
+    SfButton BtnNext;
+    SfButton BtnRun;
+    SfButton BtnPost;
+    SfButton BtnRefresh;
+    SfButton BtnClear;
+
+    public List<EuroImportModel> countryList { get; set; } = new List<EuroImportModel>();
+    public List<ImportModelOutput> dataList { get; set; } = new List<ImportModelOutput>();
+    public List<FinalImportModel> finalList { get; set; } = new List<FinalImportModel>();
+    public List<FinalImportModel> unpostedList { get; set; } = new List<FinalImportModel>();
+    public List<ChaptersModel> chapterList { get; set; } = new List<ChaptersModel>();
+    List<EUImportTariffModel> selectedTariffList { get; set; } = new List<EUImportTariffModel>();
+    List<string> sideOfTrade = new List<string>();
+    string sideOfTradeItem = string.Empty;
+
+    string selectedYear = string.Empty;
+    string selectedPeriod = string.Empty;
+    bool periodSelector = false;
+    public DateTime DateValue { get; set; } = DateTime.Now;
+
+    private List<object> toolBar = new List<object> { "Search", "ExcelExport", "ColumnChooser" };
+
+    List<int> selectedRows = new List<int>();
+    List<int> selectedChapterRows = new List<int>();
+
+    bool bCountryList = false;
+    bool bPeriod = false;
+    bool bChapterList = false;
+    bool bDataList = false;
+    bool IsLoading = false;
+    bool IsLocked = false;
+    int rowCnt = 0;
+    int SelectedPage { get; set; } = 0;
+    int ProductCount { get; set; } = 0;
+    int ProductImported { get; set; } = 0;
+
+    public List<double> SelectedRowIndexes { get; set; }
+
+    public async Task ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
+    {
+        if (args.Item.Text == "Excel Export")
+        {
+            await GridData.ExportToExcelAsync();
+        }
+    }
+
+    public async Task DataToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
+    {
+        if (args.Item.Text == "Excel Export")
+        {
+            await GridDataPosted.ExportToExcelAsync();
+        }
+    }
+
+    public async Task GetSelectedRecords(RowSelectEventArgs<EuroImportModel> args)
+    {
+        selectedRows = await this.Grid.GetSelectedRowIndexesAsync();
+    }
+
+    public async Task GetSelectedChapterRecords(RowSelectEventArgs<ChaptersModel> args)
+    {
+        selectedChapterRows = await this.GridChapter.GetSelectedRowIndexesAsync();
+    }
+
+    private void Next()
+    {
+        SelectedPage++;
+    }
+
+    public async Task OnDataBound(object args)
+    {
+        // The filtered index values are selected
+        await this.Grid.SelectRowsAsync(selectedRows.ToArray());
+    }
+
+    public async Task OnChapterDataBound(object args)
+    {
+        // The filtered index values are selected
+        await this.GridChapter.SelectRowsAsync(selectedChapterRows.ToArray());
+    }
+
+    private void Back()
+    {
+        if (SelectedPage == 0)
+        {
+
+            return;
+        }
+
+        SelectedPage--;
+    }
+
+    private async Task RefreshData()
+    {
+        IsLoading = true;
+        var flSrv = new ImportService();
+        unpostedList = await flSrv.GetUnposted();
+        IsLoading = false;
+
+        await InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+    }
+
+    private async Task ClearData()
+    {
+        IsLoading = true;
+        var tDataSrv = new TradeDataService();
+        await tDataSrv.ClearImportTransactions();
+        await RefreshData();
+
+        IsLoading = false;
+
+        await InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+    }
+
+    private async Task PostData()
+    {
+        this.IsLoading = true;
+        var flSrv = new ImportService();
+        var allCountryList = await flSrv.GetCountries();
+
+        foreach (var Item in finalList)
+        {
+            var partnerGeo = allCountryList.FirstOrDefault(x => x.Code.Equals(Item.Partner));
+            var reporterGeo = allCountryList.FirstOrDefault(x => x.Code.Equals(Item.Reporter));
+
+            var model = new FinalImportModel
+            {
+                BATCH_NO = 0,
+                DataFlow = Item.DataFlow,
+                SIDE_OF_TRADE = Item.SIDE_OF_TRADE,
+                Freq = Item.Freq,
+                Id1 = Item.Id1,
+                LastUpdate = Item.LastUpdate,
+                Partner = Item.Partner,
+                Posted = Item.Posted,
+                IMPORT_TARIFF = Item.IMPORT_TARIFF,
+                Qty = Item.Qty,
+                Reporter = Item.Reporter,
+                TimePeriod = Item.TimePeriod,
+                Value = Item.Value,
+                MC_GEO = partnerGeo.GeoCode,
+                SC_GEO = reporterGeo.GeoCode
+            };
+
+            var result = await flSrv.DoesImportExist(model);
+
+            if (!result)
+                await flSrv.AddImport(model);
+        }
+        this.IsLoading = false;
+    }
+
+    async Task GetData()
+    {
+
+        rowCnt = 1;
+        this.IsLoading = true;
+        //SelectedPage++;
+        selectedTariffList.Clear();
+        dataList.Clear();
+        var flSrv = ImportService.Instance;
+
+        if (this.GridChapter is null)
+        {
+            await ShowToast("Please select a valid Chapter");
+            this.IsLoading = false;
+            return;
+        }
+
+        var selectedRows = await this.GridChapter.GetSelectedRecordsAsync();
+
+        if (selectedRows.Count == 0)
+        {
+            await ShowToast("Please select a valid Chapter");
+            this.IsLoading = false;
+            return;
+        }
+
+        if (string.IsNullOrEmpty(sideOfTradeItem))
+        {
+            await ShowToast("Please select a Side of Trade");
+            this.IsLoading = false;
+            return;
+        }
+
+        foreach (var Item in selectedRows)
+        {
+            var code = "^" + Item.Code;
+            var tempList = await flSrv.GetTariffCodes(code);
+            selectedTariffList.AddRange(tempList);
+        }
+
+        selectedTariffList = selectedTariffList.OrderBy(x => x.TariffCode).ToList();
+
+        var selectedCountries = await this.Grid.GetSelectedRecordsAsync();
+
+        if (selectedCountries.Count == 0)
+        {
+            await ShowToast("Please select a valid Country");
+            this.IsLoading = false;
+            return;
+        }
+
+        var scFilter = "M." + selectedCountries[0].Code + ".";
+
+        var nonEuroFilter = await flSrv.GetNonEuroFilters(selectedCountries[0].Code);
+
+        var nonEuro = string.Empty;
+        int cnt = 0;
+        foreach (var Item in nonEuroFilter)
+        {
+            if (cnt == 0)
+            {
+                nonEuro = Item.Code;
+            }
+            else
+            {
+                nonEuro += "+" + Item.Code;
+            }
+            cnt++;
+        }
+        // nonEuro += ".TOTAL+";
+
+        var selectTariff = string.Empty;
+        var tariffList = new List<string>();
+
+        foreach (var Item in selectedTariffList)
+        {
+            var result = tariffList.FirstOrDefault(x => x.Equals(Item.EightDigit));
+            if (result is null)
+            {
+                tariffList.Add(Item.EightDigit);
+            }
+            //selectTariff += "+" + Item.EightDigit;//.PadRight(8, '0');
+        }
+
+        string Year = DateValue.Year.ToString();
+        string Month = DateValue.Month.ToString().PadLeft(2, '0');
+        var period = Year + "-" + Month;
+
+        var tariffCode = string.Empty;
+        int sideOfTrade = 1; //1 Imports 2 Exports
+
+        if (sideOfTradeItem.Equals("Imports"))
+        {
+            sideOfTrade = 1;
+        }
+        else
+        {
+            sideOfTrade = 2;
+        }
+
+        ProductCount = tariffList.Count;
+        ProductImported = 0;
+
+        foreach (var scItem in tariffList)
+        {
+            var tCode = "." + scItem.Trim() + ".";
+
+            //  var mainFilter = "https://ec.europa.eu/eurostat/api/comext/dissemination/sdmx/2.1/data/ds-059322/"
+            var dataFilter = "https://ec.europa.eu/eurostat/api/comext/dissemination/sdmx/2.1/data/DS-045409/"
+                + scFilter
+                + nonEuro
+                + tCode
+                + sideOfTrade + ".VALUE_IN_EUROS+QUANTITY_IN_100KG/?format=TSV&startPeriod=" + period + "&endPeriod=" + period;
+
+            await GetApiData(dataFilter, period);
+            ProductImported++;
+            await InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+        }
+
+        foreach (var Item in dataList)
+        {
+            Item.Id = rowCnt;
+            rowCnt++;
+        }
+
+        //Consolodate Data
+
+        var tList = new List<FinalImportModel>();
+        finalList.Clear();
+        dataList = dataList.OrderBy(x => x.Product).ThenBy(x => x.Partner).ThenBy(x => x.Indicators).ToList();
+
+        foreach (var Item in dataList)
+        {
+            var result = dataList.Where(x => x.Product.Equals(Item.Product) & x.Partner.Equals(Item.Partner)).ToList();
+
+            var tModel = tList.FirstOrDefault(x => x.IMPORT_TARIFF.Equals(Item.Product) & x.Partner.Equals(Item.Partner));
+
+            if (tModel is null)
+            {
+                foreach (var Item1 in result)
+                {
+                    var rModel = finalList.FirstOrDefault(x => x.IMPORT_TARIFF.Equals(Item.Product) & x.Partner.Equals(Item.Partner));
+                    if (rModel is null)
+                    {
+                        var SIDE_OF_TRADE = string.Empty;
+                        if (Item1.Flow.Equals("1"))
+                        {
+                            SIDE_OF_TRADE = "I";
+                        }
+                        if (Item1.Flow.Equals("2"))
+                        {
+                            SIDE_OF_TRADE = "E";
+                        }
+
+                        var cModel = new FinalImportModel
+                        {
+                            IMPORT_TARIFF = Item1.Product,
+                            DataFlow = Item1.DataFlow,
+                            SIDE_OF_TRADE = SIDE_OF_TRADE,
+                            Freq = Item1.Freq,
+                            Id1 = Item1.Id,
+                            LastUpdate = Item1.LastUpdate,
+                            Partner = Item1.Partner,
+                            Qty = Item1.OBSWeight,
+                            Reporter = Item1.Reporter,
+                            TimePeriod = Item1.TimePeriod,
+                            Value = "0"
+                        };
+                        finalList.Add(cModel);
+                    }
+                    else
+                    {
+                        rModel.Value = Item1.OBSValue;
+                        tList.Add(rModel);
+                    }
+                }
+            }
+        }
+
+        rowCnt = 1;
+        foreach (var Item in finalList)
+        {
+            Item.Id1 = rowCnt;
+            rowCnt++;
+        }
+
+        SelectedPage++;
+        this.IsLoading = false;
+
+        await InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+    }
+
+    async Task GetFilterData()
+    {
+        var flSrv = new ImportService();
+        countryList = await flSrv.GetEuroFilters();
+        chapterList = await flSrv.GetChapters();
+        unpostedList = await flSrv.GetUnposted();
+    }
+
+    async Task GetApiData(string filter,string period)
+    {
+        var apiService = ApiService.Instance;
+        var tempData = await apiService.GetApiData(filter,period);
+        foreach (var Item in tempData)
+        {
+            dataList.Add(Item);
+        }
+    }
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var stSrv = SystemLockService.Instance;
+            var sModel = await stSrv.GetLockStatus();
+            IsLocked = sModel.IsProcessing;
+
+            await GetFilterData();
+            await ShowToast("Loading...");
+
+            sideOfTrade.Add("Imports");
+            sideOfTrade.Add("Exports");
+
+            await InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+
+        }
+
+        base.OnAfterRender(firstRender);
+
+    }
+
+    private async Task ShowToast(string message)
+    {
+        toastTitle = "DataError";
+        toastMessage = message;
+        await this.ToastObj.ShowAsync();
+    }
+}
+
+
+<style>
+    .e-toast-container .e-toast .e-toast-message .e-toast-title {
+        color: yellow;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .e-toast-container .e-toast {
+        background-color: red;
+    }
+
+        .e-toast-container .e-toast .e-toast-message .e-toast-content {
+            color: white;
+            font-size: 13px;
+            font-weight: normal;
+        }
+</style>

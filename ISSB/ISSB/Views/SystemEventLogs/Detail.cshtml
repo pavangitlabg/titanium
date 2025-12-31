@@ -1,0 +1,171 @@
+﻿@using Infragistics.Web.Mvc
+@model Data.Models.SystemEventLogsModel
+@{
+
+    ViewData["Title"] = "View Site Event Log Record";
+
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style type="text/css">
+
+        .center {
+            margin: auto;
+            width: 60%;
+            border: 3px solid #323030;
+            padding: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            height: 300px;
+            width: 50%;
+        }
+    </style>
+</head>
+
+<body>
+
+    @*<div class="card">
+        <div class="card-header">
+            <div class="content-header">
+                <h2>@ViewData["Title"]</h2>
+                <hr />
+                <div id="map" class="center"></div>
+                <hr />
+                @using (Html.BeginForm("Close", "SystemEventLogs"))
+                {
+                    @Html.HiddenFor(x => x._id, new { _id = "_id" })
+                    <div class="form-horizontal">
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })                        
+                        <div class="needs-validation">
+                            <fieldset>
+                                <br />
+                                <div class="form-group row">                               
+                                    <div class="col-sm-2">
+                                        <label>@Html.LabelFor(u => u.Date, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-3 editor-field">
+                                        @Html.TextBoxFor(u => u.Date, htmlAttributes: new { @class = "form-control", @readonly="readonly" })                                        
+                                    </div>
+                                    <div class="col-sm-2 offset-sm-2">
+                                        <label>@Html.LabelFor(u => u.ipAddress, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-3 editor-field">
+                                        @Html.TextBoxFor(u => u.ipAddress, htmlAttributes: new { @class = "form-control", @readonly="readonly" })                                       
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-2">
+                                        <label>@Html.LabelFor(u => u.country, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-3 editor-field">
+                                        @Html.TextBoxFor(u => u.country, htmlAttributes: new { @class = "form-control", @readonly="readonly" })                                       
+                                    </div>
+                                      <div class="col-sm-2 offset-sm-2">
+                                        <label>@Html.LabelFor(u => u.countryCode, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-3 editor-field">
+                                        @Html.TextBoxFor(u => u.countryCode, htmlAttributes: new { @class = "form-control", @readonly="readonly" })                                       
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-2">
+                                        <label>@Html.LabelFor(u => u.regionName, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-3 editor-field">
+                                        @Html.TextBoxFor(u => u.regionName, htmlAttributes: new { @class = "form-control", @readonly="readonly" })                                       
+                                    </div>
+                                      <div class="col-sm-2 offset-sm-2">
+                                        <label>@Html.LabelFor(u => u.region, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-3 editor-field">
+                                        @Html.TextBoxFor(u => u.region, htmlAttributes: new { @class = "form-control", @readonly="readonly" })                                       
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-2">
+                                        <label>@Html.LabelFor(u => u.city, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-3 editor-field">
+                                        @Html.TextBoxFor(u => u.city, htmlAttributes: new { @class = "form-control", @readonly="readonly" })                                       
+                                    </div>
+                                      <div class="col-sm-2 offset-sm-2">
+                                        <label>@Html.LabelFor(u => u.zip, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-3 editor-field">
+                                        @Html.TextBoxFor(u => u.zip, htmlAttributes: new { @class = "form-control", @readonly="readonly" })                                       
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-2">
+                                        <label>@Html.LabelFor(u => u.lat, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-3 editor-field">
+                                        @Html.TextBoxFor(u => u.lat, htmlAttributes: new { @class = "form-control", @readonly="readonly" })                                       
+                                    </div>
+                                      <div class="col-sm-2 offset-sm-2">
+                                        <label>@Html.LabelFor(u => u.lon, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-3 editor-field">
+                                        @Html.TextBoxFor(u => u.lon, htmlAttributes: new { @class = "form-control", @readonly="readonly" })                                       
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-2">
+                                        <label>@Html.LabelFor(u => u.timezone, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-3 editor-field">
+                                        @Html.TextBoxFor(u => u.timezone, htmlAttributes: new { @class = "form-control", @readonly="readonly" })                                       
+                                    </div>
+                                      <div class="col-sm-2 offset-sm-2">
+                                        <label>@Html.LabelFor(u => u.isp, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-3 editor-field">
+                                        @Html.TextBoxFor(u => u.isp, htmlAttributes: new { @class = "form-control", @readonly="readonly" })                                       
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-2">
+                                        <label>@Html.LabelFor(u => u.org, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-3 editor-field">
+                                        @Html.TextBoxFor(u => u.org, htmlAttributes: new { @class = "form-control", @readonly="readonly" })                                       
+                                    </div>
+                                      <div class="col-sm-2 offset-sm-2">
+                                        <label>@Html.LabelFor(u => u.@as, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-3 editor-field">
+                                        @Html.TextBoxFor(u => u.@as, htmlAttributes: new { @class = "form-control", @readonly="readonly" })                                       
+                                    </div>
+                                </div>                             
+
+                                <hr/>
+                                <div class="form-group">
+                                    <input type="button" onclick="goBack()" class="btn btn-warning px-4" value="Close" />                                    
+                                </div>
+                            </fieldset>
+                            <br />                            
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>*@
+    <br />    
+</body>
+</html>
+
+

@@ -1,0 +1,1653 @@
+﻿
+@using Infragistics.Web.Mvc
+@model Data.Models.SalesProfileModel
+@{
+    ViewData["Title"] = "Add Customer Record";
+}
+
+<br />
+<style type="text/css">
+
+    .ui-igedit {
+        width: 100% !important;
+    }
+
+    .two-div {
+        height: 50px !important;
+    }
+
+    .div-border {
+        border: thin solid lightgray !important;
+        border-radius: 8px !important;
+        margin: 0px 0px 0px 0px !important;
+    }
+</style>
+
+@using (Html.BeginForm("AddNew", "SalesProfile"))
+{
+    @Html.HiddenFor(x => x._id, new { _id = "_id" })
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <fieldset>
+        <div class="card">
+            <div class="card-header">
+                <h2>@ViewData["Title"]</h2>
+            </div>
+
+
+            <div class="card-body">
+
+                <!--TABS-->
+                <ul class="nav nav-tabs" id="crm-tab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="details-tab" data-toggle="pill" href="#details">Details</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="default-tab" data-toggle="pill" href="#default">Default</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="credit-control-tab" data-toggle="pill" href="#creditControl">Credit Control</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="bank-tab" data-toggle="pill" href="#bank">Bank</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="memo-tab" data-toggle="pill" href="#memo">Memo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="web-access-tab" data-toggle="pill" href="#webAccess">Web Access</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="web-transaction-tab" data-toggle="pill" href="#webTransaction">Web Transaction</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="mass-email-log" data-toggle="pill" href="#massEmailLog">Mass Email Log</a>
+                    </li>
+                </ul>
+
+                <!--tab CONTENT-->
+
+                <div class="tab-content" id="crm-tabContent">
+
+                    <!--DETAILS tab-->
+                    <div class="tab-pane fade active show" id="details">
+                        <br />
+                        <div style="margin:10px;">
+                            <div class="row">
+
+                                <div class="col-md-5 col-md-5 col-md-2">
+                                    <div class="card card-secondary">
+                                        <div class="card-header">
+                                            Account Details
+                                            <div class="card-tools">
+                                                <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fas fa-minus"></i></button>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <div class="form-group row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-2">
+                                                            <label class="form-label text-grey-normal">A/C</label>
+                                                        </div>
+                                                        <div class="col-md-10">
+                                                            <div class="editor-field">
+                                                                @(Html.Infragistics().TextEditorFor(u => u.ACCOUNT_REF, new { @class = "form-control" }).Render())
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-2">
+                                                            <label class="form-label text-grey-normal">Name</label>
+                                                        </div>
+                                                        <div class="col-md-10">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.NAME, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.NAME, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-6">
+                                                            <label class="form-label text-grey-normal">Balance</label>
+                                                            <div>
+                                                                @*@(Html.Infragistics().NumericEditor().ID("BALANCE").DataMode(NumericEditorDataMode.Double).Value(Model.BALANCE).Render())*@
+                                                                @(Html.Infragistics().TextEditorFor(u => u.BALANCE, new { @class = "form-control" }).Render())
+                                                                @Html.ValidationMessageFor(u => u.BALANCE, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label class="form-label text-grey-normal">Vat No.</label>
+                                                            <div>
+                                                                @(Html.Infragistics().TextEditorFor(u => u.VAT_REG_NUMBER, new { @class = "form-control" }).Render())
+                                                                @Html.ValidationMessageFor(u => u.VAT_REG_NUMBER, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="card card-secondary">
+                                        <div class="card-header">
+                                            Address
+                                            <div class="card-tools">
+                                                <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fas fa-minus"></i></button>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-3">
+                                                            <label class="form-label text-grey-normal">Street 1</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.ADDRESS_1, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.ADDRESS_1, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-3">
+                                                            <label class="form-label text-grey-normal">Street 2</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.ADDRESS_2, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.ADDRESS_2, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-3">
+                                                            <label class="form-label text-grey-normal">Town</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.ADDRESS_3, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.ADDRESS_3, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-3">
+                                                            <label class="form-label text-grey-normal">County</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.ADDRESS_4, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.ADDRESS_4, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-3">
+                                                            <label class="form-label text-grey-normal">Post Code</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.ADDRESS_5, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.ADDRESS_5, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Country Code</label>
+                                                            <div>
+                                                                @(Html.Infragistics().TextEditorFor(u => u.COUNTRY_CODE, new { @class = "form-control" }).Render())
+                                                                @Html.ValidationMessageFor(u => u.COUNTRY_CODE, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            <label class="form-label text-grey-normal">Country Name</label>
+                                                            <div>
+                                                                @(Html.Infragistics().TextEditorFor(u => u.COUNTRY_NAME, new { @class = "form-control" }).Render())
+                                                                @Html.ValidationMessageFor(u => u.COUNTRY_NAME, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+
+                                    <div class="card card-secondary">
+                                        <div class="card-header">
+                                            Contact Information
+                                            <div class="card-tools">
+                                                <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fas fa-minus"></i></button>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <div class="form-group row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Contact Name</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.CONTACT_NAME, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.CONTACT_NAME, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Telephone</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.TELEPHONE, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.TELEPHONE, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Fax</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.FAX, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.FAX, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Mobile</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.TELEPHONE_2, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.TELEPHONE_2, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Email</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.E_MAIL, new { @class = "form-control" }).ValidatorOptions(options => options.OnBlur(true).OnChange(false).OnSubmit(true)).Render())
+                                                            @Html.ValidationMessageFor(u => u.E_MAIL, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Web</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.WEB_ADDRESS, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.WEB_ADDRESS, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-5 col-md-5 col-md-2">
+                                    <div class="card card-secondary">
+                                        <div class="card-header">
+                                            Delivery Details
+                                            <div class="card-tools">
+                                                <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fas fa-minus"></i></button>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <div class="form-group row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-3">
+                                                            <label class="form-label text-grey-normal">Name</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.DEL_NAME, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.DEL_NAME, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-3">
+                                                            <label class="form-label text-grey-normal">Street 1</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.DEL_ADDRESS_1, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.DEL_ADDRESS_1, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-3">
+                                                            <label class="form-label text-grey-normal">Street 2</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.DEL_ADDRESS_2, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.DEL_ADDRESS_2, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-3">
+                                                            <label class="form-label text-grey-normal">Town</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.DEL_ADDRESS_3, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.DEL_ADDRESS_3, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-3">
+                                                            <label class="form-label text-grey-normal">County</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.DEL_ADDRESS_4, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.DEL_ADDRESS_4, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-3">
+                                                            <label class="form-label text-grey-normal">Post Code</label>
+                                                        </div>
+                                                        <div class="col-md-9">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.DEL_ADDRESS_5, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.DEL_ADDRESS_5, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="card card-secondary">
+                                        <div class="card-header">
+                                            Delivery Contact Info
+                                            <div class="card-tools">
+                                                <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fas fa-minus"></i></button>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <div class="form-group row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Trade Contact</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.TRADE_CONTACT, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.TRADE_CONTACT, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Telephone</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.DEL_TELEPHONE, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.DEL_TELEPHONE, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Fax</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.DEL_FAX, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.DEL_FAX, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="form-gropu row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">e-Mail</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.DEL_E_MAIL, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.DEL_E_MAIL, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="card card-secondary">
+                                        <div class="card-header">
+                                            Sales
+                                            <div class="card-tools">
+                                                <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fas fa-minus"></i></button>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <div class="form-group row">
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Sales Level</label>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            @*@Html.DropDownListFor(u => u.SALES_LEVEL, new SelectList(new List<string>()), new { @class = "form-control" })*@
+                                                            @Html.DropDownListFor(u => u.SALES_LEVEL, new List<SelectListItem> {
+                                                                new SelectListItem{Text="Please Select", Value="0"},
+                                                                new SelectListItem{Text="1", Value="1"},
+                                                                new SelectListItem{Text="2", Value="2"}}, new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(u => u.SALES_LEVEL, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="card card-secondary">
+                                        <div class="card-header">
+                                            Tes
+                                            <div class="card-tools">
+                                                <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fas fa-minus"></i></button>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <div class="form-group row">
+                                                <div class="col-md-12">
+                                                    <label class="form-label text-grey-normal">TES Email Address</label>
+                                                    <div>
+                                                        @(Html.Infragistics().TextEditorFor(u => u.TES_EMAIL, new { @class = "form-control" }).Render())
+                                                        @Html.ValidationMessageFor(u => u.TES_EMAIL, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <div class="card card-secondary">
+                                        <div class="card-header">
+                                            Account Status
+                                        </div>
+
+                                        <div class="card-body">
+                                            <div class="form-group row">
+
+                                                <div class="col-md-12">
+                                                    <label class="form-label text-grey-normal">Account Opened</label>
+                                                    <div>
+                                                        @*@Html.Infragistics().DatePickerFor(u => u.DATE_ACCOUNT_OPENED, new { @class = "form-control", @type = "date", @style="font-size: small" }).DateDisplayFormat("dd/MM/yyyy").DateInputFormat("dd/MM/yyyy").Render()*@
+                                                        @Html.Infragistics().EditorFor(u => u.DATE_ACCOUNT_OPENED, new { @class = "form-control", @type = "date", @style = "font-size: small" })
+                                                        @Html.ValidationMessageFor(u => u.DATE_ACCOUNT_OPENED, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <label class="form-label text-grey-normal">Active</label>
+                                                    <div>
+                                                        @(Html.Infragistics().TextEditorFor(u => u.ACCOUNT_STATUS, new { @class = "form-control" }).Render())
+                                                        @Html.ValidationMessageFor(u => u.ACCOUNT_STATUS, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <br />
+                                                    @*<div id="RESTRICT_NOMINAL_CODE"></div>*@
+                                                    @Html.CheckBox("noMail", false)
+                                                    <label class="form-label text-grey-normal">&nbsp; No Mail</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--DEFAULTS-->
+                    <div class="tab-pane fade" id="default">
+                        <br />
+                        <div style="margin:10px;">
+                            <div class="row">
+                                <div class="col-md-12 col-md-12 col-md-12">
+                                    <div class="col-md-12 col-md-12 col-md-12">
+                                        <div class="card card-secondary">
+                                            <div class="card-header">
+                                                Custom Fields
+                                                <div class="card-tools">
+                                                    <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fas fa-minus"></i></button>
+                                                </div>
+                                            </div>
+
+                                            <div class="card-body">
+                                                <div class="form-group row">
+                                                    <div class="col-md-6">
+                                                        <div class="form-group row">
+                                                            <div class="col-md-2">
+                                                                <label class="form-label text-grey-normal">Analysis 1</label>
+                                                            </div>
+                                                            <div class="col-md-8">
+                                                                @(Html.Infragistics().TextEditorFor(u => u.ANALYSIS_1, new { @class = "form-control" }).Render())
+                                                                @Html.ValidationMessageFor(u => u.ANALYSIS_1, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="form-group row">
+                                                            <div class="col-md-2">
+                                                                <label class="form-label text-grey-normal">Category</label>
+                                                            </div>
+                                                            <div class="col-md-8">
+                                                                @(Html.Infragistics().TextEditorFor(u => u.CATEGORY, new { @class = "form-control" }).Render())
+                                                                @Html.ValidationMessageFor(u => u.CATEGORY, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-6">
+                                                        <div class="form-group row">
+                                                            <div class="col-md-2">
+                                                                <label class="form-label text-grey-normal">Analysis 2</label>
+                                                            </div>
+                                                            <div class="col-md-8">
+                                                                @(Html.Infragistics().TextEditorFor(u => u.ANALYSIS_2, new { @class = "form-control" }).Render())
+                                                                @Html.ValidationMessageFor(u => u.ANALYSIS_2, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 two-div">
+                                                        <div class="form-group row">
+                                                            <div class="col-md-2">
+                                                                <label class="form-label text-grey-normal"></label>
+                                                            </div>
+                                                            <div class="col-md-8">
+                                                                <div class="form-group row div-border">
+                                                                    <div class="col-md-5" style="margin: 5px 0px 10px 10px !important">
+                                                                        <div>
+                                                                            @Html.RadioButtonFor(u => u.STATUS, "Lapsed")
+                                                                            <text>Lapsed</text>
+                                                                        </div>
+                                                                        <div>
+                                                                            @Html.RadioButtonFor(u => u.STATUS, "Pay As You Go")
+                                                                            <text>Pay As You Go</text>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-md-5" style="margin: 5px 0px 10px 0px !important">
+                                                                        <div>
+                                                                            @Html.RadioButtonFor(u => u.STATUS, "Potential")
+                                                                            <text>Potential</text>
+                                                                        </div>
+                                                                        <div>
+                                                                            @Html.RadioButtonFor(u => u.STATUS, "Subscriber")
+                                                                            <text>Subscriber</text>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-6">
+                                                        <div class="form-group row">
+                                                            <div class="col-md-2">
+                                                                <label class="form-label text-grey-normal">Analysis 3</label>
+                                                            </div>
+                                                            <div class="col-md-8">
+                                                                @(Html.Infragistics().TextEditorFor(u => u.ANALYSIS_3, new { @class = "form-control" }).Render())
+                                                                @Html.ValidationMessageFor(u => u.ANALYSIS_3, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12 col-md-12 col-md-12">
+                                        <div class="card card-secondary">
+                                            <div class="card-header">
+                                                Miscellaneous Defaults
+                                                <div class="card-tools">
+                                                    <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fas fa-minus"></i></button>
+                                                </div>
+                                            </div>
+
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group row">
+                                                            <div class="col-md-2">
+                                                                <label class="form-label text-grey-normal">Default Nominal Code</label>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                @(Html.Infragistics().TextEditorFor(u => u.DEF_NOM_CODE, new { @class = "form-control" }).Render())
+                                                                @Html.ValidationMessageFor(u => u.DEF_NOM_CODE, "", new { @class = "text-danger" })
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                @(Html.Infragistics().TextEditorFor(u => u.NOMINAL_NAME, new { @class = "form-control" }).Render())
+                                                                @Html.ValidationMessageFor(u => u.NOMINAL_NAME, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group row">
+                                                            <div class="col-md-3">
+                                                                <label class="form-label text-grey-normal">Use Default Nominal Code for Sales</label>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div id="RESTRICT_NOMINAL_CODE"></div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group row">
+                                                            <div class="col-md-2">
+                                                                <label class="form-label text-grey-normal">Default Tax Code</label>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                @*@Html.DropDownListFor(x => x.DEF_TAX_CODE, new SelectList(ViewBag.TaxCodes, "Value", "Text"), htmlAttributes: new { @class = "form-control", @id = "TaxCode" })*@
+
+                                                                @Html.DropDownListFor(u => u.DEF_TAX_CODE, new List<SelectListItem> {
+                                                                new SelectListItem{Text="", Value=""},
+                                                                new SelectListItem{Text="T1", Value="T1"}}, new { @class = "form-control" })
+
+                                                                @Html.ValidationMessageFor(u => u.DEF_TAX_CODE, "", new { @class = "text-danger" })
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                @(Html.Infragistics().TextEditorFor(u => u.TAX_NAME, new { @class = "form-control" }).Render())
+                                                                @Html.ValidationMessageFor(u => u.TAX_NAME, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group row">
+                                                            <div class="col-md-3">
+                                                                <label class="form-label text-grey-normal">Use Default Tax Code for Sales</label>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                <div id="RESTRICT_TAX_CODE"></div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group row">
+                                                            <div class="col-md-2">
+                                                                <label class="form-label text-grey-normal">Currency</label>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                @(Html.Infragistics().TextEditorFor(u => u.CURRENCY, new { @class = "form-control" }).Render())
+                                                                @Html.ValidationMessageFor(u => u.CURRENCY, "", new { @class = "text-danger" })
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                @(Html.Infragistics().TextEditorFor(u => u.CURRENCY_NAME, new { @class = "form-control" }).Render())
+                                                                @Html.ValidationMessageFor(u => u.CURRENCY_NAME, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group row">
+                                                            <div class="col-md-2">
+                                                                <label class="form-label text-grey-normal">Department</label>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                @(Html.Infragistics().TextEditorFor(u => u.DEPT_NUMBER, new { @class = "form-control" }).Render())
+                                                                @Html.ValidationMessageFor(u => u.DEPT_NUMBER, "", new { @class = "text-danger" })
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                @(Html.Infragistics().TextEditorFor(u => u.DEPT_NAME, new { @class = "form-control" }).Render())
+                                                                @Html.ValidationMessageFor(u => u.DEPT_NAME, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group row">
+                                                            <div class="col-md-2">
+                                                                <label class="form-label text-grey-normal">Discount %</label>
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                @*@(Html.Infragistics().NumericEditor().ID("DISCOUNT_RATE").DataMode(NumericEditorDataMode.Double).Value(Model.DISCOUNT_RATE).Render())*@
+                                                                @(Html.Infragistics().TextEditorFor(u => u.DISCOUNT_RATE, new { @class = "form-control" }).Render())
+                                                                @Html.ValidationMessageFor(u => u.DISCOUNT_RATE, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12 col-md-12 col-md-12">
+                                        <div class="card card-secondary">
+                                            <div class="card-header">
+                                                Web Download
+                                                <div class="card-tools">
+                                                    <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fas fa-minus"></i></button>
+                                                </div>
+                                            </div>
+
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-12">
+                                                        <div class="form-group row">
+                                                            <div class="col-md-2">
+                                                                <label class="form-label text-grey-normal">User Email</label>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                @(Html.Infragistics().TextEditorFor(u => u.E_MAIL, new { @class = "form-control" }).Render())
+                                                                @Html.ValidationMessageFor(u => u.E_MAIL, "", new { @class = "text-danger" })
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <label class="form-label text-grey-normal">Download Portal</label>
+                                                            </div>
+                                                            <div class="col-md-3">
+                                                                <div>@Html.CheckBox("DLPortal", false)</div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group row">
+                                                            <div class="col-md-2">
+                                                                <label class="form-label text-grey-normal">Password</label>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                @(Html.Infragistics().TextEditorFor(u => u.USER_NAME, new { @class = "form-control" }).Render())
+                                                                @Html.ValidationMessageFor(u => u.USER_NAME, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group row">
+                                                            <div class="col-md-2">
+                                                                <label class="form-label text-grey-normal">Data Path</label>
+                                                            </div>
+                                                            <div class="col-md-4">
+                                                                @(Html.Infragistics().TextEditorFor(u => u.WEB_ADDRESS, new { @class = "form-control" }).Render())
+                                                                @Html.ValidationMessageFor(u => u.WEB_ADDRESS, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--CREDIT CONTROLS-->
+                    <div class="tab-pane fade" id="creditControl">
+                        <br />
+
+                        <div class="col-md-12 col-md-12 col-md-12" style="margin:10px;">
+                            <div class="row">
+
+                                <div class="col-lg-6 col-md-6 col-sm-12">
+
+                                    <div class="card card-secondary">
+                                        <div class="card-header">
+                                            Terms
+                                            <div class="card-tools">
+                                                <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fas fa-minus"></i></button>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Credit Limit</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @*@(Html.Infragistics().NumericEditor().ID("CREDIT_LIMIT").DataMode(NumericEditorDataMode.Double).Value(Model.CREDIT_LIMIT).Render())*@
+                                                            @(Html.Infragistics().TextEditorFor(u => u.CREDIT_LIMIT, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.CREDIT_LIMIT, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Settlement Due</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @*@(Html.Infragistics().NumericEditor().ID("SETTLEMENT_DUE_DAYS").DataMode(NumericEditorDataMode.Double).Value(Model.SETTLEMENT_DUE_DAYS).Render())*@
+                                                            @(Html.Infragistics().TextEditorFor(u => u.SETTLEMENT_DUE_DAYS, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.SETTLEMENT_DUE_DAYS, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Settlement Discount</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @*@(Html.Infragistics().NumericEditor().ID("SETTLEMENT_DISC_RATE").DataMode(NumericEditorDataMode.Double).Value(Model.SETTLEMENT_DISC_RATE).Render())*@
+                                                            @(Html.Infragistics().TextEditorFor(u => u.SETTLEMENT_DISC_RATE, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.SETTLEMENT_DISC_RATE, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Payment Due</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @*@(Html.Infragistics().NumericEditor().ID("PAYMENT_DUE_DAYS").DataMode(NumericEditorDataMode.Double).Value(Model.PAYMENT_DUE_DAYS).Render())*@
+                                                            @(Html.Infragistics().TextEditorFor(u => u.PAYMENT_DUE_DAYS, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.PAYMENT_DUE_DAYS, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Average Time To Pay</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @*@(Html.Infragistics().NumericEditor().ID("AVERAGE_PAY_DAYS").DataMode(NumericEditorDataMode.Double).Value(Model.AVERAGE_PAY_DAYS).Render())*@
+                                                            @(Html.Infragistics().TextEditorFor(u => u.AVERAGE_PAY_DAYS, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.AVERAGE_PAY_DAYS, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Trading Terms Text</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.TERMS, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.TERMS, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Bureau</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BUREAU_CODE, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.BUREAU_CODE, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Credit Position</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.CREDIT_POSITION, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.CREDIT_POSITION, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Account Status</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.ACCOUNT_STATUS, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.ACCOUNT_STATUS, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="card card-secondary">
+                                        <div class="card-header">
+                                            Restrictions
+                                            <div class="card-tools">
+                                                <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fas fa-minus"></i></button>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal inline">Charge Credit &nbsp;</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            <div id="CAN_CHARGE"></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Terms Agreed &nbsp;</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            <div id="TERMS_AGREED"></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Restrict Mailing &nbsp;</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            <div id="RESTRICT_MAIL"></div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Account On Hold &nbsp;</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            <div id="ACCOUNT_ON_HOLD"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6 col-md-6 col-sm-12">
+
+                                    <div class="card card-secondary">
+                                        <div class="card-header">
+                                            Terms
+                                            <div class="card-tools">
+                                                <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fas fa-minus"></i></button>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">A/C Opened</label>
+                                                        </div>
+                                                        <div class="col-md-5">
+                                                            @*@Html.Infragistics().DatePickerFor(u => u.DATE_ACCOUNT_OPENED, new { @class = "form-control"}).DateDisplayFormat("dd/MM/yyyy").DateInputFormat("dd/MM/yyyy").Render()*@
+                                                            @Html.Infragistics().EditorFor(u => u.DATE_AC_OPENED, new { @class = "form-control", @type = "date" })
+                                                            @Html.ValidationMessageFor(u => u.DATE_AC_OPENED, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Last Credit Review</label>
+                                                        </div>
+                                                        <div class="col-md-5">
+                                                            @*@Html.Infragistics().DatePickerFor(u => u.DATE_LAST_CREDIT, new { @class = "form-control" }).DateDisplayFormat("dd/MM/yyyy").DateInputFormat("dd/MM/yyyy").Render()*@
+                                                            @Html.Infragistics().EditorFor(u => u.DATE_LAST_CREDIT, new { @class = "form-control", @type = "date" })
+                                                            @Html.ValidationMessageFor(u => u.DATE_LAST_CREDIT, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Next Credit Review</label>
+                                                        </div>
+                                                        <div class="col-md-5">
+                                                            @*@Html.Infragistics().DatePickerFor(u => u.DATE_NEXT_CREDIT, new { @class = "form-control" }).DateDisplayFormat("dd/MM/yyyy").DateInputFormat("dd/MM/yyyy").Render()*@
+                                                            @Html.Infragistics().EditorFor(u => u.DATE_NEXT_CREDIT, new { @class = "form-control", @type = "date" })
+                                                            @Html.ValidationMessageFor(u => u.DATE_NEXT_CREDIT, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Application Date</label>
+                                                        </div>
+                                                        <div class="col-md-5">
+                                                            @*@Html.Infragistics().DatePickerFor(u => u.DATE_CREDIT_RECEIVED, new { @class = "form-control" }).DateDisplayFormat("dd/MM/yyyy").DateInputFormat("dd/MM/yyyy").Render()*@
+                                                            @Html.Infragistics().EditorFor(u => u.DATE_CREDIT_APPLIED, new { @class = "form-control", @type = "date" })
+                                                            @Html.ValidationMessageFor(u => u.DATE_CREDIT_APPLIED, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Date Received</label>
+                                                        </div>
+                                                        <div class="col-md-5">
+                                                            @*@Html.Infragistics().DatePickerFor(u => u.DATE_CREDIT_RECEIVED, new { @class = "form-control" }).DateDisplayFormat("dd/MM/yyyy").DateInputFormat("dd/MM/yyyy").Render()*@
+                                                            @Html.Infragistics().EditorFor(u => u.DATE_CREDIT_RECEIVED, new { @class = "form-control", @type = "date" })
+                                                            @Html.ValidationMessageFor(u => u.DATE_CREDIT_RECEIVED, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-12">
+                                                            <label class="form-label text-grey-normal">Memo</label>
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.MEMO, new { @class = "form-control" }).TextMode(TextEditorTextMode.Multiline).Height(455).Render())
+                                                            @Html.ValidationMessageFor(u => u.MEMO, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--BANK-->
+                    <div class="tab-pane fade" id="bank">
+                        <br />
+                        <div class="col-md-6 col-md-6 col-md-12" style="margin:10px;">
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6 col-sm-12">
+                                    <div class="card card-secondary">
+                                        <div class="card-header">
+                                            Bank Details
+                                            <div class="card-tools">
+                                                <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fas fa-minus"></i></button>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Bank Name</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_NAME, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_NAME, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Street 1</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_ADDRESS_1, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_ADDRESS_1, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Street 2</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_ADDRESS_2, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_ADDRESS_2, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Town</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_ADDRESS_3, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_ADDRESS_3, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">County</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_ADDRESS_4, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_ADDRESS_4, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Post Code/Zip Code</label>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_ADDRESS_5, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_ADDRESS_5, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Account Name</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_ACCOUNT_NAME, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_ACCOUNT_NAME, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Sort Code</label>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_SORT_CODE, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_SORT_CODE, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4">
+                                                            <label class="form-label text-grey-normal">Account Number</label>
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_ACCOUNT_NUMBER, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_ACCOUNT_NUMBER, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6 col-md-6 col-sm-12">
+                                    <div class="card card-secondary">
+                                        <div class="card-header">
+                                            Additional Bank Details
+                                            <div class="card-tools">
+                                                <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fas fa-minus"></i></button>
+                                            </div>
+                                        </div>
+
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-5">
+                                                            <label class="form-label text-grey-normal">BAC Ref</label>
+                                                        </div>
+                                                        <div class="col-md-7">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_BAC).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_BAC, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-5">
+                                                            <label class="form-label text-grey-normal">IBAN</label>
+                                                        </div>
+                                                        <div class="col-md-7">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_IBAN).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_IBAN, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-5">
+                                                            <label class="form-label text-grey-normal">BIC/Swift</label>
+                                                        </div>
+                                                        <div class="col-md-7">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_BIC).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_BIC, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row" style="margin-bottom: 70px">
+                                                        <div class="col-md-5">
+                                                            <label class="form-label text-grey-normal">RollNumber</label>
+                                                        </div>
+                                                        <div class="col-md-7">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_ROLLNUMBER).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_ROLLNUMBER, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-5">
+                                                            <label class="form-label text-grey-normal">Additional Reference 1</label>
+                                                        </div>
+                                                        <div class="col-md-7">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_ADDITIONALREF1).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_ADDITIONALREF1, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-5">
+                                                            <label class="form-label text-grey-normal">Additional Reference 2</label>
+                                                        </div>
+                                                        <div class="col-md-7">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_ADDITIONALREF2).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_ADDITIONALREF2, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row" style="margin-bottom: 68px">
+                                                        <div class="col-md-5">
+                                                            <label class="form-label text-grey-normal">Additional Reference 3</label>
+                                                        </div>
+                                                        <div class="col-md-7">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_ADDITIONALREF3).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_ADDITIONALREF3, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="tab-pane fade" id="memo">
+                        <br />
+                        <div class="col-md-6 col-md-6 col-md-12" style="margin:10px;">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="card card-secondary">
+                                        <div class="card-header">
+                                            Memo
+                                        </div>
+
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-1">
+                                                            <label class="form-label text-grey-normal">AC</label>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.USER_NAME, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.USER_NAME, "", new { @class = "text-danger" })
+                                                        </div>
+                                                        <div class="col-md-1" style="margin-left: 100px">
+                                                            <label class="form-label text-grey-normal">Name</label>
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.NAME, new { @class = "form-control" }).Render())
+                                                            @Html.ValidationMessageFor(u => u.NAME, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-12">
+                                                            <label class="form-label text-grey-normal">Memo Text</label>
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            @(Html.Infragistics().TextEditorFor(u => u.MEMO_2, new { @class = "form-control" }).TextMode(TextEditorTextMode.Multiline).Height(350).Render())
+                                                            @Html.ValidationMessageFor(u => u.MEMO_2, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Web-->
+                    <div class="tab-pane fade" id="webAccess">
+                        <div class="col-lg-12 col-md-12 col-sm-12" style="margin:10px;">
+                            @*<div class="card card-default">
+                                    <div class="card-header">
+                                        Custom Fields
+                                        <div class="card-tools">
+                                            <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fas fa-minus"></i></button>
+                                            <button type="button" class="btn btn-tool" data-widget="remove"><i class="fas fa-remove"></i></button>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <div class="row">
+
+                                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                                <div class="row">
+
+                                                    <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                                        <div>
+                                                            <label class="form-label text-grey-normal">First Name</label>
+                                                        </div>
+                                                        <div>
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_ADDITIONALREF3).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_ADDITIONALREF3, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                                        <div>
+                                                            <label class="form-label text-grey-normal">Last Name</label>
+                                                        </div>
+                                                        <div>
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_ADDITIONALREF3).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_ADDITIONALREF3, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                                        <div>
+                                                            <label class="form-label text-grey-normal">Company Name</label>
+                                                        </div>
+                                                        <div>
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_ADDITIONALREF3).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_ADDITIONALREF3, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                                        <div>
+                                                            <label class="form-label text-grey-normal">Building</label>
+                                                        </div>
+                                                        <div>
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_ADDITIONALREF3).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_ADDITIONALREF3, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                                        <div>
+                                                            <label class="form-label text-grey-normal">Street</label>
+                                                        </div>
+                                                        <div>
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_ADDITIONALREF3).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_ADDITIONALREF3, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                                        <div>
+                                                            <label class="form-label text-grey-normal">Town</label>
+                                                        </div>
+                                                        <div>
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_ADDITIONALREF3).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_ADDITIONALREF3, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                                        <div>
+                                                            <label class="form-label text-grey-normal">County</label>
+                                                        </div>
+                                                        <div>
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_ADDITIONALREF3).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_ADDITIONALREF3, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                                        <div>
+                                                            <label class="form-label text-grey-normal">Country</label>
+                                                        </div>
+                                                        <div>
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_ADDITIONALREF3).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_ADDITIONALREF3, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                                        <div>
+                                                            <label class="form-label text-grey-normal">Post Code</label>
+                                                        </div>
+                                                        <div>
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_ADDITIONALREF3).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_ADDITIONALREF3, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                                        <div>
+                                                            <label class="form-label text-grey-normal">Telephone</label>
+                                                        </div>
+                                                        <div>
+                                                            @(Html.Infragistics().TextEditorFor(u => u.BANK_ADDITIONALREF3).Render())
+                                                            @Html.ValidationMessageFor(u => u.BANK_ADDITIONALREF3, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                                <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                                    <div>
+                                                        <label class="form-label text-grey-normal">Expiry Date</label>
+                                                    </div>
+                                                    <div>
+                                                        @Html.Infragistics().DatePickerFor(u => u.DATE_ACCOUNT_OPENED).DateDisplayFormat("dd/MM/yyyy").DateInputFormat("dd/MM/yyyy").Render()
+                                                        @Html.ValidationMessageFor(u => u.BANK_ADDITIONALREF3, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                                    <div>
+                                                        <label class="form-label text-grey-normal">Enabled</label>
+                                                    </div>
+                                                    <div>
+                                                        @(Html.Infragistics().TextEditorFor(u => u.BANK_ADDITIONALREF3).Render())
+                                                        @Html.ValidationMessageFor(u => u.BANK_ADDITIONALREF3, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                                    <div>
+                                                        <label class="form-label text-grey-normal">Active Account</label>
+                                                    </div>
+                                                    <div>
+                                                        @(Html.Infragistics().TextEditorFor(u => u.BANK_ADDITIONALREF3).Render())
+                                                        @Html.ValidationMessageFor(u => u.BANK_ADDITIONALREF3, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                                                    <div>
+                                                        <label class="form-label text-grey-normal">Password</label>
+                                                    </div>
+                                                    <div>
+                                                        @(Html.Infragistics().TextEditorFor(u => u.BANK_ADDITIONALREF3).Render())
+                                                        @Html.ValidationMessageFor(u => u.BANK_ADDITIONALREF3, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>*@
+                        </div>
+                        UNDER MAINTENANCE
+                    </div>
+
+                    <div class="tab-pane fade" id="webTransaction">
+                        UNDER MAINTENANCE
+                    </div>
+
+                    <div class="tab-pane fade" id="massEmailLog">
+                        UNDER MAINTENANCE
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr />
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary px-4"><span>Add &nbsp;<i class="fas fa-plus-circle"></i></span></button>
+        </div>
+
+    </fieldset>
+
+
+
+
+    <script>
+        $(function () {
+
+             var bRestrictNominal = false;
+             var bRestrictTax =  false;
+             var bCanCharge =  false;
+             var bTermsAgreed =  false;
+             var bRestrictMail =  false;
+             var bAccountOnHold =  false;
+
+            if ('@ViewData["RESTRICT_NOMINAL_CODE"]' == 'True') bRestrictNominal = true;
+            if ('@ViewData["RESTRICT_TAX_CODE"]' == 'True') bRestrictTax = true;
+            if ('@ViewData["CAN_CHARGE"]' == 'True') bCanCharge = true;
+            if ('@ViewData["TERMS_AGREED"]' == 'True') bTermsAgreed = true;
+            if ('@ViewData["RESTRICT_MAIL"]' == 'True') bRestrictMail = true;
+            if ('@ViewData["ACCOUNT_ON_HOLD"]' == 'True') bAccountOnHold = true;
+
+            $("#RESTRICT_NOMINAL_CODE").igCheckboxEditor({
+                valueChanged: function (evt, ui) {
+                    if (ui.newState == true) {
+
+                        bLocked = true;
+                    }
+                    else {
+
+                        bLocked = false;
+                    }
+
+                },
+                checked: bRestrictNominal
+            });
+
+            $("#RESTRICT_TAX_CODE").igCheckboxEditor({
+                valueChanged: function (evt, ui) {
+                    if (ui.newState == true) {
+
+                        bRestrictTax = true;
+                    }
+                    else {
+
+                        bRestrictTax = false;
+                    }
+
+                },
+                checked: bRestrictTax
+            });
+
+            $("#CAN_CHARGE").igCheckboxEditor({
+                valueChanged: function (evt, ui) {
+                    if (ui.newState == true) {
+
+                        bCanCharge = true;
+                    }
+                    else {
+
+                        bCanCharge = false;
+                    }
+
+                },
+                checked: bCanCharge
+            });
+
+            $("#TERMS_AGREED").igCheckboxEditor({
+                valueChanged: function (evt, ui) {
+                    if (ui.newState == true) {
+
+                        bTermsAgreed = true;
+                    }
+                    else {
+
+                        bTermsAgreed = false;
+                    }
+
+                },
+                checked: bTermsAgreed
+            });
+
+             $("#RESTRICT_MAIL").igCheckboxEditor({
+                valueChanged: function (evt, ui) {
+                    if (ui.newState == true) {
+
+                        bRestrictMail = true;
+                    }
+                    else {
+
+                        bRestrictMail = false;
+                    }
+
+                },
+                checked: bRestrictMail
+            });
+
+            $("#ACCOUNT_ON_HOLD").igCheckboxEditor({
+                valueChanged: function (evt, ui) {
+                    if (ui.newState == true) {
+
+                        bAccountOnHold = true;
+                    }
+                    else {
+
+                        bAccountOnHold = false;
+                    }
+
+                },
+                checked: bAccountOnHold
+            });
+
+
+
+            //$("#form1").submit(function (event) {
+            //    var submittedValues = $("#form1").serializeArray();
+
+            //    $("#results").empty();
+
+            //    $(".submit-container h3").show();
+            //    for (var i = 0 ; i < submittedValues.length; i++) {
+            //        $("#results").append("<p class='result'><span class='result-name'>" + submittedValues[i].name.replace(/([A-Z])/g, ' $1') + ":</span>  " + submittedValues[i].value + "</p>");
+            //    }
+
+            //    return false;
+            //});
+        });
+    </script>
+
+
+}
+
+

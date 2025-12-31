@@ -1,0 +1,306 @@
+﻿@page "/Schedule"
+@using Services
+@using Data.Models
+@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Notifications
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.Spinner
+@using Syncfusion.Blazor.Cards
+
+
+<h3>Schedule</h3>
+
+<SfDialog @ref="dialog" Width="450px" Visible="false" ShowCloseIcon="true" IsModal="true">
+    <DialogEvents Closed="CancelClick"></DialogEvents>
+    <DialogTemplates>
+        <Header><strong style="color:red">Update Imports for @DateValue.ToString("MMM - yyyy")</strong></Header>
+        <Content>
+            <div style="color:blue"><strong>Selected Countries @selectedRows.Count</strong></div>
+            @foreach (var Item in selectedCountrylist)
+            {
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">@Item.Code -  @Item.Legend</li>
+                </ul>
+            }
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton OnClick="@OkUpdateClick" Content="Execute Batch" IsPrimary="true"></DialogButton>
+        <DialogButton OnClick="@CancelClick" Content="Cancel"></DialogButton>
+    </DialogButtons>
+</SfDialog>
+
+<SfDialog @ref="dialogWarning" Width="450px" Visible="false" ShowCloseIcon="true" IsModal="true">
+    <DialogEvents Closed="CancelClick"></DialogEvents>
+    <DialogTemplates>
+        <Header><strong style="color:red">Waring</strong></Header>
+        <Content>
+            <p>@warningText</p>
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton OnClick="@OkClearLockClick" Content="Ok" IsPrimary="true"></DialogButton>
+        <DialogButton OnClick="@CancelClick" Content="Cancel"></DialogButton>
+    </DialogButtons>
+</SfDialog>
+
+<SfTab>
+    <TabItems>
+        <TabItem>
+            <ChildContent>
+                <TabHeader Text="Schedule Data">
+                </TabHeader>
+            </ChildContent>
+            <ContentTemplate>
+                <div style="padding-top:2%">
+                    <SfDatePicker TValue="DateTime" @bind-Value="DateValue" Placeholder="Choose a Month" Format="MMMM yyyy" Start="CalendarView.Year" Depth="CalendarView.Year" ShowClearButton="true" FullScreen="true" Width="15%"></SfDatePicker>
+                </div>
+                <div style="padding-top:2%">
+                    <SfButton @ref="BtnSchedule" @onclick="ConfirmPost" Disabled="IsLoading" CssClass="e-flat" IsPrimary="true" Content="Run Schedule"></SfButton>
+                    <SfButton @ref="BtnUnLock" @onclick="ClearLockOpen" Disabled="IsLoading" CssClass="e-flat" style="background:red;color:white" IsPrimary="true" Content="Clear System Lock"></SfButton>
+                </div>
+                <div style="padding-top:2%">
+                    @*<h5 style="color:blue">@message</h5>*@
+                </div>
+                <SfGrid @ref="Grid"
+                        DataSource="countryList"
+                        TValue="EuroImportModel"
+                        AllowPaging="false"
+                        AllowSorting="true"
+                        AllowFiltering="true"
+                        AllowExcelExport="true"
+                        AllowPdfExport="true"
+                        AllowSelection="true"
+                        Height="450"
+                        Width="30%">
+                    <GridSelectionSettings CheckboxOnly="true" PersistSelection="true"></GridSelectionSettings>
+                    <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Excel"></GridFilterSettings>
+                    <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Single" CheckboxOnly="false" PersistSelection="true"></GridSelectionSettings>
+                    <GridEvents DataBound="OnDataBound" RowSelected="GetSelectedRecords" TValue="EuroImportModel"></GridEvents>
+                    <GridColumns>
+                        <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
+                        <GridColumn Field=@nameof(EuroImportModel._id) HeaderText="_id" IsPrimaryKey="true" Visible="false" TextAlign="TextAlign.Left" AutoFit="true" Width="120"></GridColumn>
+                        <GridColumn Field=@nameof(EuroImportModel.Code) HeaderText="Code" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        <GridColumn Field=@nameof(EuroImportModel.Legend) HeaderText="Legend" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        <GridColumn Field=@nameof(EuroImportModel.GeoCode) HeaderText="Geo Code" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                    </GridColumns>
+                </SfGrid>
+            </ContentTemplate>
+        </TabItem>
+        <TabItem>
+            <ChildContent>
+                <TabHeader Text="Schedule Monitor">
+                </TabHeader>
+            </ChildContent>
+            <ContentTemplate>
+                <div style="padding-top:2%">
+                    <SfButton @ref="BtnRefresh" @onclick="RefreshData" Disabled="false" CssClass="e-flat" IsPrimary="true" Content="Refresh"></SfButton>
+                </div>
+                <div class="container overflow-auto shadow-sm p-3 mb5 bg-white rounded" style="height:500px;">
+
+                    @if (!importMessages.Any())
+                    {
+                        <p>No Updates yet..</p>
+                    }
+
+                    @foreach (var message in importMessages)
+                    {
+                        <div class="row mb-3 d-flex">
+                            <div class="card shadow" style="width: 18rem;">
+                                <div class="card-header">
+                                    <strong>@message.Country</strong>
+                                </div>
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">@message.Message</li>
+                                </ul>
+                                <div class="card-footer">
+                                    <span class="small" style="color:blue">@message.Date.ToString("HH:mm | MMM dd")</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </ContentTemplate>
+        </TabItem>
+    </TabItems>
+</SfTab>
+
+
+@code {
+
+    SfGrid<EuroImportModel> Grid;
+    SfGrid<MonitorModel> GridMonitor;
+    SfButton BtnSchedule;
+    SfButton BtnRefresh;
+    SfButton BtnUnLock;
+    SfDialog dialog;
+    SfDialog dialogWarning;
+
+    DateTime DateValue { get; set; } = DateTime.Now;
+    bool IsLoading { get; set; }
+    bool IsLocked { get; set; }
+    List<ImportModelOutput> dataList { get; set; } = new();
+    List<EuroImportModel> countryList { get; set; } = new();
+    List<EuroImportModel> countrySelected { get; set; } = new();
+    List<ChaptersModel> chapterList { get; set; } = new();
+    List<EUImportTariffModel> selectedTariffList { get; set; } = new();
+    List<FinalImportModel> finalList { get; set; } = new();
+    List<int> selectedRows = new List<int>();
+    List<ImportStatusModel> importMessages { get; set; } = new();
+
+    List<EuroImportModel> selectedCountrylist { get; set; } = new();
+
+    string warningText = string.Empty;
+
+    private async void CancelClick()
+    {
+        await dialog.HideAsync();
+        await dialogWarning.HideAsync();
+    }
+
+    private async Task OkUpdateClick()
+    {
+        await dialog.HideAsync();
+        var isSrv = new ImportStatusService();
+        await isSrv.Delete();
+
+        if (selectedRows.Count == 0)
+        {
+            var model = new ImportStatusModel
+            {
+                Country = "Error",
+                Message = "No Countires have been selected",
+                Date = DateTime.Now
+            };
+
+            await isSrv.Add(model);
+            return;
+        }
+
+        await RunShedule();
+
+    }
+
+    private async void ClearLockOpen()
+    {
+        warningText = "Warning! This should only be used if the system has failed to process the Imports. It will clear the lockout on other menu items.";
+        await dialogWarning.ShowAsync();
+    }
+
+
+    private async Task OkClearLockClick()
+    {
+        await dialogWarning.HideAsync();
+        await ClearLock();
+    }
+
+    public async Task GetSelectedRecords(RowSelectEventArgs<EuroImportModel> args)
+    {
+        selectedRows = await this.Grid.GetSelectedRowIndexesAsync();
+    }
+
+    public async Task GetSelectedChapterRecords(RowSelectEventArgs<ChaptersModel> args)
+    {
+        selectedRows = await this.Grid.GetSelectedRowIndexesAsync();
+    }
+
+    public async Task OnDataBound(object args)
+    {
+        // The filtered index values are selected
+        await this.Grid.SelectRowsAsync(selectedRows.ToArray());
+    }
+
+    private async Task RefreshData()
+    {
+        var isSrv = new ImportStatusService();
+        importMessages = await isSrv.Get();
+        await InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+
+    }
+
+    private async Task ClearLock()
+    {
+        var stSrv = SystemLockService.Instance;
+        var sModel = await stSrv.GetLockStatus();
+
+        sModel.Period = null;
+        sModel.IsProcessing = false;
+        sModel.SelectedRows = new();
+
+        await stSrv.Update(sModel);
+
+        await InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+
+    }
+
+    private async Task ConfirmPost()
+    {
+        selectedCountrylist.Clear();
+
+        if(selectedRows.Count == 0)
+        {
+            warningText = "No Countries have been selected!";
+            await dialogWarning.ShowAsync();
+            return;
+        }
+
+        foreach (var Id in selectedRows)
+        {
+            selectedCountrylist.Add(countryList[Id]);
+        }
+        await dialog.ShowAsync();
+    }
+
+    private async Task RunShedule()
+    {
+        var isSrv = new ImportStatusService();
+        await isSrv.Delete();
+
+        IsLoading = true;
+        var stSrv = SystemLockService.Instance;
+        var sModel = await stSrv.GetLockStatus();
+
+        sModel.Period = DateValue;
+        sModel.IsProcessing = false;
+        sModel.SelectedRows = selectedRows;
+        await stSrv.Update(sModel);
+
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+            var flSrv = new ImportService();
+            countryList = await flSrv.GetEuroFilters();
+            var stSrv = SystemLockService.Instance;
+            var sModel = await stSrv.GetLockStatus();
+            IsLocked = sModel.IsProcessing;
+            var isSrv = new ImportStatusService();
+            importMessages = await isSrv.Get();
+
+            await InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+        }
+
+        //return base.OnAfterRenderAsync(firstRender);
+    }
+
+}
+

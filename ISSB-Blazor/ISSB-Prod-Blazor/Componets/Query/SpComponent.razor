@@ -1,0 +1,552 @@
+@using FilterType = Syncfusion.Blazor.Grids.FilterType
+<div class="card-body">
+    <div class="form-group">
+        <div class="form-row">
+            <div class="bar-horizontal">
+                <div class="form-group col-md-4">
+                    <SfRadioButton Label="Group Products Together" Name="spgroup" Value="GroupProductTogether" TChecked="string" @onchange="SelectGroup" @bind-Checked="SelectGroupType"></SfRadioButton>
+                </div>
+                <div class="form-group col-md-4">
+                    <SfRadioButton Label="View Products Separately" Name="spgroup" Value="ViewProductsSeparately" TChecked="string" @onchange="SelectGroup" @bind-Checked="SelectGroupType"></SfRadioButton>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if (ProductGroupType.Equals("Broad"))
+    {
+        @if (!_isloading)
+        {
+            <br/>
+            <div style="height: 300px; overflow-y: auto;">
+                <SfTreeView @ref="BroadTree"
+                            TValue="BroadItemModel"
+                            ShowCheckBox="_showCheckBoxes"
+                            Height="Auto">
+                    <TreeViewFieldsSettings DataSource="ProductBroadData"
+                                            Id="Id"
+                                            Text="FolderName"
+                                            ParentId="ParentId"
+                                            HasChildren="HasSubFolders"
+                                            Expanded="Expanded"
+                                            IsChecked="IsChecked"/>
+                    <TreeViewEvents TValue="BroadItemModel" NodeChecking="NodeCheckingHandler" NodeChecked="NodeCheckedHandler"></TreeViewEvents>
+                </SfTreeView>
+                </div>
+        }
+    }
+
+    @if (ProductGroupType.Equals("Medium"))
+    {
+        @if (!_isloading)
+        {
+            <br/>
+            <div style="height: 300px; overflow-y: auto;">
+                <SfTreeView @ref="MediumTree"
+                            TValue="BroadItemModel"
+                            ShowCheckBox="_showCheckBoxes"
+                            Height="Auto">
+                    <TreeViewFieldsSettings DataSource="ProductMediumData"
+                                            Id="Id"
+                                            Text="FolderName"
+                                            ParentId="ParentId"
+                                            HasChildren="HasSubFolders"
+                                            Expanded="Expanded"
+                                            IsChecked="IsChecked"/>
+                    <TreeViewEvents TValue="BroadItemModel" NodeChecking="MediumNodeCheckingHandler"
+                                    NodeChecked="MediumNodeCheckedHandler"></TreeViewEvents>
+                </SfTreeView>
+            </div>
+        }
+    }
+    
+    @if (ProductGroupType.Equals("High"))
+    {
+        @if (!_isloading)
+        {
+            <br/>
+            <SfGrid ID="HighGrid"
+                    @ref="HighGrid"
+                    TValue="ProductBroadFilterItemModel"
+                    DataSource="@ProductHighData"
+                    Toolbar="@_toolBar"
+                    AllowPaging="false"
+                    AllowSorting="true"
+                    AllowSelection="true"
+                    AllowFiltering="true"
+                    AllowExcelExport="true"
+                    AllowPdfExport="false"
+                    Height="300"
+                    Width="Auto">
+                @* <GridPageSettings PageCount="10" PageSize="@_pageSize"></GridPageSettings> *@
+                <GridFilterSettings
+                    Type="FilterType.Excel"></GridFilterSettings>
+                <GridEditSettings Mode="EditMode.Normal" AllowEditing="true"></GridEditSettings>
+                <GridEvents RowSelected="OnHighRowSelected" RowDeselected="OnHighRowDeselected"
+                            TValue="ProductBroadFilterItemModel"></GridEvents>
+                <GridColumns>
+                    <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
+                    @* <GridColumn Field=@nameof(ProductBroadFilterItemModel.Sort) HeaderText="Id" *@
+                    @*              *@
+                    @*             TextAlign="TextAlign.Center" *@
+                    @*             Width="5%" *@
+                    @*             Type="ColumnType.Integer"></GridColumn> *@
+
+                    <GridColumn Field=@nameof(ProductBroadFilterItemModel.TariffCode) HeaderText="Tariff"
+                                IsPrimaryKey="true"
+                                TextAlign="TextAlign.Left"
+                                Width="20%" AllowEditing="false"
+                                Type="ColumnType.String"></GridColumn>
+                    <GridColumn Field=@nameof(ProductBroadFilterItemModel.Description) HeaderText="Description"
+                                TextAlign="TextAlign.Left"
+                                Width="90%" AllowEditing="false"
+                                Type="ColumnType.String"></GridColumn>
+
+                </GridColumns>
+                <SfSpinner @bind-Visible="_isloading">
+                </SfSpinner>
+            </SfGrid>
+        }
+    }
+    @if (ProductGroupType.Equals("Long"))
+    {
+        <div class="card-body">
+        <div class="form-group">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    
+                    <SfComboBox TValue="TariffIndexModel"
+                                TItem="TariffIndexModel"
+                                @bind-index="ProductSelectedItem"
+                                DataSource="TariffIndexModels"
+                                Placeholder="Select a region"
+                                Width="40%"
+                                ValueChanged="@(new EventCallback<TariffIndexModel>(this, OnRegionChange))">
+                        <ComboBoxFieldSettings Text="Description"
+                                               Value="Code"></ComboBoxFieldSettings>
+                    </SfComboBox>
+                    <button id="selectAllBtn" class="btn btn-outline-primary btn-sm">Select All</button>
+                    
+                    &nbsp;&nbsp;
+                    <SfComboBox TValue="Tariff2DigitIndexModel"
+                                TItem="Tariff2DigitIndexModel"
+                                @bind-index="Produc2DigitSelectedItem"
+                                DataSource="@Tariff2DigitIndexModels"
+                                Placeholder="Select 2 Digit"
+                                Width="40%"
+                                ValueChanged="@(new EventCallback<Tariff2DigitIndexModel>(this, On2DigitChange))">
+                        <ComboBoxFieldSettings Text="Description"
+                                               Value="Code"></ComboBoxFieldSettings>
+                    </SfComboBox>
+                </div>
+            </div>
+        </div>
+            <br/>
+            <SfGrid ID="LongGrid"
+                    @ref="LongGrid"
+                    TValue="TariffShortModel"
+                    DataSource="@LongData"
+                    Toolbar="@_toolBar"
+                    AllowPaging="false"
+                    AllowSorting="true"
+                    AllowSelection="true"
+                    AllowFiltering="true"
+                    AllowExcelExport="true"
+                    AllowPdfExport="false"
+                    Height="300"
+                    Width="Auto">
+                <GridFilterSettings
+                    Type="FilterType.Excel"></GridFilterSettings>
+                <GridEditSettings Mode="EditMode.Normal" AllowEditing="true"></GridEditSettings>
+                @* <GridEvents RowSelected="OnHighRowSelected" RowDeselected="OnHighRowDeselected" *@
+                @*             TValue="ProductBroadFilterItemModel"></GridEvents> *@
+                <GridColumns>
+                    <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
+                    
+                    <GridColumn Field=@nameof(TariffShortModel._id) HeaderText="_id"
+                                IsPrimaryKey="true"
+                                Visible="false"
+                                TextAlign="TextAlign.Left"
+                                Width="0%" AllowEditing="false"
+                                Type="ColumnType.String"></GridColumn>
+                    <GridColumn Field=@nameof(TariffShortModel.SOURCE_COUNTRY_TARIFF_CODE) HeaderText="Code"
+                                TextAlign="TextAlign.Left"
+                                Width="25%" AllowEditing="false"
+                                Type="ColumnType.String"></GridColumn>
+                    <GridColumn Field=@nameof(TariffShortModel.SOURCE_COUNTRY_TARIFF_SHORT_LEGEND) HeaderText="Name"
+                                TextAlign="TextAlign.Left"
+                                Width="75%" AllowEditing="false"
+                                Type="ColumnType.String"></GridColumn>
+
+                </GridColumns>
+                <SfSpinner @bind-Visible="_isloading">
+                </SfSpinner>
+            </SfGrid>
+         </div>
+    }
+
+    @if (ProductGroupType.Equals("Custom"))
+    {
+        @if (!_isloading)
+        {
+            <p>Custom</p>
+            <br/>
+        }
+    }
+</div>
+  
+    
+
+@code {
+    [Parameter] public EventCallback<object> OnMessage { get; set; }
+    [Parameter] public QueryModel Data { get; set; }
+    [Parameter] public SavedQueryModel ReportModel { get; set; }
+    [Parameter] public List<ProductBroadFilterModel> ProductBroad { get; set; }
+    [Parameter] public List<ProductMedumFilterModel> ProductMedium { get; set; }
+    [Parameter] public List<TariffIndexModel> TariffIndexModels { get; set; }
+    [Parameter] public List<Tariff2DigitIndexModel> Tariff2DigitIndexModels { get; set; }
+    
+    private List<object> _toolBar = new() { "Search" };
+    private string SelectGroupType { get; set; }
+    private string ProductGroupType { get; set; }
+    private string ProductRegionCode { get; set; }
+    private int? ProductSelectedItem { get; set; }
+    private int? Produc2DigitSelectedItem { get; set; }
+    private List<BroadItemModel> ProductBroadData { get; set; }
+    private List<BroadItemModel> ProductMediumData { get; set; }
+    private List<ProductBroadFilterItemModel> ProductHighData { get; set; }
+    private bool _isloading = true;
+    private bool _isBusy = false;
+    private bool _showCheckBoxes = false;
+    private List<SaveQueryProductsModel> Products { get; set; }
+    SfTreeView<BroadItemModel> BroadTree { get; set; }
+    SfTreeView<BroadItemModel> MediumTree { get; set; }
+    SfGrid<ProductBroadFilterItemModel> HighGrid { get; set; }
+    SfGrid<TariffShortModel> LongGrid { get; set; }
+    private int[] _indexHighArray;
+    private ProductBroadFilterItemModel SelectedHighRow { get; set; }
+    private List<TariffShortModel> LongData { get; set; } = new();
+    
+    private async Task OnHighRowSelected(RowSelectEventArgs<ProductBroadFilterItemModel> args)
+    {
+        if(_isBusy)
+            return;
+        
+        SelectedHighRow = args.Data;
+        await NotifyParent();
+       
+    }
+
+    private async Task OnHighRowDeselected(RowDeselectEventArgs<ProductBroadFilterItemModel> args)
+    {
+        if(_isloading)
+            return;
+        
+        await NotifyParent();
+       
+    }
+    
+    private async Task SelectGroup(Microsoft.AspNetCore.Components.ChangeEventArgs args)
+    {
+        await NotifyParent();
+    }
+
+    public void NodeCheckingHandler(NodeCheckEventArgs args)
+    {
+        BroadTree.CheckedNodes = null;
+    }
+    
+    public async Task NodeCheckedHandler(NodeCheckEventArgs args)
+    {
+        Products.Clear();
+        var tData = BroadTree.CheckedNodes;
+        if (tData is null)
+            return;
+        
+        foreach (var nitem in tData)
+        {
+            var tItem = ProductBroadData.FirstOrDefault(x => x.Id.Equals(int.Parse(nitem)));
+            if (tItem?.TariffCode != null)
+            {
+                var pModel = new SaveQueryProductsModel { Product = tItem.TariffCode };
+                Products.Add(pModel);
+            }
+        }
+        
+// Check for duplicates and remove
+        Products = Products
+            .GroupBy(p => p.Product)
+            .Select(group => group.First())
+            .ToList();
+
+        await NotifyParent();
+    }
+
+    private async Task OnRegionChange(TariffIndexModel args)
+    {
+        _isloading = true;
+        Produc2DigitSelectedItem = -1;
+        var tariffSrv = new ProductService();
+        ProductRegionCode = args.Code;
+        LongData = await tariffSrv.GetLongTarrifByCode(args.Code);
+        _isloading = false;
+    }
+
+    private async Task On2DigitChange(Tariff2DigitIndexModel args)
+    {
+        //Get the codes for this region
+        Produc2DigitSelectedItem = Tariff2DigitIndexModels.FindIndex(x => x.Code == args.Code);
+        _isloading = true;
+        var tariffSrv = new ProductService();
+        LongData = await tariffSrv.GetLongTarrifBy2DigitCode(ProductRegionCode,args.Code);
+        _isloading = false;
+    }
+    //MediumTree
+    public void MediumNodeCheckingHandler(NodeCheckEventArgs args)
+    {
+        MediumTree.CheckedNodes = null;
+    }
+    
+    public async Task MediumNodeCheckedHandler(NodeCheckEventArgs args)
+    {
+        Products.Clear();
+        var tData = MediumTree.CheckedNodes;
+        if (tData is null)
+            return;
+        
+        foreach (var nitem in tData)
+        {
+            var tItem = ProductMediumData.FirstOrDefault(x => x.Id.Equals(int.Parse(nitem)));
+            if (tItem?.TariffCode != null)
+            {
+                var pModel = new SaveQueryProductsModel { Product = tItem.TariffCode };
+                Products.Add(pModel);
+            }
+        }
+        
+// Check for duplicates and remove
+        Products = Products
+            .GroupBy(p => p.Product)
+            .Select(group => group.First())
+            .ToList();
+
+        await NotifyParent();
+    }
+    
+    private async Task NotifyParent()
+    {
+        if (ProductGroupType.Equals("High"))
+        {
+            GetHighSelectedRows();
+        }
+        
+        var delegateModel = new SelectionQueryModel
+        {
+            Id = "SP",
+            SelectedSourceCountries = new List<SaveQuerySourceCountriesModel>(),
+            SelectedMarketCountries = new List<SaveQueryMarketCountriesModel>(),
+            SelectedProducts = Products,
+            Selection = SelectGroupType
+        };
+        
+        if (OnMessage.HasDelegate)
+        {
+            await OnMessage.InvokeAsync(delegateModel);
+        }
+    }
+
+    private void GetHighSelectedRows()
+    {
+        _isloading = true;
+        Products = new();
+        var selected = HighGrid.SelectedRecords;
+        foreach (var item in selected)
+        {
+            var model = Data.HighTree.FirstOrDefault(mc => mc.TariffCode.Equals(item.TariffCode));
+            if (model is not null)
+            {
+                var sqModel = new SaveQueryProductsModel()
+                {
+                     Product = model.TariffCode
+                };
+                Products.Add(sqModel);
+            }
+        }
+        
+        Products = Products
+            .GroupBy(p => p.Product)
+            .Select(group => group.First())
+            .ToList();
+        _isloading = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (ProductGroupType == "High")
+            {
+                _isBusy = true;
+                if (_indexHighArray is not null)
+                {
+                    await HighGrid.SelectRowsAsync(_indexHighArray);
+                }
+
+                _isBusy = false;
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+    }
+    
+    protected override async void OnInitialized()
+    {
+        SelectGroupType = ReportModel.ProductGroup;
+        ProductGroupType = ReportModel.ProductGroupType;
+        Products = ReportModel.Products;
+        ProductRegionCode = ReportModel.ProductRegionCode;
+
+        ProductSelectedItem = TariffIndexModels.FindIndex(x => x.Code == ProductRegionCode);
+        
+        
+        if (ProductGroupType == "High")
+        {
+            _isloading = true;
+            ProductHighData = Data.HighTree;
+            InitSelectedHighRows();
+        
+            _isloading = false;
+        }
+
+        if (ProductGroupType == "Medium")
+        {
+            ProductMediumData = new List<BroadItemModel>();
+
+            _isloading = true;
+            var parcnt = 1;
+
+            foreach (var prod in ProductMedium)
+            {
+                var subItem = new BroadItemModel
+                {
+                    Id = parcnt,
+                    ParentId = null,
+                    FolderName = prod.Name,
+                    HasSubFolders = true,
+                    Expanded = false
+                };
+
+                ProductMediumData.Add(subItem);
+                var subCnt = parcnt + 1;
+                foreach (var subitem in prod.Items)
+                {
+                    var productExists = Products?.FirstOrDefault(p => p.Product == subitem.TariffCode);
+                    bool check = productExists != null;
+                    subItem = new BroadItemModel
+                    {
+                        Id = subCnt,
+                        ParentId = parcnt.ToString(),
+                        FolderName = subitem.Description,
+                        HasSubFolders = false,
+                        Expanded = false,
+                        IsChecked = check,
+                        TariffCode = subitem.TariffCode
+                    };
+                    
+                    ProductMediumData.Add(subItem);
+                    subCnt++;
+                }
+
+                parcnt = subCnt + 1;
+
+            }
+            _isloading = false;
+            _showCheckBoxes = true;
+        }
+
+        if (ProductGroupType == "Broad")
+        {
+            ProductBroadData = new List<BroadItemModel>();
+
+            _isloading = true;
+            var parcnt = 1;
+
+            foreach (var prod in ProductBroad)
+            {
+                var subItem = new BroadItemModel
+                {
+                    Id = parcnt,
+                    ParentId = null,
+                    FolderName = prod.Name,
+                    HasSubFolders = true,
+                    Expanded = false
+                };
+
+                ProductBroadData.Add(subItem);
+                var subCnt = parcnt + 1;
+                foreach (var subitem in prod.Items)
+                {
+
+                    if (prod.Name.Equals("ALL STEEL"))
+                    {
+                        var productExists = Products?.FirstOrDefault(p => p.Product == subitem.TariffCode);
+                        bool check = productExists != null;
+                        subItem = new BroadItemModel
+                        {
+                            Id = subCnt,
+                            ParentId = parcnt.ToString(),
+                            FolderName = subitem.Description,
+                            HasSubFolders = false,
+                            Expanded = false,
+                            IsChecked = check,
+                            TariffCode = subitem.TariffCode
+                        };
+                    }
+                    else
+                    {
+                        subItem = new BroadItemModel
+                        {
+                            Id = subCnt,
+                            ParentId = parcnt.ToString(),
+                            FolderName = subitem.Description,
+                            HasSubFolders = false,
+                            Expanded = false,
+                            IsChecked = false,
+                            TariffCode = subitem.TariffCode
+                        };
+                    }
+
+                    ProductBroadData.Add(subItem);
+                    subCnt++;
+                }
+
+                parcnt = subCnt + 1;
+            }
+
+            if (ProductGroupType == "Long")
+            {
+                _isloading = true;
+                var test = TariffIndexModels;
+            }
+
+            _isloading = false;
+            _showCheckBoxes = true;
+        }
+    }
+    
+    private void InitSelectedHighRows()
+    {
+        List<int> highIndexes = new();
+            
+        foreach (var item in Products)
+        {
+            var index = ProductHighData.FindIndex(sc => sc.TariffCode.Equals(item.Product));
+            if (index != -1)
+            {
+                highIndexes.Add(index);
+            }
+        
+        }
+            
+        _indexHighArray = highIndexes.ToArray();
+    }
+}
+

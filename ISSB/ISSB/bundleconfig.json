@@ -1,0 +1,80 @@
+﻿[
+  {
+    "outputFileName": "wwwroot/css/site.min.css",
+    "inputFiles": [
+      "wwwroot/css/site.css",
+      "wwwroot/css/igniteUI/modiff.css",
+      "wwwroot/css/bootstrap/adminlte.min.css",
+      "wwwroot/css/bootstrap/fontawesome-free/all.min.css",
+      "wwwroot/css/bootstrap/OverlayScrollbars.min.css",
+      "wwwroot/js/bootstrap/daterangepicker.css",
+      "wwwroot/css/bootstrap/fontawesome-free/fontN.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/site1.min.css",
+    "inputFiles": [
+      "wwwroot/IgniteUI/css/themes/ios/infragistics.theme.css",
+      "wwwroot/IgniteUI/css/structure/infragistics.css",
+      "wwwroot/IgniteUI/css/structure/modules/infragistics.ui.chart.css",
+      "wwwroot/IgniteUI/demos/css/charts/chart-samples.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/js/export.min.js",
+    "inputFiles": [
+      "wwwroot/IgniteUI/js/infragistics.excel-bundled.js",
+      "wwwroot/IgniteUI/js/modules/infragistics.gridexcelexporter.js",
+      "wwwroot/js/igniteUI/blob.js",
+      "wwwroot/js/igniteUI/filesaver.js"
+
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/site1.min.js",
+    "inputFiles": [
+      "wwwroot/js/igniteUI/modernizr.min.js",
+      "wwwroot/js/igniteUI/modernizr-2.8.3.min.js",
+      "wwwroot/js/igniteUI/jquery-1.9.1.min.js",
+      "wwwroot/js/igniteUI/jquery-1.11.3.min.js",
+      "wwwroot/js/igniteUI/jquery.min.js",
+      "wwwroot/js/igniteUI/jquery-ui.min.js",
+
+      "wwwroot/IgniteUI/js/infragistics.core.js",
+      "wwwroot/IgniteUI/js/infragistics.lob.js",
+      "wwwroot/IgniteUI/js/infragistics.dv.js",
+
+      "wwwroot/IgniteUI/js/modules/infragistics.ui.grid.shared.js",
+      "wwwroot/IgniteUI/js/modules/infragistics.ui.chart.js",
+      "wwwroot/IgniteUI/js/modules/infragistics.ui.funnelchart.js",
+      "wwwroot/IgniteUI/js/modules/infragistics.ui.combo.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  },
+  {
+    "outputFileName": "wwwroot/js/site.min.js",
+    "inputFiles": [
+      "wwwroot/js/site.js",
+      "wwwroot/js/bootstrap/bootstrap.bundle.min.js",
+      "wwwroot/js/bootstrap/jquery.overlayScrollbars.min.js",
+      "wwwroot/js/bootstrap/daterangepicker.js",
+      "wwwroot/js/bootstrap/adminlte.js",
+      "wwwroot/js/bootstrap/demo.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  }
+ 
+]

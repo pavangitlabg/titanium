@@ -1,0 +1,79 @@
+﻿@page "/importdata"
+@using Syncfusion.Blazor.Inputs
+@using Services
+@using Data.Models
+
+<h3>Eurostat Import</h3>
+
+<SfUploader AutoUpload="true">
+    <UploaderEvents ValueChange="@OnChange"></UploaderEvents>
+</SfUploader>
+
+@code {
+
+    private async Task OnChange(UploadChangeEventArgs args)
+    {
+        try
+        {
+            string rootpath = System.IO.Path.Combine(System.IO.Directory.GetCurrentDirectory(), "wwwroot");
+            foreach (var file in args.Files)
+            {
+                var path = @"" + file.FileInfo.Name;
+
+                rootpath = rootpath + "/" + file.FileInfo.Name;
+
+                FileStream filestream = new FileStream(rootpath, FileMode.Create, FileAccess.Write);
+                await file.File.OpenReadStream(long.MaxValue).CopyToAsync(filestream);
+                filestream.Close();
+
+                var impSrv = new ImportService();
+                int cnt = 0;
+
+                var importList = new List<EuroStatDataImportModel>();
+                foreach (string line in File.ReadLines(rootpath))
+                {
+                    Console.WriteLine(line);
+                   // string[] headers = line.Split(',');
+                    if (cnt >0)
+                    {
+                        string[] subs = line.Split(',');
+
+                        var model = new EuroStatDataImportModel
+                        {
+                            DECLARANT = subs[0],
+                            DECLARANT_ISO = subs[1],
+                            FLOW = subs[13],
+                            PARTNER = subs[2],
+                            PARTNER_ISO = subs[3],
+                            PERIOD = subs[16],
+                            PRODUCT_BEC = subs[10],
+                            PRODUCT_BEC5 = subs[11],
+                            PRODUCT_CPA2002 = subs[7],
+                            PRODUCT_CPA2008 = subs[8],
+                            PRODUCT_CPA2_1 = subs[9],
+                            PRODUCT_NC = subs[5],
+                            PRODUCT_SECTION = subs[12],
+                            PRODUCT_SITC = subs[6],
+                            QUANTITY_IN_KG = subs[18],
+                            STAT_REGIME = subs[14],
+                            SUPP_UNIT = subs[15],
+                            SUP_QUANTITY = subs[19],
+                            TRADE_TYPE = subs[4],
+                            VALUE_IN_EUROS = subs[17]
+                        };
+                        //await impSrv.BulkEuroInsert(model);
+                        importList.Add(model);
+                    }
+                    cnt++;
+                }
+                await impSrv.BulkEuroInsert(importList);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+}
+

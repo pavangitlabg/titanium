@@ -1,0 +1,158 @@
+﻿@model Data.Models.AssetModel
+@{
+
+    ViewData["Title"] = "Add Asset";
+
+}
+
+<body>
+    <br />
+    <div class="card sourceC">
+        <div class="card-header">
+            <h3>@ViewData["Title"]</h3>
+        </div>
+
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-md-10 mx-auto">
+                    @using (Html.BeginForm("AddNew", "Asset"))
+                    {
+                        @Html.HiddenFor(x => x._id, new { _id = "_id" })
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="needs-validation">
+                            <fieldset>
+                                <div class="form-group row">
+                                    <div class="col-sm-3">
+                                        <label class="editor-label">@Html.LabelFor(u => u.ID, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.ID, new { @class = "form-control"})
+                                            @Html.ValidationMessageFor(u => u.ID, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <label class="editor-label">@Html.LabelFor(u => u.SERIAL_NO, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.SERIAL_NO, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(u => u.SERIAL_NO, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-3">
+                                        <label>@Html.LabelFor(u => u.VALUE, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.VALUE, new { @class = "form-control", @type = "number", @min = "0", @step = "0.01", @value = "0" })
+                                            @Html.ValidationMessageFor(u => u.VALUE, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-3">
+                                        <label>@Html.LabelFor(u => u.MANUFACTURER, htmlAttributes: new { @class = "control-label" }) </label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.MANUFACTURER, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(u => u.MANUFACTURER, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <label>@Html.LabelFor(u => u.USERNAME, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.USERNAME, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(u => u.USERNAME, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-3">
+                                        <label>@Html.LabelFor(u => u.PASSWORD, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.PASSWORD, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(u => u.PASSWORD, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-3">
+                                        <label>@Html.LabelFor(u => u.MODEL_TYPE, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.MODEL_TYPE, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(u => u.MODEL_TYPE, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <label>@Html.LabelFor(u => u.CHECKED_BY, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.CHECKED_BY, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(u => u.CHECKED_BY, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-3">
+                                        <label>@Html.LabelFor(u => u.LAST_MODIFIED, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.EditorFor(u => u.LAST_MODIFIED,  new { htmlAttributes = new { @class = "form-control datepicker"} }) 
+                                            @Html.ValidationMessageFor(u => u.LAST_MODIFIED, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-6">
+                                        <label>@Html.LabelFor(u => u.LOCATION, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.LOCATION, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(u => u.LOCATION, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-3">
+                                        <label>@Html.LabelFor(u => u.PURCHASE_DATE, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.EditorFor(u => u.PURCHASE_DATE,  new { htmlAttributes = new { @class = "form-control datepicker"} }) 
+                                            @Html.ValidationMessageFor(u => u.PURCHASE_DATE, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-3">
+                                        <label>@Html.LabelFor(u => u.DATE_CHECKED, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.EditorFor(u => u.DATE_CHECKED,  new { htmlAttributes = new { @class = "form-control datepicker"} }) 
+                                            @Html.ValidationMessageFor(u => u.DATE_CHECKED, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-6">
+                                        <label>@Html.LabelFor(u => u.MEMO, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextAreaFor(u => u.MEMO, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(u => u.MEMO, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label>@Html.LabelFor(u => u.DESCRIPTION, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextAreaFor(u => u.DESCRIPTION, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(u => u.DESCRIPTION, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr />
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary px-4"><span>Add &nbsp;<i class="fas fa-plus-circle"></i></span></button>
+                                </div>
+                            </fieldset>
+                        </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <br />
+</body>

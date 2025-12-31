@@ -1,0 +1,213 @@
+﻿@model Data.Models.TariffModel
+@{
+
+    ViewData["Title"] = "Tariff View";
+
+}
+
+<body>
+    <br />
+    <div class="card sourceC">
+        <div class="card-header">
+            <h3>@ViewData["Title"]</h3>
+        </div>
+
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-md-10 mx-auto">
+                    @using (Html.BeginForm("Index", "SystemEventLogs"))
+                    {
+                        @Html.HiddenFor(x => x._id, new { _id = "_id" })                        
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="needs-validation">
+                            <fieldset>
+                                <div class="form-group row">
+                                    <div class="col-sm-4">
+                                        <label>@Html.LabelFor(u => u.TARIFF_ID, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.TARIFF_ID, new { @class = "form-control", @type = "number", @readonly = "readonly" })
+                                            @Html.ValidationMessageFor(u => u.TARIFF_ID, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3 offset-md-1">
+                                        <label>@Html.LabelFor(u => u.WTO_CODE, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.WTO_CODE, new { @class = "form-control", @type = "number" })
+                                            @Html.ValidationMessageFor(u => u.WTO_CODE, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label>@Html.LabelFor(u => u.WTO_ALLOY_CODE, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.WTO_ALLOY_CODE, new { @class = "form-control", @type = "number" })
+                                            @Html.ValidationMessageFor(u => u.WTO_ALLOY_CODE, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-md-4">
+                                        <label>@Html.LabelFor(u => u.WTO_CODE_LEGEND, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.WTO_CODE_LEGEND, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(u => u.WTO_CODE_LEGEND, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-7 offset-md-1">
+                                        <label>@Html.LabelFor(u => u.WTO_ALLOY_LEGEND, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.WTO_ALLOY_LEGEND, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(u => u.WTO_ALLOY_LEGEND, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr />
+
+                                <div class="form-group row">
+                                    <div class="col-sm-4">
+                                        <label>@Html.LabelFor(u => u.ISSB_STORED_CODE, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.ISSB_STORED_CODE, new { @class = "form-control", @type = "number" })
+                                            @Html.ValidationMessageFor(u => u.ISSB_STORED_CODE, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-7 offset-md-1">
+                                        <label>@Html.LabelFor(u => u.ISSB_STORED_LEGEND, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.ISSB_STORED_LEGEND, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(u => u.ISSB_STORED_LEGEND, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr />
+
+                                <div class="form-group row">
+                                    <div class="col-sm-4">
+                                        <label>@Html.LabelFor(u => u.HARMONISED_TARIFF_CODE, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.HARMONISED_TARIFF_CODE, new { @class = "form-control", @type = "number" })
+                                            @Html.ValidationMessageFor(u => u.HARMONISED_TARIFF_CODE, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-7 offset-md-1">
+                                        <label>@Html.LabelFor(u => u.HARMONISED_TARIFF_SHORT_LEGEND, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.HARMONISED_TARIFF_SHORT_LEGEND, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(u => u.HARMONISED_TARIFF_SHORT_LEGEND, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-4">
+                                        <label>@Html.LabelFor(u => u.HARMONISED_TARIFF_SHORT_LEGEND_BACKUP, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.HARMONISED_TARIFF_SHORT_LEGEND_BACKUP, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(u => u.HARMONISED_TARIFF_SHORT_LEGEND_BACKUP, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-7 offset-md-1">
+                                        <label>@Html.LabelFor(u => u.HARMONISED_TARIFF_LONG_LEGEND, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextAreaFor(u => u.HARMONISED_TARIFF_LONG_LEGEND, new { @class = "form-control", @rows = 1 })
+                                            @Html.ValidationMessageFor(u => u.HARMONISED_TARIFF_LONG_LEGEND, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr />
+
+                                <div class="form-group row">
+                                    <div class="col-sm-3">
+                                        <label>@Html.LabelFor(u => u.SOURCE_COUNTRY_TARIFF_CODE, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.SOURCE_COUNTRY_TARIFF_CODE, new { @class = "form-control", @type = "number" })
+                                            @Html.ValidationMessageFor(u => u.SOURCE_COUNTRY_TARIFF_CODE, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-4">
+                                        <label>@Html.LabelFor(u => u.SOURCE_COUNTRY_TARIFF_SHORT_LEGEND, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.SOURCE_COUNTRY_TARIFF_SHORT_LEGEND, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(u => u.SOURCE_COUNTRY_TARIFF_SHORT_LEGEND, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-5">
+                                        <label>@Html.LabelFor(u => u.SOURCE_COUNTRY_TARIFF_LONG_LEGEND, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextAreaFor(u => u.SOURCE_COUNTRY_TARIFF_LONG_LEGEND, new { @class = "form-control", @rows = 1 })
+                                            @Html.ValidationMessageFor(u => u.SOURCE_COUNTRY_TARIFF_LONG_LEGEND, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr />
+
+                                <div class="form-group row">
+                                    <div class="col-sm-4">
+                                        <label>@Html.LabelFor(u => u.TARIFF_CODE_TABLE_CODE, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.TARIFF_CODE_TABLE_CODE, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(u => u.TARIFF_CODE_TABLE_CODE, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label>@Html.LabelFor(u => u.LOWER_VPT, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.LOWER_VPT, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(u => u.LOWER_VPT, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label>@Html.LabelFor(u => u.UPPER_VPT, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.UPPER_VPT, new { @class = "form-control", @rows = 3 })
+                                            @Html.ValidationMessageFor(u => u.UPPER_VPT, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr />
+
+                                <div class="form-group row">
+                                    <div class="col-sm-4">
+                                        <label>@Html.LabelFor(u => u.START_DATE, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.EditorFor(u => u.START_DATE, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                            @Html.ValidationMessageFor(u => u.START_DATE, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-4">
+                                        <label>@Html.LabelFor(u => u.DISCONTINUED_DATE, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.EditorFor(u => u.DISCONTINUED_DATE, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                            @Html.ValidationMessageFor(u => u.DISCONTINUED_DATE, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-4">
+                                        <label>@Html.LabelFor(u => u.SIDE_OF_TRADE, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.SIDE_OF_TRADE, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(u => u.SIDE_OF_TRADE, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr />
+                                <div class="form-group">
+                                    <button onclick="goBack()" class="btn btn-primary px-4"><span>Close &nbsp;<i class="far fa-times-circle"></i></span></button>
+                                </div>
+                            </fieldset>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+</body>

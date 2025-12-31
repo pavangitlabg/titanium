@@ -1,0 +1,196 @@
+@page "/queryindex"
+@using System.Security.Claims;
+@using ISSB_Prod_Blazor.Componets.Query
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<PageTitle>Query List</PageTitle>
+<AuthorizeView>
+    <Authorized>
+        <SfButton id="BackBtn" @onclick="GoBack" CssClass="e-custom-back" IconPosition="IconPosition.Left"
+                  IconCss="e-icons e-chevron-left-double">Back
+        </SfButton>
+        <label style="margin-left:10px;font-size:20px;">
+            <strong>@SelectedRow.Name</strong>
+        </label>
+        <hr/>
+
+        @if (IsLoading)
+        {
+            <SfSkeleton CssClass="skeleton-default" Shape=Syncfusion.Blazor.Notifications.SkeletonType.Rectangle Width="100%"
+                        Height="80vh"></SfSkeleton>
+        }
+        else
+        {
+            @if (!_isEdit)
+            {
+                @* <SfButton id="addBtn" @onclick="AddUser" IconPosition="IconPosition.Left" *@
+                @*           IconCss="e-icons e-plus" CssClass="e-custom-remove">Add User *@
+                @* </SfButton> *@
+                <h3>Query List</h3>
+                <SfGrid ID="Grid"
+                        @ref="Grid"
+                        TValue="SavedQueryModel"
+                        Toolbar="@_toolBar"
+                        DataSource="@Data"
+                        AllowPaging="true"
+                        AllowSorting="true"
+                        AllowSelection="true"
+                        AllowFiltering="true"
+                        AllowExcelExport="true"
+                        AllowPdfExport="false"
+
+                        Height="500"
+                        Width="Auto">
+                    <GridPageSettings PageCount="10" PageSize="@_pageSize"></GridPageSettings>
+                    <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Excel"></GridFilterSettings>
+                    <GridEditSettings Mode="EditMode.Normal" AllowEditing="true"></GridEditSettings>
+                    <GridEvents RowSelected="OnRowSelected" PageChanged="PageChangedHandler"
+                                CommandClicked="OnCommandClicked" OnToolbarClick="DataToolbarClickHandler"
+                                TValue="SavedQueryModel"></GridEvents>
+                    <GridColumns>
+                        @* <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn> *@
+                        <GridColumn Field=@nameof(SavedQueryModel.Id) HeaderText="_id" IsPrimaryKey="true" Visible="false"
+                                    TextAlign="TextAlign.Left"
+                                    Type="ColumnType.String"></GridColumn>
+
+                        <GridColumn Field=@nameof(SavedQueryModel.Date) HeaderText="Last Updated" TextAlign="TextAlign.Left"
+                                    Width="10%" AllowEditing="false"
+                                    Type="ColumnType.Date"></GridColumn>
+                        <GridColumn Field=@nameof(SavedQueryModel.Name) HeaderText="Report Name" TextAlign="TextAlign.Left"
+                                    Width="65%" AllowEditing="false"
+                                    Type="ColumnType.String"></GridColumn>
+                        
+                        <GridColumn HeaderText="Manage Records" Width="250">
+                            <GridCommandColumns>
+                                <GridCommandColumns>
+                                    <GridCommandColumn
+                                        ButtonOption="@(new CommandButtonOptions { Content = "Run", CssClass = "e-success" })"></GridCommandColumn>
+                                    <GridCommandColumn
+                                        ButtonOption="@(new CommandButtonOptions { Content = "Edit", CssClass = "e-primary" })"></GridCommandColumn>
+                                    <GridCommandColumn 
+                                        ButtonOption="@(new CommandButtonOptions { Content = "Email", CssClass = "e-secondary" })"></GridCommandColumn>
+                                    <GridCommandColumn
+                                        ButtonOption="@(new CommandButtonOptions { Content = "Delete", CssClass = "e-danger" })"></GridCommandColumn>
+                                </GridCommandColumns>
+                            </GridCommandColumns>
+                        </GridColumn>
+                    </GridColumns>
+                    <SfSpinner @bind-Visible="IsLoading">
+                    </SfSpinner>
+                </SfGrid>
+            }
+            
+            @if (_isEdit)
+            {
+                <QueryEdit Id="@SelectedRow.Id"  Itype=1/>
+            }
+        }
+
+    </Authorized>
+    <NotAuthorized>
+        <p>Not Authorized</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    SfGrid<SavedQueryModel> Grid { get; set; }
+    SavedQueryModel SelectedRow { get; set; } = new();
+    private List<object> _toolBar = new() { "ExcelExport", "Search" };
+    private bool IsLoading { get; set; } = true;
+    private AuthenticationState authState;
+    private List<SavedQueryModel> Data { get; set; } = new();
+    private bool _isEdit = false;
+    private bool _isAddUser = false;
+    private int RowIndex { get; set; }
+    private int SelectedRowIndexOnPage { get; set; }
+    private int PageIndex { get; set; }
+    private int _pageSize = 15;
+
+    public async Task DataToolbarClickHandler(ClickEventArgs args)    
+    {                                                                 
+        if (args.Item.Text == "Excel Export")                         
+        {                                                             
+            await Grid.ExportToExcelAsync();                          
+        }                                                             
+    }                                                                 
+    
+    public void PageChangedHandler(GridPageChangedEventArgs args)     
+    {                                                                 
+        PageIndex = args.CurrentPage;                                 
+    }                                                                 
+    
+    public async void OnCommandClicked(CommandClickEventArgs<SavedQueryModel> args)
+    {
+        SelectedRow = args.RowData;
+
+        if (args.CommandColumn.ButtonOption.Content.Equals("Run"))
+        {
+            
+        }
+        
+        if (args.CommandColumn.ButtonOption.Content.Equals("Edit"))
+        {
+            _isEdit = true;
+        }
+        
+        if (args.CommandColumn.ButtonOption.Content.Equals("Email"))
+        {
+            
+        }
+        
+        if (args.CommandColumn.ButtonOption.Content.Equals("Delete"))
+        {
+            
+        }
+        
+    }
+    
+    private void OnRowSelected(RowSelectEventArgs<SavedQueryModel> args)
+    {
+        SelectedRow = args.Data;
+        RowIndex = args.RowIndex; // Global index
+        SelectedRowIndexOnPage = args.RowIndex % _pageSize + 1; // Index within current page
+    }
+    
+    private async Task GoBack()
+    {
+        _isEdit = false;
+        _isAddUser = false;
+        if (RowIndex > 0)
+        {
+            IsLoading = true;
+           // SelectedRow.CONTACT_NAME = string.Empty;
+            var usrService = new SalesProfileService();
+           // _users = await usrService.GetSalesProfiles();
+            IsLoading = false;
+            _isEdit = false;
+
+            await InvokeAsync(() => { StateHasChanged(); });
+            await Task.Delay(500);
+            await Grid.GoToPageAsync(PageIndex);
+
+           // var rowForPage = RowIndex / PageIndex;
+            await Grid.SelectRowAsync(SelectedRowIndexOnPage - 1);
+
+            if (SelectedRowIndexOnPage >= 0)
+            {
+                await Grid.ScrollIntoViewAsync(SelectedRowIndexOnPage - 1);
+            }
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            IsLoading = true;
+            authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var userEmail = authState.User?.FindFirst(ClaimTypes.Email)?.Value;
+            var srv = new QueryService();
+            Data = await srv.GetAllReportHeadersByUser(userEmail);
+            IsLoading = false;
+        
+            await InvokeAsync(() => { StateHasChanged(); });
+        }
+    }
+}

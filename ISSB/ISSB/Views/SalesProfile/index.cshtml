@@ -1,0 +1,229 @@
+﻿
+@using Infragistics.Web.Mvc
+@model IQueryable<Data.Models.SalesProfileModel>
+
+
+<head>
+    <style>     
+        .optionContainer {
+            display: inline-block;
+        }
+
+        .item {
+            display: inline-block;
+            height: 30px;
+        }
+
+            .item ~ .item {
+                margin-left: 15px;
+            }
+
+        .item-label {
+            display: block;
+            float: right;
+            margin-left: 5px;
+            line-height: 21px;
+        }
+
+        .exporting-overlay {
+            position: absolute;
+            background-color: rgba(181, 181, 181, 0.9);
+            top: 0;
+            left: 0;
+            z-index: 100000;
+            text-align: center;
+            vertical-align: top;
+            padding-top: 100px;
+        }
+
+            .exporting-overlay:after {
+                content: "";
+                display: inline-block;
+                vertical-align: middle;
+                height: 100%;
+            }
+
+        .exporting-text {
+            font-size: 46px;
+            font-weight: bold;
+            vertical-align: top;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    @{
+        ViewData["Title"] = "Customer's Record";
+    }
+
+    <div class="content-header">
+        <h2>@ViewData["Title"]</h2> 
+    </div>
+
+    @(Html.Infragistics().Grid(Model)
+                                .ID("grid")
+                                .Width("100%")
+                                .Height("600px")
+                                .DataBind()
+                                .PrimaryKey("_id")
+                                .AutoGenerateColumns(false)
+                                .AutoGenerateLayouts(false)
+                                .Columns(column =>
+                                {
+                                    column.For(x => x._id).HeaderText("_id").Width("10%").Hidden(true);
+                                    column.For(x => x.ACCOUNT_REF).HeaderText("Account Ref").Width("10%");
+                                    column.For(x => x.NAME).HeaderText("Name").Width("40%");
+                                    column.For(x => x.CONTACT_NAME).HeaderText("Contact Name").Width("20%");
+                                    column.For(x => x.TELEPHONE).HeaderText("Telephone").Width("20%");
+                                    column.For(x => x._id).HeaderText("").Width("7%").Template("<input type='button' onclick='editRow(\"${_id}\")' value='Edit' class='btn btn-block bg-gradient-warning btn-sm'/>");
+                                    column.For(x => x._id).HeaderText("").Width("7%").Template("<input type='button' onclick='deleteRow(\"${_id}\")' value='Delete' class='btn btn-block bg-gradient-danger btn-sm'/>");
+
+                                })
+                                .Features(features =>
+                                {
+                                features.Sorting().Type(OpType.Local).Mode(SortingMode.Multiple)
+                                    .ColumnSettings(setting =>
+                                    {
+                                        setting.ColumnSetting().ColumnKey("_id").AllowSorting(false);
+
+                                    });
+                                features.Sorting().Type(OpType.Local)
+                                     .ColumnSettings(setting =>
+                                     {
+                                         setting.ColumnSetting().ColumnKey("_id").AllowSorting(false);
+
+                                     });
+                                features.Paging().Type(OpType.Local);
+                                features.Filtering().Type(OpType.Local);
+                                features.Selection().MultipleSelection(true);
+                                features.Selection().Mode(SelectionMode.Row);
+                                //features.GroupBy().Type(OpType.Local);
+                                features.RowSelectors().EnableRowNumbering(true);
+                                features.Updating().EnableAddRow(false).EnableDeleteRow(false).StartEditTriggers(GridStartEditTriggers.DblClick)
+                                .EditMode(GridEditMode.Dialog)
+                                .RowEditDialogOptions(opt =>
+                                {
+                                opt.Containment("owner");
+
+                                /**/
+                                /**/
+                                /**/
+                                    @*opt.DialogTemplateSelector("#dialogTemplate");*@
+                                    @*opt.EditorsTemplateSelector("#editorsTemplate");*@
+                                    opt.ShowReadonlyEditors(true);
+                                    opt.ShowEditorsForHiddenColumns(true);
+                                    opt.ShowDoneCancelButtons(true);
+                                    opt.Width("400px");
+                                    opt.Height("400px");
+                                    })
+                                    .ColumnSettings(settings =>
+                                    {
+                                    settings.ColumnSetting().ColumnKey("GEO_CODE").ReadOnly(true);
+
+                                    });
+                                    })
+
+                            .DataSourceUrl(Url.Action("GetSalesProfiles", "SalesProfile"))
+                            .UpdateUrl(Url.Action("SaveSalesProfile", "SalesProfile"))
+
+                            /**/
+                            @*.AutoCommit(true)*@
+   .Render())
+
+ <hr />
+        <div class="form-group row">
+            <div class="col-md-5">
+                <button id="addBtn" class="btn btn-outline-primary btn-md">Add Item &nbsp;<span><i class="fas fa-folder-plus"></i></span></button>
+                <button id="exportButton" class="btn btn-outline-success btn-md">Export to Excel &nbsp;<span><i class="fas fa-file-export"></i></span></button>
+                @*<button id="pdfBtn" class="btn btn-outline-info btn-md">Export to PDF &nbsp;<span><i class="fas fa-file-pdf"></i></span></button>*@
+            </div>                       
+        </div>
+
+    <script>$(function () {
+
+        $("#exportButton").on("click", function () {
+            var exportingOverlay = $('<div>');
+            $.ig.GridExcelExporter.exportGrid($("#grid"), {
+                columnsToSkip: ["_id"],
+                fileName: "SalesProfileData",
+                worksheetName: "SalesProfile",
+
+                gridFeatureOptions: { sorting: "applied", filtering: "applied" },
+            },
+                {
+                    exportStarting: function (e, args) {
+                        showOverlay(args.grid, exportingOverlay);
+                    },
+                    success: function () {
+                        hideOverlay(exportingOverlay);
+                    },
+                    cellExported: function (e, args) {
+                        if (args.xlRow.index() == 0) {
+                            return;
+                        }
+
+                    },
+                    exportEnding: function (e, args) {
+                        //args.worksheet.columns().item(2).cellFormat().formatString("dd-MM-yyyy");
+                        //args.worksheet.columns().item(3).cellFormat().formatString("dd-MM-yyyy");
+                    },
+                });
+
+        });
+
+        $("#addBtn").on("click", function () {
+            var url = "/SalesProfile/Add";
+            $(location).attr('href', url);
+        });
+
+        function showOverlay(grid, exportingOverlay) {
+            var $gridContainer = $('#' + grid.attr('id') + '_container');
+
+            exportingOverlay.css({
+                "width": $gridContainer.outerWidth(),
+                "height": $gridContainer.outerHeight()
+            }).html('<span class="exporting-text">Exporting...</span>');
+            exportingOverlay.addClass("exporting-overlay");
+
+            $gridContainer.append(exportingOverlay);
+        }
+        function hideOverlay(exportingOverlay) {
+            exportingOverlay.remove();
+        }
+
+        $("#pdfBtn").on("click", function () {
+            window.location.href = 'SalesProfile/PrintPage';
+            return false;
+        });
+
+    });
+
+    function editRow(rowId) {
+
+        var url = "/SalesProfile/Edit?_id=" + rowId.toString();
+        $(location).attr('href', url);
+
+    }
+
+    function deleteRow(rowId) {
+        var grid = $("#grid").data("igGrid");
+        grid.dataSource.deleteRow(rowId);
+
+        if (confirm('Do you want to delete?')) {
+        }
+        else {
+            e.preventDefault()
+            grid.commit();
+        }
+
+        var url = "/SalesProfile/Delete?_id=" + rowId.toString();
+        $(location).attr('href', url);
+    }
+
+    ;</script>
+
+    <script></script>
+
+</body>

@@ -1,0 +1,51 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <!--<Nullable>enable</Nullable>-->
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' " />
+  <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' " />
+  <ItemGroup>
+    <ProjectReference Include="..\Data\Data.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+    <ProjectReference Include="..\Services\Services.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Syncfusion.Blazor.Core" Version="25.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.Themes" Version="25.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.Buttons" Version="25.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.Grid" Version="25.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.Navigations" Version="25.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.Calendars" Version="25.2.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Syncfusion.Blazor.Layouts" Version="25.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.Popups" Version="25.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.Notifications" Version="25.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.Cards" Version="25.2.3" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.0" />
+    <PackageReference Include="Syncfusion.Blazor.Inputs" Version="25.2.3" />
+    <PackageReference Include="Syncfusion.Blazor.ProgressBar" Version="25.2.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Areas\" />
+    <None Remove="Areas\Identity\" />
+    <None Remove="Areas\Identity\Pages\" />
+    <None Remove="Areas\Identity\Pages\Account\" />
+    <None Remove="HostedServices\" />
+    <None Remove="Hubs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Areas\" />
+    <Folder Include="Areas\Identity\" />
+    <Folder Include="Areas\Identity\Pages\" />
+    <Folder Include="Areas\Identity\Pages\Account\" />
+    <Folder Include="HostedServices\" />
+    <Folder Include="Hubs\" />
+  </ItemGroup>
+</Project>

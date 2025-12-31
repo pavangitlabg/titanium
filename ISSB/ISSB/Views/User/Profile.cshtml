@@ -1,0 +1,173 @@
+﻿@using Infragistics.Web.Mvc
+@model ISSB.Models.UserProfileModel
+
+@{
+
+    ViewData["Title"] = "Edit Profile";
+
+}
+
+<head>
+    
+</head>
+
+<body>
+    <div id="printArea">
+        <div class="card">
+            <div class="card-header">
+                <h3>@ViewData["Title"]</h3>
+            </div>
+            <div class="container py-5">
+                <div class="row">
+                    <div class="col-md-10 mx-auto">
+
+
+                        @using (Html.BeginForm("Update", "User", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                        {
+                            @Html.HiddenFor(x => x._id, new { id = "Id" })
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            <div class="needs-validation">
+                                <fieldset>
+                                    <div class="form-group row">
+                                        <div class="col-sm-6">
+                                            <label>@Html.LabelFor(u => u.FirstName, htmlAttributes: new { @class = "control-label" })</label>
+                                            <div id="FirstName" ; class="editor-field">
+                                                @Html.TextBoxFor(u => u.FirstName, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(u => u.FirstName, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label>@Html.LabelFor(u => u.LastName, htmlAttributes: new { @class = "control-label" })</label>
+                                            <div id="LastName" ; class="editor-field">
+                                                @Html.TextBoxFor(u => u.LastName, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(u => u.LastName, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <div class="col-sm-6">
+                                            <label>@Html.LabelFor(u => u.UserName, htmlAttributes: new { @class = "control-label" })</label>
+                                            <div id="UserName" ; class="editor-field">
+                                                @Html.TextBoxFor(u => u.UserName, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(u => u.UserName, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label>@Html.LabelFor(u => u.Address1, htmlAttributes: new { @class = "control-label" })</label>
+                                            <div id="Address1" ; class="editor-field">
+                                                @Html.TextAreaFor(u => u.Address1, new { @class = "form-control", @rows = 1 })
+                                                @Html.ValidationMessageFor(u => u.Address1, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-6">
+                                            <label>@Html.LabelFor(u => u.Email, htmlAttributes: new { @class = "control-label" })</label>
+                                            <div id="Mobile" ; class="editor-field">
+                                                @Html.TextBoxFor(u => u.Email, htmlAttributes: new { @class = "form-control", @readonly = "readonly" })
+                                                @Html.ValidationMessageFor(u => u.Email, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label>@Html.LabelFor(u => u.Address2, htmlAttributes: new { @class = "control-label" })</label>
+                                            <div id="Address2" ; class="editor-field">
+                                                @Html.TextAreaFor(u => u.Address2, new { @class = "form-control", @rows = 1 })
+                                                @Html.ValidationMessageFor(u => u.Address2, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-2">
+                                            <label>@Html.LabelFor(u => u.PostalCode, htmlAttributes: new { @class = "control-label" })</label>
+                                            <div id="PostalCode" ; class="editor-field">
+                                                @Html.TextBoxFor(u => u.PostalCode, htmlAttributes: new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(u => u.PostalCode, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label>@Html.LabelFor(u => u.CompanyName, htmlAttributes: new { @class = "control-label" })</label>
+                                            <div id="CompanyName" ; class="editor-field">
+                                                @Html.TextBoxFor(u => u.CompanyName, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(u => u.CompanyName, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label>@Html.LabelFor(u => u.Address3, htmlAttributes: new { @class = "control-label" })</label>
+                                            <div id="Address3" ; class="editor-field">
+                                                @Html.TextAreaFor(u => u.Address3, new { @class = "form-control", @rows = 1 })
+                                                @Html.ValidationMessageFor(u => u.Address3, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row">
+                                        <div class="col-sm-3">
+                                            <label>@Html.LabelFor(u => u.Telephone, htmlAttributes: new { @class = "control-label" })</label>
+                                            <div id="Comment" ; class="editor-field">
+                                                @Html.TextBoxFor(u => u.Telephone, htmlAttributes: new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(u => u.Telephone, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-3">
+                                            <label>@Html.LabelFor(u => u.Mobile, htmlAttributes: new { @class = "control-label" })</label>
+                                            <div id="Mobile" ; class="editor-field">
+                                                @Html.TextBoxFor(u => u.Mobile, htmlAttributes: new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(u => u.Mobile, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <label>@Html.LabelFor(u => u.Address4, htmlAttributes: new { @class = "control-label" })</label>
+                                            <div id="Address4" ; class="editor-field">
+                                                @Html.TextAreaFor(u => u.Address4, new { @class = "form-control", @rows = 1 })
+                                                @Html.ValidationMessageFor(u => u.Address4, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="form-group row">
+
+                                        <div class="col-sm-4">
+                                            <label>
+                                                @Html.LabelFor(u => u.EmailNotification, htmlAttributes: new { @class = "control-label" }) &nbsp;
+                                                @Html.CheckBoxFor(u => u.EmailNotification, "true")
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+
+                                        <img src=@Model.ImageURL alt="Sample Image" height="100px" width="100px" />
+                                        <div class="custom-file">
+                                            <input asp-for="File" class="form-control custom-file-input" />
+                                            <label class="custom-file-label">Choose User Image in PNG format</label>
+                                        </div>
+                                    </div>
+
+                                    <hr />
+                                    <div class="form-group">
+                                        <input type="submit" class="btn btn-warning px-4" form-control" value="Save" />
+                                        <!--<input id="savetheam" type="button" class="btn btn-warning px-4" form-control" value="Save Theme" />-->
+                                    </div>
+
+                                  <!-- <button onclick='addCookie()'>ADD</button><br>
+                                    <button onclick='listCookies()'>LIST COOKIES</button><br>
+                                    <button onclick='removeCookies()'>REMOVE</button>
+                                    <button onclick="deleteItems()">Delete items</button>
+
+                                    <h1>Cookies List</h1>
+                                    <p id="list"></p>-->
+
+                                </fieldset>
+                            </div>
+                        }
+                        <hr />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+
+   
+</body>

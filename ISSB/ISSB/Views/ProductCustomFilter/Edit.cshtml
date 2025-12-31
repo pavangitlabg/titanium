@@ -1,0 +1,196 @@
+﻿@using Infragistics.Web.Mvc
+@model Data.Models.ProductCustomFilterModel
+@{
+    ViewData["Title"] = "Edit Product Filters";
+}
+
+<head>
+    <script src="../js/Customfilter.js" type="text/javascript"></script>
+
+    <style>
+
+        #overlay {
+            position: fixed;
+            display: none;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 2;
+            cursor: pointer;
+        }
+
+        #text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            font-size: 50px;
+            color: yellow;
+            transform: translate(-50%,-50%);
+            -ms-transform: translate(-50%,-50%);
+        }
+
+        .col45 {
+            width: 45%;
+        }
+
+        .col10 {
+            width: 10%;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        form.example input[type=text] {
+            padding: 10px;
+            font-size: 17px;
+            border: 1px solid grey;
+            float: left;
+            width: 80%;
+            background: #f1f1f1;
+        }
+
+        form.example button {
+            float: left;
+            width: 20%;
+            padding: 10px;
+            background: #2196F3;
+            color: white;
+            font-size: 17px;
+            border: 1px solid grey;
+            border-left: none;
+            cursor: pointer;
+        }
+
+        form.example button:hover {
+            background: #0b7dda;
+        }
+    </style>
+
+   
+</head>
+<body>
+    <div id="overlay">
+        <div id="text">Updating...</div>
+    </div>
+    @using (Html.BeginForm("Save", "ProductCustomFilter"))
+    {
+
+        @Html.HiddenFor(x => x._id, new { id = "Id" })
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <input type="hidden" value="@Url.Action("UpdateTariffCodes", "ProductCustomFilter")" id="UrlUpdateTariff" />
+        <input type="hidden" value="@Url.Action("RemoveTariffCodes", "ProductCustomFilter")" id="UrlRemoveTariff" />
+        <input type="hidden" value="@Url.Action("PostTariffCodes", "ProductCustomFilter")" id="UrlPostTariffCodes" />
+        <input type="hidden" value="@ViewBag.TCList" id="TCListID" />
+        <input type="hidden" value="@ViewBag.FilterTCList" id="FilterTCList" />
+        <fieldset>
+            <div class="card">
+                <div class="card-header">
+                    <h2>@ViewData["Title"]</h2>
+                </div>
+
+                <div class="needs-validation">
+                    <div class="card-body">
+
+                        <!--TABS-->
+                        <ul class="nav nav-tabs" id="crm-tab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="details-tab" data-toggle="pill" href="#customFilter">Custom Filter</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="default-tab" data-toggle="pill" href="#tariffCodes">Allowed Codes</a>
+                            </li>
+
+                        </ul>
+
+                        <!--tab CONTENT-->
+
+                        <div class="tab-content" id="crm-tabContent">
+
+                            <!--customFilter tab-->
+                            <div class="tab-pane fade active show" id="customFilter">
+
+                                <div class="container py-5">
+                                    <div class="row">
+                                        <div class="col-md-10 mx-auto">
+                                            <h5>Filter Details</h5>
+                                            <hr />
+                                            <div class="form-group row">
+                                                <div class="col-sm-4">
+                                                    <label>@Html.LabelFor(u => u.SortOrder, htmlAttributes: new { @class = "control-label" })</label>
+                                                    <div id="Costs" ; class="editor-field">
+                                                        @Html.TextBoxFor(u => u.SortOrder, new { type = "number", min = "0", step = "1", @class = "form-control" })
+                                                        @Html.ValidationMessageFor(u => u.SortOrder, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row">
+                                                <div class="col-sm-4">
+                                                    <label>@Html.LabelFor(u => u.Name, htmlAttributes: new { @class = "control-label" })</label>
+                                                    <div id="Name" ; class="editor-field">
+                                                        @Html.TextBoxFor(u => u.Name, htmlAttributes: new { @class = "form-control" })
+                                                        @Html.ValidationMessageFor(u => u.Name, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--tariffCodes-->
+
+                            <div class="take-all-space-you-can fade" id="tariffCodes">
+
+                                <div class="row">
+                                    <div>
+                                        <div class="form-group row">
+
+                                            <div class="col45 card card-outline card-success">
+                                                <h4>Filter by Region</h4>
+                                                @Html.TextBoxFor(u => u.SearchType, htmlAttributes: new { @class = "form-control", id = "searchInput" , placeholder = "Search.." })
+                                                @*<input id="searchInput" type="text" placeholder="Search.." name="search" value=@Model.SearchType>*@
+                                                <button id="searchBtn" type="submit"><i class="fa fa-search"></i></button>
+                                                <div id="error_message" style="color: red; font-weight: bold"></div>
+                                                <table id="TariffCodesA"></table>
+                                            </div>
+                                            <div class="col10">
+                                                <div class="form-group row">
+                                                    <div class="btn-group-vertical col-md-10 offset-sm-1" style="margin-top: 50% ">
+                                                        <button id="addTCBtn" type="button" class="btn btn-outline-success">Add &nbsp<span><i class="fas fa-angle-double-right"></i></span></button>
+                                                        <button id="removeTCBtn" type="button" class="btn btn-outline-danger"><span><i class="fas fa-angle-double-left"></i>&nbsp Remove</span></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="col45 card card-outline card-danger">
+                                                <div id="error_message1" style="color: red; font-weight: bold"></div>
+                                                <table id="TariffCodes"></table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <hr />
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary px-4"><span>Save &nbsp;<i class="fas fa-file-import"></i></span></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </fieldset>
+    }
+    <br />
+</body>
+
+

@@ -1,0 +1,223 @@
+﻿@using Infragistics.Web.Mvc
+@model IQueryable<Data.Models.ProductAllFilterModel>
+@{
+    ViewData["Title"] = "Product Filters";
+}
+
+<html>
+<body>
+    <header>
+        <style type="text/css">
+            .center {
+                margin: auto;
+                width: 60%;
+                border: 3px solid #323030;
+                padding: 10px;
+            }
+
+            * {
+                margin: 0;
+                padding: 0;
+            }
+
+            #map {
+                height: 500px;
+                width: 50%;
+            }
+
+            .optionContainer {
+                display: inline-block;
+            }
+
+            .item {
+                display: inline-block;
+                height: 30px;
+            }
+
+                .item ~ .item {
+                    margin-left: 15px;
+                }
+
+            .item-label {
+                display: block;
+                float: right;
+                margin-left: 5px;
+                line-height: 21px;
+            }
+
+            .exporting-overlay {
+                position: absolute;
+                background-color: rgba(181, 181, 181, 0.9);
+                top: 0;
+                left: 0;
+                z-index: 100000;
+                text-align: center;
+                vertical-align: top;
+                padding-top: 100px;
+            }
+
+                .exporting-overlay:after {
+                    content: "";
+                    display: inline-block;
+                    vertical-align: middle;
+                    height: 100%;
+                }
+
+            .exporting-text {
+                font-size: 46px;
+                font-weight: bold;
+                vertical-align: top;
+            }
+        </style>
+    </header>
+
+    <div class="content-header">
+        <h2>@ViewData["Title"]</h2>
+        <h3>@ViewData["Message"]</h3>
+    </div>
+    @(Html.Infragistics().Grid(Model)
+                        .ID("grid")
+                        .Width("100%")
+                        .Height("600px")
+                        .DataBind()
+                        .PrimaryKey("_id")
+                        .AutoGenerateColumns(false)
+                        .AutoGenerateLayouts(false)
+                        .Columns(column =>
+                        {
+                        column.For(x => x.Idx).HeaderText("Id").Width("10%").Hidden(true);
+                        column.For(x => x.TariffCode).HeaderText("Tariff Code").Width("15%");
+                        column.For(x => x.Name).HeaderText("Name").Width("80%");
+                        column.For(x => x.Cost).HeaderText("Cost").Width("10%");
+                        column.For(x => x._id).HeaderText("").Width("7%").Template("<input type='button' onclick='editRow(\"${_id}\")' value='Edit' class='btn btn-block btn-warning btn-sm'/>");
+                        column.For(x => x._id).HeaderText("").Width("7%").Template("<input type='button' onclick='deleteRow(\"${_id}\")' value='Delete' class='btn btn-block btn-danger btn-sm'/>");
+
+                        })
+                        .Features(features =>
+                        {
+                        features.Sorting().Type(OpType.Local).Mode(SortingMode.Multiple)
+                        .ColumnSettings(setting =>
+                        {
+                        setting.ColumnSetting().ColumnKey("_id").AllowSorting(false);
+
+                        });
+                        features.Sorting().Type(OpType.Local)
+                        .ColumnSettings(setting =>
+                        {
+                        setting.ColumnSetting().ColumnKey("_id").AllowSorting(false);
+
+                        });
+                        features.Paging().Type(OpType.Local);
+                        features.Filtering().Type(OpType.Local)
+                        .ColumnSettings(setting =>
+                        {
+                        /**/
+                        /**/
+                        /**/
+                        /**/
+                        /**/
+                        @*setting.ColumnSetting().ColumnKey("Name").AllowFiltering(true);
+                        setting.ColumnSetting().ColumnKey("Idx").AllowFiltering(false);
+                        setting.ColumnSetting().ColumnKey("TariffCode").AllowFiltering(true);
+                        setting.ColumnSetting().ColumnKey("Cost").AllowFiltering(false);*@
+
+                        });
+
+                        features.Selection().MultipleSelection(false);
+                        features.Selection().Mode(SelectionMode.Row);
+                        features.RowSelectors().EnableRowNumbering(true);
+
+                        })
+
+                        .Render())
+
+    <hr />
+    <div class="form-group row">
+        <div class="col-md-5">
+            <button id="updateHSButton" class="btn btn-outline-warning btn-md">Re Sync HS codes &nbsp;<span><i class="fas fa-file-export"></i></span></button>
+            <button id="exportButton" class="btn btn-outline-success btn-md">Export to Excel &nbsp;<span><i class="fas fa-file-export"></i></span></button>
+        </div>
+    </div>
+
+    <script>$(function () {
+           $("#updateHSButton").on("click", function () {
+
+               var url = "/ProductFilter/UpdateHS";
+               $(location).attr('href', url);
+
+            });
+
+            $("#exportButton").on("click", function () {
+                var exportingOverlay = $('<div>');
+                $.ig.GridExcelExporter.exportGrid($("#grid"), {
+                    columnsToSkip: ["_id"],
+                    fileName: "ProductFilterData",
+                    worksheetName: "ProductFilter",
+
+                    gridFeatureOptions: { sorting: "applied", filtering: "applied" },
+                },
+                    {
+                        exportStarting: function (e, args) {
+                            showOverlay(args.grid, exportingOverlay);
+                        },
+                        success: function () {
+                            hideOverlay(exportingOverlay);
+                        },
+                        cellExported: function (e, args) {
+                            if (args.xlRow.index() == 0) {
+                                return;
+                            }
+
+                        },
+                        exportEnding: function (e, args) {
+                            //args.worksheet.columns().item(2).cellFormat().formatString("dd-MM-yyyy");
+                            //args.worksheet.columns().item(3).cellFormat().formatString("dd-MM-yyyy");
+                        },
+                    });
+
+            });
+
+            function showOverlay(grid, exportingOverlay) {
+                var $gridContainer = $('#' + grid.attr('id') + '_container');
+
+                exportingOverlay.css({
+                    "width": $gridContainer.outerWidth(),
+                    "height": $gridContainer.outerHeight()
+                }).html('<span class="exporting-text">Exporting...</span>');
+                exportingOverlay.addClass("exporting-overlay");
+
+                $gridContainer.append(exportingOverlay);
+            }
+            function hideOverlay(exportingOverlay) {
+                exportingOverlay.remove();
+            }
+
+        });</script>
+
+    <script>function editRow(rowId) {
+
+            var url = "/ProductFilter/Edit?_id=" + rowId.toString();
+            $(location).attr('href', url);
+
+        }
+
+        function deleteRow(rowId) {
+            var grid = $("#grid").data("igGrid");
+            grid.dataSource.deleteRow(rowId);
+
+            if (confirm('Do you want to delete?')) {
+            }
+            else {
+                e.preventDefault()
+                grid.commit();
+            }
+
+            var url = "/ProductFilter/Delete?_id=" + rowId.toString();
+            $(location).attr('href', url);
+        };</script>
+</body>
+</html>
+
+
+
+

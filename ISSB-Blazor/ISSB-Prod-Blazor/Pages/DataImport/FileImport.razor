@@ -1,0 +1,696 @@
+@using System.Security.Claims
+@using Data.Enums
+@using ISSB_Prod_Blazor.Componets.HubMessages
+@using FilterType = Syncfusion.Blazor.Grids.FilterType
+@using SkeletonType = Syncfusion.Blazor.Notifications.SkeletonType
+@inject IWebHostEnvironment Env
+@inject DataImportService  DataImportService
+@using Syncfusion.Blazor.Popups
+
+<style>
+
+    .skeleton-default .col-sm-6 {
+        padding: 20px;
+        min-height: 150px;
+        position: relative;
+    }
+
+    .skeletonRectangleMediumRight {
+        float: right;
+    }
+
+    .skeletonRectangleMedium {
+        float: left;
+    }
+
+    .image img {
+        height: 55px;
+        width: 55px;
+        border-radius: 50px;
+        box-shadow: inset 0 0 1px #e0e0e0, inset 0 0 14px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn-79,
+    .btn-79 *,
+    .btn-79 :after,
+    .btn-79 :before,
+    .btn-79:after,
+    .btn-79:before {
+        border: 0 solid;
+        box-sizing: border-box;
+    }
+    .btn-79.e-btn:focus,
+    .btn-79.e-btn:active {
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+
+    .btn-79 .e-btn :hover{
+        /*color: #385273 !important;*/
+        color: #a89f9f!important;
+    }
+
+    .btn-79 {
+        -webkit-tap-highlight-color: transparent;
+        -webkit-appearance: button;
+        background-color: #FFFFFF !important;
+        background-image: none;
+        /*color: #079CAC!important;*/
+        color: #a89f9f!important;
+        cursor: pointer;
+        font-family: 'Assistant-Regular', sans-serif;
+        font-size: 100%;
+        font-weight: 900;
+        line-height: 1.5;
+        margin: 0;
+        -webkit-mask-image: -webkit-linear-gradient(#6f8fb8, #0dcaf0);
+        padding: 0;
+    }
+    .btn-79:disabled {
+        cursor: default;
+    }
+    .btn-79:-moz-focusring {
+        outline: auto;
+    }
+    .btn-79 svg {
+        display: block;
+        vertical-align: middle;
+    }
+    .btn-79 [hidden] {
+        display: none;
+    }
+    .btn-79 {
+        --height: 60px;
+        background: none;
+        border-radius: 999px;
+        box-sizing: border-box;
+        display: grid;
+        place-items: center;
+        height: var(--height);
+        -webkit-mask-image: none;
+        padding: 0 3rem;
+        position: relative;
+        text-transform: uppercase;
+    }
+    .btn-79  {
+        font-weight: 900;
+        mix-blend-mode: difference!important;
+    }
+
+    .span{
+        z-index:1000 !important;
+    }
+    .btn-79:before {
+        background: #34568b;
+        border-radius: 20px;
+        content: "";
+        height: calc(var(--height) / 1.7);
+        left: 0;
+        pointer-events: none;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        transition: 0.2s;
+        width: calc(var(--height) / 1.7);
+    }
+    .btn-79:hover:before {
+        left: 0;
+        width: 100%;
+    }
+
+    #addBtn{
+        background-color: #34568b;!important;
+        color: white;!important;
+        border-radius: 1px;
+        border: none;
+        font-weight: bolder;
+        font-family: 'Assistant-Regular', sans-serif;
+        padding: 8px;
+        float: right;
+        margin-bottom: 10px;
+        margin-right: 10px;
+        /*box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset;*/
+        box-shadow: rgba(50, 50, 93, 0.2) 0px 40px 80px -20px, rgba(0, 0, 0, 0.25) 0px 20px 50px -30px, rgba(10, 37, 64, 0.3) 0px -2px 4px 0px inset;
+    }
+
+    #addBtn:hover{
+        color: #FFFFFF;
+        font-weight: bolder;
+        /*padding: 10.5px;*/
+        margin-bottom: 10px;
+        background-color: #264c87;
+        /*box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;*/
+    }
+
+    #addBtn:active {
+        transform: translateY(2px); /* Makes the element look like it's pressed */
+        box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px 0px; /* Reduces shadow for 'pressed' effect */
+    }
+
+    .GridCard{
+        /*padding: 20px;*/
+        margin-top: 40px;
+        margin-right: 8%;
+        /*max-width: 95% !important;*/
+        /*box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;*/
+        /*background-color: rgba(171, 198, 205, 0.2) !important;*/
+        /*border-radius: 10px;*/
+        box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+        z-index: 10000;!important;
+    }
+    .e-grid{
+        font-family: 'Assistant-Regular', sans-serif;!important;
+    }
+
+    .e-icons .e-plus{
+        font-weight: bolder;!important;
+        font-size: 1.2em;!important;
+        text-shadow: 0px 0px 1px black;!important;
+    }
+    
+    .e-headertext{
+        color: #34568b !important;
+    }
+
+    /*remove blue border on focused search box*/
+    .e-input-group.e-input-focus:not(.e-success):not(.e-warning):not(.e-error), .e-input-group.e-control-wrapper.e-input-focus:not(.e-success):not(.e-warning):not(.e-error){
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+        border:#F2F2F2!important;
+    }
+
+    .e-input-group:not(.e-disabled):active:not(.e-success):not(.e-warning):not(.e-error), .e-input-group.e-control-wrapper:not(.e-disabled):active:not(.e-success):not(.e-warning):not(.e-error){
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+        border:#F2F2F2!important;
+    }
+    .e-grid .e-focused:not(.e-menu-item){
+        box-shadow: none;!important;
+    }
+    .e-flat:focus{
+        border: none!important;
+        outline: 0 !important;
+        box-shadow: none!important;
+    }
+    
+    .e-grid .e-pager{
+        background-color: #f5f7f8;
+    }
+
+    .e-input-group input.e-input, .e-input-group.e-control-wrapper input.e-input .e-focused{
+        border: none!important;
+    }
+
+
+    .e-grid td.e-rowcell.e-focus.e-focused {
+        box-shadow: none !important;
+    }
+
+
+    .e-grid td.e-groupcaption .e-focus.e-focused {
+        box-shadow: none !important;
+    }
+
+
+    .e-grid th.e-headercell.e-focus.e-focused {
+        box-shadow: none !important;
+    }
+
+    /*page arrows next*/
+    .e-pager div.e-icons.e-pager-default{
+        color: #34568b;
+    }
+    /*page arrows previous*/
+    .e-pager.sf-pager .e-pagercontainer .e-prev{
+        color: #34568b;
+    }
+    /*page numbers*/
+    .e-pager.sf-pager .e-numericcontainer a{
+        color: #34568b;
+    }
+    .e-link .e-numericitem .e-spacing .e-currentitem .e-active{
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+        border:#F2F2F2!important;
+    }
+
+    .e-pager .e-currentitem.e-numericitem.e-focused{
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+        background: #FBFBFB;
+    }
+
+    .e-pager .e-currentitem, .e-pager .e-currentitem:hover{
+        border-right-color: #34568b;
+        background: #FBFBFB;
+    }
+
+    .e-pager .e-currentitem {
+        border: 2px solid #34568b;
+    }
+
+    .e-grid .e-focused:not(.e-menu-item):not(.e-editedbachcell){
+        box-shadow: none;
+        border: none;
+    }
+
+    .e-headertext{
+        color: #34568b;
+    }
+
+</style>
+
+<PageTitle>Import Files</PageTitle>
+<AuthorizeView>
+    <Authorized>
+        @* <SfButton id="BackBtn" @onclick="GoBack" CssClass="e-custom-back" IconPosition="IconPosition.Left" *@
+        @*           IconCss="e-icons e-chevron-left-double">Back *@
+        @* </SfButton> *@
+        <SfButton id="BackBtn" @onclick="GoBack" CssClass="btn-79" IconPosition="IconPosition.Left"><bold style="z-index: 1000 !important;">Go Back</bold>
+        </SfButton>
+        <HubMessage/>
+        <label class="selected-name">
+            <strong>@SelectedRow.FileName</strong>
+        </label>
+        
+        @if (IsLoading)
+        {
+            <SfSkeleton CssClass="skeleton-default" Shape=SkeletonType.Rectangle Width="100%"
+                        Height="80vh"></SfSkeleton>
+        }
+        else
+        {
+            @if (!_isEdit)
+            {
+                
+                <div>
+                    <div style="float:left">
+                        <h3 class="page-title">Imported Files</h3>
+                    </div>
+                    
+                    <div style="float: right">
+                        <SfButton id="uploadBtn" @onclick="UploadFile" IconPosition="IconPosition.Left"
+                                  IconCss="e-icons e-plus" CssClass="e-custom-remove">Upload New File
+                        </SfButton>
+                    </div>
+                </div>
+                
+                <div style="padding-bottom:200px">
+                <SfCard CssClass="GridCard">
+                    <SfGrid ID="Grid"
+                            @ref="Grid"
+                            TValue="DataFileImportModel"
+                            Toolbar="@_toolBar"
+                            DataSource="@_modelList"
+                            AllowPaging="true"
+                            AllowSorting="true"
+                            AllowSelection="true"
+                            AllowFiltering="false"
+                            AllowExcelExport="true"
+                            AllowPdfExport="false"
+                            Height="500"
+                            Width="Auto">
+                        <GridPageSettings PageCount="10" PageSize="@_pageSize"></GridPageSettings>
+                        <GridFilterSettings Type="FilterType.Excel"></GridFilterSettings>
+                        <GridEditSettings Mode="EditMode.Normal" AllowEditing="true"></GridEditSettings>
+                        @* <GridEvents RowSelected="OnRowSelected" PageChanged="PageChangedHandler" *@
+                        @*             CommandClicked="OnCommandClicked" OnToolbarClick="DataToolbarClickHandler" *@
+                        @*             TValue="DataFileImportModel"></GridEvents> *@
+                        <GridColumns>
+                            @* <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn> *@
+                            <GridColumn Field=@nameof(DataFileImportModel._id) HeaderText="_id" IsPrimaryKey="true" Visible="false"
+                                        TextAlign="TextAlign.Left" 
+                                        Type="ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(DataFileImportModel.Date) HeaderText="Date"
+                                        TextAlign="TextAlign.Left" Width="15%" AllowEditing="false"
+                                        Format="dd-MM-yyyy" Type="ColumnType.Date"></GridColumn>
+                            <GridColumn Field=@nameof(DataFileImportModel.Source) HeaderText="Source" TextAlign="TextAlign.Left"
+                                        Width="20%" AllowEditing="false"
+                                        Type="ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(DataFileImportModel.FileName) HeaderText="File Name" TextAlign="TextAlign.Left"
+                                        Width="20%" AllowEditing="false"
+                                        Type="ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(DataFileImportModel.Subject) HeaderText="Subject" TextAlign="TextAlign.Left"
+                                        Width="20%" AllowEditing="false"
+                                        Type="ColumnType.String"></GridColumn>
+                            
+                            <GridColumn HeaderText="Manage Records" Width="20%">
+                                <GridCommandColumns>
+                                    <GridCommandColumns>
+                                        <GridCommandColumn
+                                            ButtonOption="@(new CommandButtonOptions { Content = "Edit", CssClass = "e-success" })"></GridCommandColumn>
+                                        <GridCommandColumn
+                                            ButtonOption="@(new CommandButtonOptions { Content = "Delete", CssClass = "e-danger" })"></GridCommandColumn>
+                                    </GridCommandColumns>
+                                </GridCommandColumns>
+                            </GridColumn>
+                        </GridColumns>
+                        <SfSpinner @bind-Visible="IsLoading">
+                        </SfSpinner>
+                    </SfGrid>
+                </SfCard>
+                </div>
+            }
+
+            <SfDialog Width="80%" IsModal="true" @bind-Visible="@IsDialogVisible">
+                <DialogTemplates>
+                    <Header>Upload File</Header>
+                    <Content>
+                        <div>
+                            @* <div class="form-group" style="margin-bottom: 1rem;"> *@
+                            @*      *@
+                            @*     <label for="sourceInput">Source</label> *@
+                            @*     <SfTextBox ID="sourceInput" *@
+                            @*                @bind-Value="Source" *@
+                            @*                Placeholder="Enter source"> *@
+                            @*     </SfTextBox> *@
+                            @* *@
+                            @*     <label for="subjectInput">Subject</label> *@
+                            @*     <SfTextBox ID="subjectInput" *@
+                            @*                @bind-Value="Subject" *@
+                            @*                Placeholder="Enter subject"> *@
+                            @*     </SfTextBox> *@
+                            @* </div> *@
+
+                            <SfUploader ID="UploadFiles"
+                                        AllowMultiple="true"
+                                        MaxFileSize="10485760"
+                                        AllowedExtensions=".zip"
+                                        AutoUpload="false">
+                                <UploaderEvents ValueChange="OnFileSelected"></UploaderEvents>
+                            </SfUploader>
+                            <h4 style="color: red">@_errorMessage</h4>
+                        </div>
+                    </Content>
+                </DialogTemplates>
+                <DialogButtons>
+                    <DialogButton Content="Cancel" OnClick="@(() => IsDialogVisible = false)"/>
+                    @* <DialogButton Content="Upload" IsPrimary="true" OnClick="@HandleUpload"/> *@
+                </DialogButtons>
+            </SfDialog>
+
+            @if (SelectedRow != null && _isEdit && !_isAddUser)
+            {
+                <DynamicComponent Type="@SelectedComponent" Parameters="@ComponentParameters"/>
+            }
+            
+            @* @if (_isAddUser) *@
+            @* { *@
+            @*     <AddUser /> *@
+            @* } *@
+        }
+
+    </Authorized>
+    <NotAuthorized>
+        <p>Not Authorized</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    List<DataFileImportModel> _modelList { get; set; } = new();
+    SfDialog _fileUpload;
+    SfGrid<DataFileImportModel> Grid { get; set; }
+    List<DataFileImportModel> _imports = new();
+    DataFileImportModel Import { get; set; } = new();
+    private List<object> _toolBar = new() { "ExcelExport", "Search" };
+    private bool IsLoading { get; set; } = true;
+    private string _errorMessage = string.Empty;
+    private RenderFragment _dynamicRenderFragment;
+    IBrowserFile? selectedFile;
+    string? status;
+    private DataFileImportModel SelectedRow { get; set; } = new();
+    private Type SelectedComponent { get; set; }
+    private Dictionary<string, object> ComponentParameters { get; set; }
+    private bool _isEdit = false;
+    private bool _isAddUser = false;
+    private bool IsDialogVisible { get; set; } = false;
+    private string Source { get; set; }
+    private string Subject { get; set; }
+    private int RowIndex { get; set; }
+    private int SelectedRowIndexOnPage { get; set; }
+    private int PageIndex { get; set; }
+    private int _pageSize = 15;
+
+    public void Dispose()
+    {
+        Grid?.Dispose();
+    }
+
+    private async Task HandleUpload()
+    {
+        try
+        {
+            // if (string.IsNullOrEmpty(Source))
+            // {
+            //     _errorMessage = "Source is required";
+            //     return;
+            // }
+            //
+            // if (string.IsNullOrEmpty(Subject))
+            // {
+            //     _errorMessage = "Subject is required";
+            //     return;
+            // }
+
+            if (selectedFile == null)
+            {
+                status = "Please select a file first.";
+                return;
+            }
+
+            // Destination folder
+            var uploadFolder = Path.Combine(Env.WebRootPath, "uploads");
+            Directory.CreateDirectory(uploadFolder);
+
+            var filePath = Path.Combine(uploadFolder, selectedFile.Name);
+
+            // Copy file stream to destination
+            await using var stream = selectedFile.OpenReadStream(maxAllowedSize: 100_000_000);
+            await using var fs = File.Create(filePath);
+            await stream.CopyToAsync(fs);
+
+            status = $"Saved successfully to {filePath}";
+            
+            _errorMessage = string.Empty;
+            var model = new DataFileUploadModel
+            {
+                Date = DateTime.Now,
+                File = selectedFile.Name,
+                Source = "UPLOAD",
+                Subject = selectedFile.Name,
+                Message = ""
+            };
+            var alreadyEntered = await DataImportService.DoesExitst(selectedFile.Name);
+
+            if (alreadyEntered.FileName.Equals(selectedFile.Name))
+            {
+                _errorMessage = alreadyEntered.FileName + " is already on the system";
+                
+                File.Delete(filePath);
+
+                return;
+            }
+
+            var mailSrv = new EmailService(DataImportService);
+            var mailModel = await mailSrv.GetEmailCredentials();
+            var controlSrv = new SystemControlService();
+            var cntl = await controlSrv.GetSystemControl();
+
+            if (model.File.Contains(".zip"))
+            {
+                var newPath = filePath.Replace(".zip", ".uploading");
+                File.Move(filePath, newPath);
+            }
+            //Update the db
+
+            var sysFilePath = Path.GetDirectoryName(filePath);
+            var importModel = new DataFileImportModel
+             {
+                 Idx = cntl.LastFileNumber++,
+                 Date = DateTime.Now,
+                 //FileLocation = mailModel.FilePath,
+                 FileLocation = sysFilePath,
+                 FileName = selectedFile.Name,
+                 Source = "UPLOAD",
+                 FileStatus = "Uploaded",
+                 Message = "",
+                 Subject = model.Subject,
+             };
+
+             await DataImportService.SaveImportFile(importModel);
+             cntl.LastFileNumber = cntl.LastFileNumber + 1;
+             await controlSrv.UpdateControl(cntl);
+             IsDialogVisible = false;
+        }
+        catch (Exception ex)
+        {
+        }
+    }
+
+
+
+//             string filePath = string.Empty;
+// #if RELEASE
+//             if (model.File.Contains(".zip"))
+//             {
+//             filePath = mailModel.FilePath + cntl.LastFileNumber.ToString() + "-" + model.File.FileName.Replace(".zip",".uploading");
+//             await model.File.CopyToAsync(new FileStream(filePath, FileMode.Create));
+//             }
+// #endif
+//
+// #if DEBUG
+//             if (model.File.FileName.Contains(".zip"))
+//             {
+//                 filePath = mailModel.FilePath + cntl.LastFileNumber.ToString() + "-" + model.File.FileName.Replace(".zip", ".uploading");
+//                 await model.File.CopyToAsync(new FileStream(filePath, FileMode.Create));
+//             }
+// #endif
+//             //ToDo File Location
+//             var importModel = new DataFileImportModel
+//             {
+//                 Idx = cntl.LastFileNumber++,
+//                 Date = DateTime.Now,
+//                 //FileLocation = mailModel.FilePath,
+//                 FileLocation = filePath,
+//                 FileName = model.File.FileName,
+//                 Source = "UPLOAD",
+//                 FileStatus = "Uploaded",
+//                 Message = "",
+//                 Subject = model.Subject,
+//             };
+//
+//             await DataImportService.SaveImportFile(importModel);
+//             cntl.LastFileNumber = cntl.LastFileNumber + 1;
+//             await controlSrv.UpdateControl(cntl);
+//
+//             var newPath = filePath.Replace(".zip", ".uploading");
+//             System.IO.File.Move(filePath, newPath);
+//
+//             // var UserId = ClaimTypes.Email;
+//             // var EventModel = new SystemEventLogsModel
+//             // {
+//             //     DataType = DataTypeEnums.DataFileUploadModel,
+//             //     TransactionType = TransactionTypeEnums.Edit,
+//             //     MESSAGE = "Data Import Updated, [" + UserId + "]",
+//             //     DATE = DateTime.Now,
+//             //     USER = UserId,
+//             //     Model = model
+//             // };
+//             // new EventLog(EventModel);
+//
+//             //IsDialogVisible = false;
+        
+    
+
+
+    private async Task OnFileSelected(UploadChangeEventArgs args)
+    {
+        // Get the selected file
+        selectedFile = args.Files.FirstOrDefault()?.File;
+        status = selectedFile != null ? $"Selected: {selectedFile.Name}" : "No file selected";
+        await HandleUpload();
+    }
+
+    private void UploadFile()
+    {
+        IsDialogVisible = true;
+    }
+    
+    public void PageChangedHandler(GridPageChangedEventArgs args)
+    {
+        PageIndex = args.CurrentPage;
+    }
+
+    private void OnRowSelected(RowSelectEventArgs<DataFileImportModel> args)
+    {
+        SelectedRow = args.Data;
+        RowIndex = args.RowIndex; // Global index
+        SelectedRowIndexOnPage = args.RowIndex % _pageSize + 1; // Index within current page
+    }
+
+    // private async Task AddUser()
+    // {
+    //     // Set the Blazor component to load dynamically
+    //     SelectedComponent = typeof(AddUser);
+    //
+    //     _isEdit = true;
+    //     _isAddUser = true;
+    // }
+
+    private async Task GoBack()
+    {
+        // _isEdit = false;
+        // _isAddUser = false;
+        // if (RowIndex > 0)
+        // {
+        //     IsLoading = true;
+        //     SelectedRow.CompanyName = string.Empty;
+        //     _imports = await UserServices.GetUsersAsync();
+        //     IsLoading = false;
+        //     _isEdit = false;
+        //  
+        //     await InvokeAsync(() => { StateHasChanged(); });
+        //     await Task.Delay(500);
+        //     await Grid.GoToPageAsync(PageIndex);
+        //
+        //     var rowForPage = RowIndex / PageIndex;
+        //     await Grid.SelectRowAsync(SelectedRowIndexOnPage - 1);
+        //
+        //     if (SelectedRowIndexOnPage >= 0)
+        //     {
+        //         await Grid.ScrollIntoViewAsync(SelectedRowIndexOnPage - 1);
+        //     }
+        // }
+    }
+
+    public string ReturnUrl { get; set; }
+
+    // public async void OnCommandClicked(CommandClickEventArgs<UserModel> args)
+    // {
+    //     if (args.CommandColumn.ButtonOption.Content.Equals("Delete"))
+    //     {
+    //         
+    //     }
+    //     if (args.CommandColumn.ButtonOption.Content.Equals("Edit"))
+    //     {
+    //         SelectedRow = args.RowData;
+    //         RowIndex = _users.FindIndex(item => item._id.Equals(SelectedRow._id));
+    //         PageIndex = RowIndex / _pageSize + 1;
+    //         await Grid.SelectRowAsync(RowIndex, true);
+    //         var userSelected = Grid.SelectedRecords;
+    //         ModelService.CurrentUserModel = SelectedRow;
+    //         var gModel = new GridIndexModel { PageIndex = PageIndex, RowIndex = RowIndex };
+    //         ModelService.CurrentGridModel = gModel;
+    //         // Set the Blazor component to load dynamically
+    //         SelectedComponent = typeof(UserEdit);
+    //
+    //         // Pass parameters to the component
+    //         ComponentParameters = new Dictionary<string, object>
+    //         {
+    //             { "userModel", SelectedRow }
+    //         };
+    //
+    //         _isEdit = true;
+    //         await InvokeAsync(() => { StateHasChanged(); });
+    //     }
+    //     
+    // }
+
+    public async Task DataToolbarClickHandler(ClickEventArgs args)
+    {
+        if (args.Item.Text == "Excel Export")
+        {
+            await Grid.ExportToExcelAsync();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            IsLoading = true;
+            _modelList = await DataImportService.GetImportedFiles();
+            IsLoading = false;
+            await InvokeAsync(StateHasChanged);
+        }
+       // return base.OnAfterRenderAsync(firstRender);
+    }
+
+}

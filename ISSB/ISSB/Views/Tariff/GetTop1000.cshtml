@@ -1,0 +1,217 @@
+﻿@using Infragistics.Web.Mvc
+@model IQueryable<Data.Models.TradeDataModel>
+@{
+    ViewData["Title"] = "Tariff History";
+}
+
+<div class="content-header">
+    <h2>@ViewData["Title"]</h2>
+    <h3>@ViewData["Message"]</h3>
+</div>
+
+<head>
+    <style>
+        .headerStyle {
+            text-align: center !important;
+        }
+
+        .numberStyle {
+            text-align: right !important;
+        }
+
+        .optionContainer {
+            display: inline-block;
+        }
+
+        .item {
+            display: inline-block;
+            height: 30px;
+        }
+
+            .item ~ .item {
+                margin-left: 15px;
+            }
+
+        .item-label {
+            display: block;
+            float: right;
+            margin-left: 5px;
+            line-height: 21px;
+        }
+
+        .exporting-overlay {
+            position: absolute;
+            background-color: rgba(181, 181, 181, 0.9);
+            top: 0;
+            left: 0;
+            z-index: 100000;
+            text-align: center;
+            vertical-align: top;
+            padding-top: 100px;
+        }
+
+            .exporting-overlay:after {
+                content: "";
+                display: inline-block;
+                vertical-align: middle;
+                height: 100%;
+            }
+
+        .exporting-text {
+            font-size: 46px;
+            font-weight: bold;
+            vertical-align: top;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        @(Html.Infragistics().Grid(Model)
+                                          .ID("grid")
+                                          .Width("100%")
+                                          .Height("600px")
+                                          .DataBind()
+                                          .PrimaryKey("_id")
+                                          .AutoGenerateColumns(false)
+                                          .AutoGenerateLayouts(false)
+                                          .Columns(column =>
+                                          {
+                                              column.For(x => x._id).HeaderText("_id").Width("10%").Hidden(true);
+                                              column.For(x => x.SIDE_OF_TRADE).HeaderText("Side of Trade").Width("10%");
+                                              column.For(x => x.SC_GEO).HeaderText("SC_GEO").Width("10%");
+                                              column.For(x => x.MC_GEO).HeaderText("MC_GEMO").Width("10%");
+                                              column.For(x => x.MONTH).HeaderText("Month").Width("10%");
+                                              column.For(x => x.QUARTER).HeaderText("Quarter").Width("10%");
+                                              column.For(x => x.YEAR).HeaderText("Year").Width("10%");
+                                              column.For(x => x.WEIGHT).HeaderText("Weight").Width("20%").HeaderCssClass("numberStyle").ColumnCssClass("numberStyle"); 
+                                              column.For(x => x.MONETARY_VALUE).HeaderText("Value GBP").Width("10%").HeaderCssClass("numberStyle").ColumnCssClass("numberStyle");
+
+                                          })
+                                          .Features(features =>
+                                          {
+
+                                              features.Sorting().Type(OpType.Local).Mode(SortingMode.Multiple)
+                                     .ColumnSettings(setting =>
+                                     {
+                                         setting.ColumnSetting().ColumnKey("_id").AllowSorting(false);
+
+                                     });
+                                              features.Sorting().Type(OpType.Local)
+                                                  .ColumnSettings(setting =>
+                                                  {
+                                                      setting.ColumnSetting().ColumnKey("_id").AllowSorting(false);
+
+                                                  });
+                                              features.Paging().Type(OpType.Local);
+                                              features.Filtering().Type(OpType.Local);
+
+                                              features.Selection().MultipleSelection(false);
+                                              features.Selection().Mode(SelectionMode.Row);
+
+                                              features.RowSelectors().EnableRowNumbering(true);
+                                          })
+
+                                  .Render())
+        <hr />
+        <div class="form-group row">
+            <div class="col-md-5">
+                  <button id="exportButton" class="btn btn-outline-success btn-md">Export to Excel &nbsp;<span><i class="fas fa-file-export"></i></span></button>
+                @*<button id="pdfBtn" class="btn btn-outline-info btn-md">Export to PDF &nbsp;<span><i class="fas fa-file-pdf"></i></span></button>*@
+            </div>
+        </div>
+
+        <script>
+    function editRow(rowId) {
+
+        var url = "/Tariff/Edit?=" + rowId.toString();
+        $(location).attr('href', url);
+
+        }
+
+        function transRow(rowId) {
+
+            var url = "/Tariff/GetTop1000?=" + rowId.toString();
+            $(location).attr('href', url);
+
+        }
+
+    function deleteRow(rowId) {
+        var grid = $("#grid").data("igGrid");
+        grid.dataSource.deleteRow(rowId);
+
+        if (confirm('Do you want to delete?')) {
+        }
+        else {
+            e.preventDefault()
+            grid.commit();
+        }
+
+        var url = "/Tariff/Delete?=" + rowId.toString();
+        $(location).attr('href', url);
+    }
+
+    $(function () {
+
+        $("#exportButton").on("click", function () {
+            var exportingOverlay = $('<div>');
+            $.ig.GridExcelExporter.exportGrid($("#grid"), {
+                columnsToSkip: ["_id"],
+                fileName: "TariffData",
+                worksheetName: "Tariff",
+
+                gridFeatureOptions: { sorting: "applied", filtering: "applied" },
+            },
+                {
+                    exportStarting: function (e, args) {
+                        showOverlay(args.grid, exportingOverlay);
+                    },
+                    success: function () {
+                        hideOverlay(exportingOverlay);
+                    },
+                    cellExported: function (e, args) {
+                        if (args.xlRow.index() == 0) {
+                            return;
+                        }
+
+                    },
+                    exportEnding: function (e, args) {
+                        //args.worksheet.columns().item(2).cellFormat().formatString("dd-MM-yyyy");
+                        //args.worksheet.columns().item(3).cellFormat().formatString("dd-MM-yyyy");
+                    },
+                });
+
+        });
+
+        $("#addBtn").on("click", function () {
+            var url = "/Tariff/Add";
+            $(location).attr('href', url);
+        });
+
+        function showOverlay(grid, exportingOverlay) {
+            var $gridContainer = $('#' + grid.attr('id') + '_container');
+
+            exportingOverlay.css({
+                "width": $gridContainer.outerWidth(),
+                "height": $gridContainer.outerHeight()
+            }).html('<span class="exporting-text">Exporting...</span>');
+            exportingOverlay.addClass("exporting-overlay");
+
+            $gridContainer.append(exportingOverlay);
+        }
+        function hideOverlay(exportingOverlay) {
+            exportingOverlay.remove();
+        }
+
+        //$("#pdfBtn").on("click", function () {
+        //    window.location.href = 'Tariff/PrintPage';
+        //    return false;
+        //});
+
+    });
+        </script>
+    </div>
+</body>
+
+
+

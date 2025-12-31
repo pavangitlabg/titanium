@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <TargetFramework>net9.0</TargetFramework>
+        <LangVersion>default</LangVersion>
+        <!--<Nullable>enable</Nullable>-->
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="7.2.0"/>
+        <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.3.1"/>
+        <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.3.1"/>
+        <PackageReference Include="Infragistics.Web.AspNetCore" Version="9.24.2.7"/>
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.1"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Data\Data.csproj"/>
+        <ProjectReference Include="..\Services\Services.csproj"/>
+    </ItemGroup>
+</Project>

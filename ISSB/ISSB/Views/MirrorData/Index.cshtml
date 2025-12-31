@@ -1,0 +1,90 @@
+﻿@using Infragistics.Web.Mvc
+@model Data.Models.MirrorDataModel
+@{
+
+    ViewData["Title"] = "Mirror Data";
+
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+
+<body>
+    <div class="card">
+        <div class="card-header">
+            <div class="content-header">
+                <h2>@ViewData["Title"]</h2>
+                <hr />
+
+                @using (Html.BeginForm("Execute", "MirrorData"))
+                {
+
+                    <div class="form-horizontal">
+
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div style="width: 50%; margin-top:5%; margin-left:25%; margin-right:25%" class="needs-validation">
+                            <fieldset>
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(u => u.GeoCode, htmlAttributes: new { @class = "control-label" })
+                                    </div>
+
+                                    <div class="editor-field">
+                                        @Html.EditorFor(u => u.GeoCode, new { htmlAttributes = new { @class = "form-control", @type = "number" } })
+                                        @Html.ValidationMessageFor(u => u.GeoCode, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(u => u.Month, htmlAttributes: new { @class = "control-label" })
+                                    </div>
+
+                                    <div class="editor-field">
+                                        @Html.EditorFor(u => u.Month, new { htmlAttributes = new { @class = "form-control", @type = "number" } })
+                                        @Html.ValidationMessageFor(u => u.Month, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(u => u.Year, htmlAttributes: new { @class = "control-label" })
+                                    </div>
+
+                                    <div class="editor-field">
+                                        @Html.EditorFor(u => u.Year, new { htmlAttributes = new { @class = "form-control", @type = "number" } })
+                                        @Html.ValidationMessageFor(u => u.Year, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(u => u.TariffCodes, htmlAttributes: new { @class = "control-label" })
+                                    </div>
+
+                                    <div class="editor-field">
+                                        @Html.EditorFor(u => u.TariffCodes, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(u => u.TariffCodes, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <hr />
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary px-4"><span>Run Query &nbsp;<i class="fas fa-file-import"></i></span></button>
+                                </div>
+
+                            </fieldset>
+                            <br />
+                        </div>
+                    </div>
+                }
+
+          
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+

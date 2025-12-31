@@ -1,0 +1,878 @@
+﻿@using Infragistics.Web.Mvc
+
+@model Data.Models.QueryModel
+
+@{
+    Layout = "~/Views/Shared/_PipelineBuilderLayout.cshtml";
+}
+
+@{
+    ViewData["Title"] = "Query Builder";
+}
+<html>
+<head>
+    <script src="../js/querybuilder.js" type="text/javascript"></script>
+
+    <style>
+
+        .ui-igcombo-listitemholder .ui-igcombo-listitem {
+            padding: 0px !important;
+        }
+
+        .ui-igcombo-wrapper {
+            height: 36px !important;
+        }
+
+        .ui-igcombo-list {
+            line-height: 2em !important;
+        }
+    </style>
+    <style>
+
+        #overlay {
+            position: fixed;
+            display: none;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 2;
+            cursor: pointer;
+        }
+
+        #text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            font-size: 50px;
+            color: yellow;
+            transform: translate(-50%,-50%);
+            -ms-transform: translate(-50%,-50%);
+        }
+    </style>
+
+    <style>
+
+        #overlay {
+            position: fixed;
+            display: none;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 2;
+            cursor: pointer;
+        }
+    </style>
+
+</head>
+
+@*<body oncontextmenu="return false" >*@
+<body>
+    <div class="content" id="PB">
+        <input type="hidden" value="@Url.Action("GetSourceGeo", "PipeLineBuilder")" id="UrlGetSourceGeoCodes" />
+        <input type="hidden" value="@Url.Action("GetMarketGeo", "PipeLineBuilder")" id="UrlGetMarketGeoCodes" />
+        <input type="hidden" value="@Url.Action("GetTariffRegions", "PipeLineBuilder")" id="UrlGetTariffRegionCodes" />
+        <input type="hidden" value="@Url.Action("GetTariff2DigitRegions", "PipeLineBuilder")" id="UrlGetTariff2DigitRegionCodes" />
+        <input type="hidden" value="@Url.Action("UpdateSaveQuery", "PipeLineBuilder")" id="UrlPostUpdateSaveQuery" />
+        <input type="hidden" value="@ViewBag.Type" id="iType" />
+        <input type="hidden" value="@ViewBag.SourceCountryGroup" id="SourceCountryGroup" />
+        <input type="hidden" value="@ViewBag.MarketCountryGroup" id="MarketCountryGroup" />
+        <input type="hidden" value="@ViewBag.TradeFlowType" id="TradeFlowType" />
+        <input type="hidden" value="@ViewBag.ProductGroupType" id="ProductGroupType" />
+        <input type="hidden" value="@ViewBag.ProductGroup" id="ProductGroup" />
+        <input type="hidden" value="@ViewBag.TonnesValuesGroup" id="TonnesValuesGroup" />
+        <input type="hidden" value="@ViewBag.GroupByMonth" id="GroupByMonth" />
+        <input type="hidden" value="@ViewBag.GroupByQuarter" id="GroupByQuarter" />
+        <input type="hidden" value="@ViewBag.GroupByYear" id="GroupByYear" />
+        <input type="hidden" value="@ViewBag.SourceCountryGEOs" id="SourceCountryGEOs" />
+        <input type="hidden" value="@ViewBag.MarketCountryGEOs" id="MarketCountryGEOs" />
+        <input type="hidden" value="@ViewBag.Products" id="Products" />
+        <input type="hidden" value="@ViewBag.ReportName" id="ReportName" />
+        <input type="hidden" value="@ViewBag.ReportDescription" id="ReportDescription" />
+        <input type="hidden" value="@ViewBag.ReportComments" id="ReportComments" />
+        <input type="hidden" value="@ViewBag.Id" id="Id" />
+        <input type="hidden" value="@ViewBag.Ports" id="PortIDs" />
+        <input type="hidden" value="@ViewBag.UsePorts" id="UsePorts" />
+        <input type="hidden" value="@ViewBag.SelectedCurency" id="SelectedCurency" />
+        <input type="hidden" value="@ViewBag.SelectedDay" id="SelectedDay" />
+        <input type="hidden" value="@ViewBag.IsSchedule" id="IsSchedule" />
+        <input type="hidden" value="@ViewBag.PortsGrouping" id="GroupByPorts" />
+        <input type="hidden" value="@ViewBag.Type" id="Type" />
+        <input type="hidden" value="@ViewBag.IsAdvancedUser" id="AdvancedUser" />
+        <input type="hidden" value="@ViewBag.IsAdministrator" id="Administrator" />
+        <input type="hidden" value="@ViewBag.DashItem" id="DashItem" />
+        <input type="hidden" value="@ViewBag.DashItemType" id="DashItemType" />
+        <input type="hidden" value="@ViewBag.DashRecordID" id="DashRecordID" />
+        <input type="hidden" value="@Url.Action("UpdateSaveQuery", "DashboardCreator")" id="UrlPostDashUpdate" />
+        <input type="hidden" value="@ViewBag.TariffRegion" id="TariffRegionID" />
+        <input type="hidden" value="@ViewBag.Tariff2Digit" id="Tariff2DigitID" />
+        <input type="hidden" value="@ViewBag.SaveToVisitorPageIndex" id="SaveToVisitorID" />
+        <input type="hidden" value="@ViewBag.SaveToDashboard" id="SaveToDashboardID" />
+
+
+
+
+        <div id="overlay">
+            <div id="text">Updating Data ......</div>
+        </div>
+        <div class="content-header">
+            <h2>@ViewData["Title"]</h2>
+            <h3>@ViewData["Message"]</h3>
+        </div>
+
+        <div class="container-fluid">
+            <div class="card card-secondary" id="SC">
+                <div class="card-header">
+                    <header id="labSourceCountries"> Source Countries </header>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+
+
+                <div class="card-body">
+                    <div class="form-group">
+
+                        <form id="SourceForm">
+                            <div class="form-row">
+                                <div class="form-group col-md-3">
+                                    <label class="radio-inline RadioButtonText" onclick="pipelinebuilder.GroupSource()">
+                                        <input type="radio" id="rdSourceGroup" name="radioName" value="GroupCountriesTogether">&nbsp Group Countries Together
+                                    </label>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="radio-inline RadioButtonText" onclick="pipelinebuilder.SeperateSource()">
+                                        <input type="radio" id="rdSourceSep" name="radioName" value="ViewCountriesSeparately">&nbsp View Countries Separately
+                                    </label>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    @*<button type="button" id="regionEqualButton" onclick="EqualTo()" class="btn btn-default btn-block navbar-btn StandardFormButton StandardFormButton highlightColor"> Regions equal to</button>*@
+                                    <div class="RegionSelectorCombo">
+                                        @(Html.Infragistics().Combo()
+                                                    .ID("SourceCountrySelector")
+                                                    .DataSource(Model.SourceRegions)
+                                                    .Width("92%")
+                                                    .ValueKey("_id")
+                                                    .TextKey("Name")
+                                                    .DataBind()
+                                                    .Render()
+        )
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+
+                    <div class="card-body">
+                        @(Html.Infragistics().Grid(Model.SourceCountries.AsQueryable())
+                                            .ID("SourceCountries")
+                                            .Width("100%")
+                                            .Height("300px")
+                                            .DataBind()
+                                            .PrimaryKey("GEO_CODE")
+                                                    .AutoGenerateColumns(false)
+                                                    .AutoGenerateLayouts(false)
+                                                    .Columns(column =>
+                                            {
+                                                column.For(x => x.GEO_CODE).HeaderText("Code").Width("10%");
+                                                column.For(x => x.NAME).HeaderText("Name").Width("50%");
+                                                column.For(x => x.LATEST_DATE).HeaderText("Last Updated").Format("dd-MM-yyyy").Width("25%");
+                                            })
+                                            .Features(features =>
+                                            {
+                                                features.Sorting().Type(OpType.Local);
+                                                features.Filtering().Type(OpType.Local);
+                                                features.RowSelectors().EnableCheckBoxes(true);
+                                                features.Selection().MultipleSelection(true);
+                                                        //features.Selection().Mode(SelectionMode.Row);
+
+
+                                                    })
+                                            .Render())
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-secondary" id="TFS">
+                <div class="card-header">
+                    <header id="labTradeFlowSelection"> Trade Flow Selection</header>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="form-group">
+                        <form id="TradeFlowForm">
+                            <div class="form-row">
+                                <div class="form-group col-md-3">
+                                    <label class="radio-inline RadioButtonText" onclick="pipelinebuilder.ImportsOnly()">
+                                        <input type="radio" id="rdImportsOnly" name="radioName" value="SelectImportsOnly">&nbsp Select Imports Only
+                                    </label>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label class="radio-inline RadioButtonText" onclick="pipelinebuilder.ExportsOnly()">
+                                        <input type="radio" id="rdExportsOnly" name="radioName" value="SelectExportsOnly">&nbsp Select Exports Only
+                                    </label>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="radio-inline RadioButtonText" onclick="pipelinebuilder.ExportsImports()">
+                                        <input type="radio" id="rdExportsImports" name="radioName" value="SelectBothImportsandExports">&nbsp Select Both Imports and Exports
+                                    </label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-secondary" id="SCS">
+                <div class="card-header">
+                    <header id="labMarketCountries"> Market Countries </header>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="form-group">
+                        <form id="MarketForm">
+                            <div class="form-row">
+                                <div class="form-group col-md-3">
+                                    <label class="radio-inline RadioButtonText" onclick="pipelinebuilder.GroupMarket()">
+                                        <input type="radio" id="rdMarketGroup" name="radioName" value="GroupCountriesTogether">&nbsp Group Countries Together
+                                    </label>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="radio-inline RadioButtonText" onclick="pipelinebuilder.SeperateMarket()">
+                                        <input type="radio" id="rdMarketSep" name="radioName" value="ViewCountriesSeparately">&nbsp View Countries Separately
+                                    </label>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    @*<button type="button" id="regionEqualButton" onclick="EqualTo()" class="btn btn-default btn-block navbar-btn StandardFormButton StandardFormButton highlightColor">Regions equal to</button>*@
+                                    <div class="RegionSelectorCombo">
+                                        @(Html.Infragistics().Combo()
+                                                        .ID("MarketCountrySelector")
+                                                        .Width("92%")
+                                                        .DataSource(Model.MarketRegions)
+                                                        .ValueKey("_id")
+                                                        .TextKey("Name")
+                                                        .DataBind()
+                                                        .Render()
+                                        )
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+
+                        <div class="card-body">
+                            @(Html.Infragistics().Grid(Model.MarketCountries.AsQueryable())
+                                                        .ID("MarketCountries")
+                                                        .Width("100%")
+                                                        .Height("300px")
+                                                        .DataBind()
+                                                        .PrimaryKey("GEO_CODE")
+                                                                .AutoGenerateColumns(false)
+                                                                .AutoGenerateLayouts(false)
+                                                                .Columns(column =>
+                                                        {
+                                                            column.For(x => x.GEO_CODE).HeaderText("Code").Width("10%");
+                                                            column.For(x => x.NAME).HeaderText("Name").Width("75%");
+                                                                        //column.For(x => x.START_DATE).HeaderText("Last Upaded").Format("dd-MM-yyyy").Width("25%");
+
+                                                                    })
+                                                        .Features(features =>
+                                                        {
+                                                            features.Sorting().Type(OpType.Local);
+                                                            features.Filtering().Type(OpType.Local);
+                                                            features.RowSelectors().EnableCheckBoxes(true);
+                                                            features.Selection().MultipleSelection(true);
+                                                        })
+                                                        .Render())
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-secondary" id="PORT">
+                <div class="card-header">
+                    <header id="labPorts"> Ports </header>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="form-group">
+                        <form id="PortForm">
+                            <div class="form-row">
+                                <div class="form-group col-md-3">
+                                    <label class="radio-inline RadioButtonText" onclick="pipelinebuilder.GroupPorts()">
+                                        <input type="checkbox" id="cbPort" name="" value="UsePorts">&nbsp Use Ports in Query
+                                    </label>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label class="radio-inline RadioButtonText" onclick="pipelinebuilder.GroupPorts()">
+                                        <input type="radio" id="rdPortGroup" name="radioName" value="GroupPortsTogether">&nbsp Group Ports Together
+                                    </label>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="radio-inline RadioButtonText" onclick="pipelinebuilder.SeperatePorts()">
+                                        <input type="radio" id="rdPortSep" name="radioName" value="ViewPortsSeparately">&nbsp View Ports Separately
+                                    </label>
+                                </div>
+
+                            </div>
+                        </form>
+
+
+
+                        <div class="card-body">
+                            @(Html.Infragistics().Grid(Model.Ports.AsQueryable())
+                                                    .ID("Ports")
+                                                    .Width("100%")
+                                                    .Height("300px")
+                                                    .DataBind()
+                                                    .PrimaryKey("PortID")
+                                                            .AutoGenerateColumns(false)
+                                                            .AutoGenerateLayouts(false)
+                                                            .Columns(column =>
+                                                            {
+                                                                column.For(x => x.PortID).HeaderText("ID").Width("10%");
+                                                                column.For(x => x.GeoCode).HeaderText("Geo Code").Width("10%");
+                                                                column.For(x => x.Name).HeaderText("Name").Width("60%");
+
+
+                                                            })
+                                                    .Features(features =>
+                                                    {
+                                                        features.Sorting().Type(OpType.Local);
+                                                        features.Filtering().Type(OpType.Local);
+                                                        features.RowSelectors().EnableCheckBoxes(true);
+                                                        features.Selection().MultipleSelection(true);
+                                                    })
+                                                    .Render())
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="card card-secondary" id="PLS">
+                <div class="card-header">
+                    <header id="labProductLevel"> Product Level Selection</header>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="form-group">
+                        <form id="ProductTypeForm">
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label class="radio-inline RadioButtonText" onclick="pipelinebuilder.BroadProduct()">
+                                        <input type="radio" id="rdBroadProduct" name="radioName" value="Broad">&nbsp Broad Product
+                                    </label>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label class="radio-inline RadioButtonText" onclick="pipelinebuilder.MedumProduct()">
+                                        <input type="radio" id="rdMedumProduct" name="radioName" value="Medum">&nbsp Medium Level Product Detail (2 Digits)
+                                    </label>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label class="radio-inline RadioButtonText" onclick="pipelinebuilder.HighProduct()">
+                                        <input type="radio" id="rdHighLevelProduct" name="radioName" value="High">&nbsp High Level Product Detail
+                                    </label>
+                                </div>
+
+                                <div class="form-group col-md-4">
+                                    <label class="radio-inline RadioButtonText" onclick="pipelinebuilder.LongProduct()">
+                                        <input type="radio" id="rdLongProduct" name="radioName" value="Long">&nbsp Full Product Detail
+                                    </label>
+                                </div>
+
+                                <div class="form-group col-md-4">
+                                    <label class="radio-inline RadioButtonText" onclick="pipelinebuilder.CustomProduct()">
+                                        <input type="radio" id="rdUserProduct" name="radioName" value="Custom">&nbsp Custom Filters
+                                    </label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-secondary" id="SPS">
+                <div class="card-header">
+                    <header id="labSpecificProduct"> Specific Product Selection</header>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-widget="collapse">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="form-group">
+                        <form id="ProductForm">
+                            <div class="form-row">
+                                <div class="form-group col-md-3">
+                                    <label class="radio-inline RadioButtonText" onclick="pipelinebuilder.ProductsTogether()">
+                                        <input type="radio" id="rdProductsTogether" name="radioName" value="GroupProductTogether">&nbsp Group Products Together
+                                    </label>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <label class="radio-inline RadioButtonText" onclick="pipelinebuilder.ProductsSeparately()">
+                                        <input type="radio" id="rdProductsSeparately" name="radioName" value="ViewProductsSeparately">&nbsp View Products Separately
+                                    </label>
+                                </div>
+
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="card-body">
+                        @(Html.Infragistics().Tree()
+                                            .ID("broadtree")
+                                            .Width("100%")
+                                            .Height("280px")
+                                            .DataSource(@ViewData["BroadTreeData"])
+                                            .CheckboxMode(CheckboxMode.TriState)
+                                            .SingleBranchExpand(true)
+                                            .DragAndDrop(false)
+                                            .DragAndDropSettings(d =>
+                                            {
+                                                d.DragAndDropMode(DragAndDropMode.Move);
+                                                        //d.Revert(true);
+                                                        d.CustomDropValidation("customDropValidation");
+                                            })
+                                            .PathSeparator('.')
+                                            .Bindings(b =>
+                                            b.PrimaryKey("Idx")
+                                            .TextKey("Name")
+                                            .ValueKey("Name")
+                                            .ChildDataProperty("Items")
+                                            .Bindings(b2 =>
+                                            b2.TextKey("Description")
+                                            .ValueKey("Idx")
+                                            )
+                                    )
+                                    .DataBind()
+                                    .Render()
+                        )
+                        @(Html.Infragistics().Tree()
+                                        .ID("medumtree")
+                                        .Width("100%")
+                                        .Height("280px")
+                                        .DataSource(@ViewData["MedumTreeData"])
+                                        .CheckboxMode(CheckboxMode.TriState)
+                                        .SingleBranchExpand(true)
+                                        .DragAndDrop(false)
+                                        .DragAndDropSettings(d =>
+                                        {
+                                            d.DragAndDropMode(DragAndDropMode.Move);
+                                                    //d.Revert(true);
+                                            d.CustomDropValidation("customDropValidation");
+                                        })
+                                        .PathSeparator('.')
+
+                                        .Bindings(b =>
+                                        b.PrimaryKey("Idx")
+                                        .TextKey("Name")
+                                        .ValueKey("Name")
+                                        .ChildDataProperty("Items")
+                                        .Bindings(b2 =>
+                                        b2.TextKey("Description")
+                                        .ValueKey("Idx")
+                                        )
+                                )
+
+                                .DataBind()
+                                .Render()
+                         )
+                        <div id="HighTreeDiv">
+                            @(Html.Infragistics().Grid(Model.HighTree.AsQueryable())
+                                    .ID("HighTree")
+                                    .Width("100%")
+                                    .Height("300px")
+                                    .DataBind()
+                                    .PrimaryKey("TariffCode")
+                                            .AutoGenerateColumns(false)
+                                            .AutoGenerateLayouts(false)
+                                            .Columns(column =>
+                                            {
+                                                column.For(x => x.TariffCode).HeaderText("Tariff").Width("20%");
+                                                column.For(x => x.Description).HeaderText("Description").Width("80%");
+                                               // column.For(x => x.Name).HeaderText("Name").Width("60%");
+                                            })
+                                    .Features(features =>
+                                    {
+                                        features.Sorting().Type(OpType.Local);
+                                        features.Filtering().Type(OpType.Local);
+                                        features.RowSelectors().EnableCheckBoxes(true);
+                                        features.Selection().MultipleSelection(true);
+                                    })
+                                    .Render())
+                        </div>
+                        <div id="LongTreeDiv">
+
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <form id="ProductFormLong">
+                                        <div class="form-row">
+                                            <div class="form-group col-md-6">
+                                                <div class="RegionSelectorCombo">
+                                                    @(Html.Infragistics().Combo()
+                                                                            .ID("TariffIndexSelector")
+                                                                            .DataSource(@ViewData["TariffIndex"])
+                                                                            .Width("50%")
+                                                                            .ValueKey("Code")
+                                                                            .TextKey("Description")
+                                                                            .DataBind()
+                                                                            .Render()
+                                                    )
+                                                </div>
+
+                                                <button id="selectAllBtn" class="btn btn-outline-primary btn-sm">Select All</button>
+
+                                            </div>
+                                            <div class="form-group col-md-6">
+                                                <div class="2DigitSelectorCombo">
+                                                    @(Html.Infragistics().Combo()
+                                                                    .ID("Tariff2DigitIndexSelector")
+                                                                    .DataSource(@ViewData["Tariff2DigitIndex"])
+                                                                    .Width("60%")
+                                                                    .ValueKey("Code")
+                                                                    .TextKey("Description")
+                                                                    .DataBind()
+                                                                    .Render()
+                                                    )
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <table id="LongTree"></table>
+
+                            </div>
+                        </div>
+
+                        <div id="CustomTreeDiv">
+
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <form id="ProductFormCustom">
+                                        <div class="form-row">
+
+                                            @(Html.Infragistics().Grid(Model.CustomTariff.AsQueryable())
+                                                .ID("CustomGrid")
+                                                .Width("100%")
+                                                .Height("300px")
+                                                .DataBind()
+                                                .PrimaryKey("_id")
+                                                        .AutoGenerateColumns(false)
+                                                        .AutoGenerateLayouts(false)
+                                                        .Columns(column =>
+                                                        {
+                                                            column.For(x => x._id).HeaderText("Id").Width("20%").Hidden(true);
+                                                            column.For(x => x.SortOrder).HeaderText("Sort").Width("5%");
+                                                            column.For(x => x.Name).HeaderText("Name").Width("80%");
+                                                            // column.For(x => x.Name).HeaderText("Name").Width("60%");
+                                                        })
+                                                .Features(features =>
+                                                {
+                                                    features.Sorting().Type(OpType.Local);
+                                                    features.Filtering().Type(OpType.Local);
+                                                    features.RowSelectors().EnableCheckBoxes(true);
+                                                    features.Selection().MultipleSelection(true);
+                                                })
+                                    .Render())
+                                        </div>
+                                    </form>
+                                </div>
+
+
+                                <table id="CustomTree"></table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-secondary" id="TPS">
+                    <div class="card-header">
+                        <header id="labTimePeriod"> Time Period Selection</header>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label class="radio-inline RadioButtonText">
+                                    <input type="checkbox" id="cbGroupByMonth">&nbsp Group By Month
+                                </label>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label class="radio-inline RadioButtonText">
+                                    <input type="checkbox" id="cbGroupByQuarter">&nbsp Group By Quarter
+                                </label>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label class="radio-inline RadioButtonText">
+                                    <input type="checkbox" id="cbGroupByYear"> &nbsp Group By Year
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <p style=" font-size: large">Select Months</p>
+                                @*<div id="cbMonths"></div>*@
+                                <div class="btn-group" role="group" aria-label="Qselection">
+                                    <button type="button" class="btn btn-default" onclick="pipelinebuilder.SetQ1()">Q1</button>
+                                    <button type="button" class="btn btn-default" onclick="pipelinebuilder.SetQ2()">Q2</button>
+                                    <button type="button" class="btn btn-default" onclick="pipelinebuilder.SetQ3()">Q3</button>
+                                    <button type="button" class="btn btn-default" onclick="pipelinebuilder.SetQ4()">Q4</button>
+                                    <button type="button" class="btn btn-default" onclick="pipelinebuilder.SetAll()">All</button>
+                                    <button type="button" class="btn btn-default" onclick="pipelinebuilder.ClearAll()">Clear All</button>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group span3 offset2">
+                                <p style=" font-size: large">Selected Years and Months</p>
+                                <div>
+                                    @(Html.Infragistics().Grid(Model.YearTable.AsQueryable())
+                                            .ID("YearTable")
+                                            .Width("100%")
+                                            //.Height("auto")
+                                            .RenderCheckboxes(true)
+                                            .DataBind()
+                                            .PrimaryKey("Id")
+                                            .AutoGenerateColumns(false)
+                                            .AutoGenerateLayouts(false)
+                                            .Columns(column =>
+                                            {
+                                                column.For(x => x.Id).HeaderText("Id").Width("20%").Hidden(true);
+                                                column.For(x => x.Year).HeaderText("Year").Width("20%");
+                                                column.For(x => x.January)
+                                                                .HeaderText("Jan")
+                                                                .Width("10%")
+                                                                .DataType("bool")
+                                                                .Format("checkbox")
+                                                                .Template("<input type='checkbox' />");
+
+                                                column.For(x => x.February).HeaderText("Feb")
+                                                                .Width("10%").DataType("bool").Format("checkbox").Template("<input type='checkbox' />");
+                                                column.For(x => x.March).HeaderText("Mar")
+                                                                .Width("10%").DataType("bool").Format("checkbox").Template("<input type='checkbox' />");
+                                                column.For(x => x.April).HeaderText("Apr")
+                                                                .Width("10%").DataType("bool").Format("checkbox").Template("<input type='checkbox' />");
+                                                column.For(x => x.May).HeaderText("May")
+                                                                .Width("10%").DataType("bool").Format("checkbox").Template("<input type='checkbox' />");
+                                                column.For(x => x.June).HeaderText("Jun")
+                                                                .Width("10%").DataType("bool").Format("checkbox").Template("<input type='checkbox' />");
+                                                column.For(x => x.July).HeaderText("Jul")
+                                                                .Width("10%").DataType("bool").Format("checkbox").Template("<input type='checkbox' />");
+                                                column.For(x => x.August).HeaderText("Aug")
+                                                                .Width("10%").DataType("bool").Format("checkbox").Template("<input type='checkbox' />");
+                                                column.For(x => x.September).HeaderText("Sep")
+                                                                .Width("10%").DataType("bool").Format("checkbox").Template("<input type='checkbox' />");
+                                                column.For(x => x.October).HeaderText("Oct")
+                                                                .Width("10%").DataType("bool").Format("checkbox").Template("<input type='checkbox' />");
+                                                column.For(x => x.November).HeaderText("Nov")
+                                                                .Width("10%").DataType("bool").Format("checkbox").Template("<input type='checkbox' />");
+                                                column.For(x => x.December).HeaderText("Dec")
+                                                                .Width("10%").DataType("bool").Format("checkbox").Template("<input type='checkbox' />");
+
+                                            })
+                                            .Features(features =>
+                                            {
+
+                                                //features.Sorting().Type(OpType.Local);
+                                                // features.Filtering().Type(OpType.Local);
+                                                // features.Updating();
+                                                features.RowSelectors().EnableCheckBoxes(true);
+                                                features.Selection().MultipleSelection(true);
+                                            })
+                                            //.AutoCommit(true)
+                                            .Render())
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <div class="card card-secondary" id="VS">
+                    <div class="card-header">
+                        <header id="labTonnesAndValues"> Tonnes and Values</header>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="form-group">
+                            <form id="ValuesForm">
+                                <div class="form-row">
+                                    <div class="form-group col-md-4">
+                                        <label class="radio-inline RadioButtonText" onclick="pipelinebuilder.TonnesOnly()">
+                                            <input type="radio" id="rdTonnes" name="radioName" value="SelectTonnesOnly">&nbsp Select Tonnes Only
+                                        </label>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label class="radio-inline RadioButtonText" onclick="pipelinebuilder.TonnesValues()">
+                                            <input type="radio" id="rdTonnesValues" name="radioName" value="SelectBothTonnesandValues">&nbsp Select Both Tonnes and Values
+                                        </label>
+                                    </div>
+
+                                    <div class="RegionSelectorCombo">
+                                        @(Html.Infragistics().Combo()
+                                                    .ID("CurrencySelection")
+                                                    .DataSource(Model.CurrencyUsed)
+                                                    .Width("92%")
+                                                    .ValueKey("Code")
+                                                    .TextKey("Description")
+                                                    .DataBind()
+                                                    .Render()
+                                             )
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!--<button id="runBtn" class="btn btn-outline-primary btn-sm" onclick="pipelinebuilder.RunQuery()">Run Query</button>-->
+                        <a href="#SQ" id="storeBtn" class="btn btn-outline-primary btn-sm" onclick="pipelinebuilder.SaveQueryForLater()"> Save Query for Later</button></a>
+                        <div id="error_message" style=" color: red;font-weight: bold"></div>
+
+                    </div>
+                </div>
+
+
+                <div class="card card-secondary" id="SQ">
+                    <div class="card-header">
+                        <header> Save Query</header>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-widget="collapse">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <form class="form-horizontal" id="saveQform">
+                            <div class="form-row">
+                                <div class="form-group col-sm-2">
+                                    <label class="control-label ">Name:</label>
+                                </div>
+                                <div class="form-group col-sm-10">
+                                    <input id="name" type="text" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-sm-2">
+                                    <label class="control-label">Description:</label>
+                                </div>
+                                <div class="form-group col-sm-10">
+                                    <input id="description" type="text" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-sm-2">
+                                    <label class="control-label">Comments:</label>
+                                </div>
+                                <div class="form-group col-sm-10">
+                                    <textarea id="comments" type="text" class="form-control"></textarea>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-3">
+
+                                    <label id="lblVisitorMainPage"><input type="checkbox" id="cbVisitorMainPage" name="" value="">&nbsp Save to site Main Page</label>
+
+                                </div>
+                                <div class="form-group col-md-3">
+
+                                    <input type="checkbox" id="cbSaveToDashboard" name="" value="">&nbsp Save to my Dashboard
+
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-3">
+
+                                    <label id="lbShedule"><input type="checkbox" id="cbSchedule" name="" value="">&nbsp Run in Schedule</label>
+
+                                </div>
+                                <div id="sheduleGroup" class="form-group col-md-3">
+                                    <label id="lbShedule">Run Day</label>
+                                    <div class="RegionSelectorCombo">
+                                        @(Html.Infragistics().Combo()
+                                                    .ID("DaySelection")
+                                                    .DataSource(Model.SheduleDays)
+                                                    .Width("50%")
+                                                    .ValueKey("Code")
+                                                    .TextKey("Day")
+                                                    .DataBind()
+                                                    .Render()
+                                             )
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </form>
+                        <button id="storeSaveBtn" class="btn btn-outline-primary btn-sm" onclick="pipelinebuilder.SaveQuery()">Save Query</button>
+                        <button id="reset" type="reset" class="btn btn-outline-primary btn-sm" onclick="pipelinebuilder.Reset()">Clear</button>
+
+                        <div id="error_message_save" style="color: red; font-weight: bold"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <br />
+        <br />
+        <script>$("#cbGroupByMonth").click(function () {
+                $("#cbGroupByYear").prop("checked", true);
+            });
+
+            $("#cbGroupByQuarter").click(function () {
+                $("#cbGroupByYear").prop("checked", true);
+            });</script>
+    </div>
+</body>
+</html>

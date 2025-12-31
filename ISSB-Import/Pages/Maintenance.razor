@@ -1,0 +1,376 @@
+﻿@page "/Maintenance"
+@using Services
+@using Data.Models
+@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Notifications
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.Spinner
+@using Syncfusion.Blazor.Cards
+
+<h3>Maintenance</h3>
+@if (!IsLocked)
+{
+    <SfTab>
+        <TabItems>
+            <TabItem>
+                <ChildContent>
+                    <TabHeader Text="Chapters">
+                    </TabHeader>
+                </ChildContent>
+                <ContentTemplate>
+                    <SfGrid @ref="GridChapter"
+                            DataSource="chapterList"
+                            Toolbar="@toolBarChapter"
+                            TValue="ChaptersModel"
+                            AllowPaging="false"
+                            AllowSorting="true"
+                            AllowFiltering="true"
+                            AllowExcelExport="true"
+                            AllowPdfExport="true"
+                            AllowSelection="true"
+                            Height="450"
+                            Width="95%">
+                        <GridEditSettings Mode="EditMode.Normal" AllowDeleting="true" AllowAdding="true" AllowEditing="true"></GridEditSettings>
+                        <GridPageSettings PageCount="10" PageSize="15"></GridPageSettings>
+                        <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Excel"></GridFilterSettings>
+
+                        <GridEvents OnActionBegin="ActionBeginChapterHandler" OnToolbarClick="ToolbarClickChapterHandler" TValue="ChaptersModel"></GridEvents>
+                        <GridColumns>
+
+                            <GridColumn Field=@nameof(ChaptersModel._id) HeaderText="_id" IsPrimaryKey="true" Visible="false" TextAlign="TextAlign.Left" AutoFit="true" Width="120"></GridColumn>
+                            <GridColumn Field=@nameof(ChaptersModel.Code) HeaderText="Code" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="true" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(ChaptersModel.Description) HeaderText="Description" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="true" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+
+                        </GridColumns>
+                    </SfGrid>
+                </ContentTemplate>
+            </TabItem>
+            <TabItem>
+
+                <ChildContent>
+                    <TabHeader Text="Countries">
+                    </TabHeader>
+                </ChildContent>
+                <ContentTemplate>
+
+                    <SfGrid @ref="GridCountries"
+                            DataSource="countryList"
+                            Toolbar="@toolBarCountry"
+                            TValue="EuroImportModel"
+                            AllowPaging="true"
+                            AllowSorting="true"
+                            AllowFiltering="true"
+                            AllowExcelExport="true"
+                            AllowPdfExport="true"
+                            AllowSelection="true"
+                            Height="450"
+                            Width="90%">
+                        <GridEditSettings Mode="EditMode.Normal" AllowDeleting="true" AllowAdding="true" AllowEditing="true"></GridEditSettings>
+                        <GridPageSettings PageCount="10" PageSize="15"></GridPageSettings>
+                        <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Excel"></GridFilterSettings>
+                        <GridEvents OnActionBegin="ActionBeginCountryHandler" OnToolbarClick="ToolbarClickCountyHandler" TValue="EuroImportModel"></GridEvents>
+
+                        @*<GridEvents DataBound="OnChapterDataBound" RowSelected="GetSelectedChapterRecords" TValue="ChaptersModel"></GridEvents>*@
+                        <GridColumns>
+
+                            <GridColumn Field=@nameof(EuroImportModel._id) HeaderText="_id" IsPrimaryKey="true" Visible="false" TextAlign="TextAlign.Left" AutoFit="true" Width="120"></GridColumn>
+                            <GridColumn Field=@nameof(EuroImportModel.Code) HeaderText="Code" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="true" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(EuroImportModel.GeoCode) HeaderText="Geo Code" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="true" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(EuroImportModel.Legend) HeaderText="Name" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="true" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(EuroImportModel.IsEuro) HeaderText="Is Euro" TextAlign="TextAlign.Center" AutoFit="true" AllowEditing="true" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(EuroImportModel.NotAllowed) HeaderText="Excluded" TextAlign="TextAlign.Center" AutoFit="true" AllowEditing="true" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+
+                        </GridColumns>
+
+                    </SfGrid>
+                </ContentTemplate>
+
+
+            </TabItem>
+            <TabItem>
+
+                <ChildContent>
+                    <TabHeader Text="Tariff">
+                    </TabHeader>
+                </ChildContent>
+                <ContentTemplate>
+
+                    <SfGrid @ref="GridTariff"
+                            DataSource="importTariffModels"
+                            Toolbar="@toolBarTariff"
+                            TValue="EUImportTariffModel"
+                            AllowPaging="true"
+                            AllowSorting="true"
+                            AllowFiltering="true"
+                            AllowExcelExport="true"
+                            AllowPdfExport="true"
+                            AllowSelection="true"
+                            Height="450"
+                            Width="90%">
+                        <GridEditSettings Mode="EditMode.Normal" AllowDeleting="true" AllowAdding="true" AllowEditing="true"></GridEditSettings>
+                        <GridPageSettings PageCount="10" PageSize="15"></GridPageSettings>
+                        <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Excel"></GridFilterSettings>
+                        <GridEvents OnActionBegin="ActionBeginTariffHandler" OnToolbarClick="ToolbarClickTariffHandler" TValue="EUImportTariffModel"></GridEvents>
+
+                        @*<GridEvents DataBound="OnChapterDataBound" RowSelected="GetSelectedChapterRecords" TValue="ChaptersModel"></GridEvents>*@
+                        <GridColumns>
+
+                            <GridColumn Field=@nameof(EUImportTariffModel._id) HeaderText="_id" IsPrimaryKey="true" Visible="false" TextAlign="TextAlign.Left" AutoFit="true" Width="120"></GridColumn>
+                            <GridColumn Field=@nameof(EUImportTariffModel.Harmonised) HeaderText="Harmonised" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="true" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(EUImportTariffModel.TariffCode) HeaderText="Tariff Code" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="true" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(EUImportTariffModel.EightDigit) HeaderText="Eight Digit" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="true" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(EUImportTariffModel.Description) HeaderText="Description" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="true" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(EUImportTariffModel.NotAllowed) HeaderText="Excluded" TextAlign="TextAlign.Center" AutoFit="true" AllowEditing="true" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+
+                        </GridColumns>
+
+                    </SfGrid>
+                </ContentTemplate>
+
+
+            </TabItem>
+            @*<TabItem>
+
+                <ChildContent>
+                    <TabHeader Text="Remove Batch">
+                    </TabHeader>
+                </ChildContent>
+                <ContentTemplate>
+                    <div class="row">
+                        <div class="column">
+                            <div class="form-row">
+                                <SfCard Title="Batch">
+                                    <CardHeader Title="Batch Details (Only use this with extream caution!)">
+                                    </CardHeader>
+                                    <CardContent>
+                                        <SfNumericTextBox ID="InvoiceNo" Placeholder="Batch Number" @bind-Value="@(BatchNumber)" Enabled="true" FloatLabelType="FloatLabelType.Always" Width="200px"></SfNumericTextBox>
+                                    </CardContent>
+                                    <CardFooter>
+                                        <CardFooterContent>
+                                            <SfButton CssClass="e-btn e-outline e-primary" Disabled="IsLoading" OnClick="@DeleteBatch">Delete Batch</SfButton>
+                                          
+                                        </CardFooterContent>
+                                    </CardFooter>
+                                </SfCard>
+                            </div>
+                        </div>
+                    </div>
+                </ContentTemplate>
+            </TabItem>*@
+        </TabItems>
+    </SfTab>
+}
+else
+{
+    <h5 style="color:Red">System is Processing, try again later.</h5>
+}
+@code {
+
+    SfGrid<ChaptersModel> GridChapter;
+    SfGrid<EuroImportModel> GridCountries;
+    SfGrid<EUImportTariffModel> GridTariff;
+
+    public long BatchNumber { get; set; } = 0;
+
+    private List<object> toolBarCountry = new List<object> { "Add", "Edit", "Update", "Delete", "Search", "ExcelExport" };
+    private List<object> toolBarChapter = new List<object> { "Add", "Edit", "Update", "Delete", "Search", "ExcelExport" };
+    private List<object> toolBarTariff = new List<object> { "Add", "Edit", "Update", "Delete", "Search", "ExcelExport" };
+
+    bool IsLoading { get; set; }
+    bool IsLocked { get; set; }
+    public List<EuroImportModel> countryList { get; set; } = new List<EuroImportModel>();
+    public List<ChaptersModel> chapterList { get; set; } = new List<ChaptersModel>();
+    List<EUImportTariffModel> importTariffModels { get; set; } = new List<EUImportTariffModel>();
+
+    async Task DeleteBatch()
+    {
+        if (BatchNumber == 0)
+            return;
+
+        IsLoading = true;
+        var tDataSrv = new TradeDataService();
+        await tDataSrv.DeleteBatch((int)BatchNumber);
+        IsLoading = false;
+    }
+
+    public async Task ToolbarClickCountyHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
+    {
+
+        if (args.Item.Text == "Excel Export") //Id is combination of Grid's ID and itemname
+        {
+            await GridCountries.ExportToExcelAsync();
+        }
+    }
+
+    public async Task ToolbarClickChapterHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
+    {
+
+        if (args.Item.Text == "Excel Export") //Id is combination of Grid's ID and itemname
+        {
+            await GridChapter.ExportToExcelAsync();
+        }
+    }
+
+    public async Task ToolbarClickTariffHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
+    {
+
+        if (args.Item.Text == "Excel Export") //Id is combination of Grid's ID and itemname
+        {
+            await GridTariff.ExportToExcelAsync();
+        }
+    }
+
+    public async void ActionBeginCountryHandler(ActionEventArgs<EuroImportModel> args)
+    {
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.BeginEdit))
+        {
+
+            await InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+        }
+
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Add))
+        {
+
+            await InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+        }
+
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save))
+        {
+            if (args.Action == "Add")
+            {
+                var flSrv = new ImportService();
+                await flSrv.AddCountry(args.Data);
+            }
+
+            if (args.Action == "Edit")
+            {
+                var flSrv = new ImportService();
+                await flSrv.UpdateCountry(args.Data);
+            }
+        }
+
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
+        {
+            var flSrv = new ImportService();
+            await flSrv.DeleteCountry(args.Data);
+        }
+    }
+
+    public async void ActionBeginChapterHandler(ActionEventArgs<ChaptersModel> args)
+    {
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.BeginEdit))
+        {
+
+            await InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+        }
+
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Add))
+        {
+
+            await InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+        }
+
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save))
+        {
+            if (args.Action == "Add")
+            {
+                var flSrv = new ImportService();
+                await flSrv.AddChapter(args.Data);
+            }
+
+            if (args.Action == "Edit")
+            {
+                var flSrv = new ImportService();
+                await flSrv.UpdateChapter(args.Data);
+            }
+        }
+
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
+        {
+            var flSrv = new ImportService();
+            await flSrv.DeleteChapter(args.Data);
+        }
+    }
+
+    public async void ActionBeginTariffHandler(ActionEventArgs<EUImportTariffModel> args)
+    {
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.BeginEdit))
+        {
+
+            await InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+        }
+
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Add))
+        {
+            await InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+        }
+
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save))
+        {
+            if (args.Action == "Add")
+            {
+                var flSrv = new ImportService();
+                await flSrv.AddTariff(args.Data);
+            }
+
+            if (args.Action == "Edit")
+            {
+                var flSrv = new ImportService();
+                await flSrv.UpdateTariff(args.Data);
+            }
+        }
+
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
+        {
+            var flSrv = new ImportService();
+            await flSrv.DeleteTariff(args.Data);
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var stSrv = SystemLockService.Instance;
+            var sModel = await stSrv.GetLockStatus();
+            IsLocked = sModel.IsProcessing;
+            IsLoading = true;
+            var flSrv = new ImportService();
+            countryList = await flSrv.GetEuroCoutries();
+            chapterList = await flSrv.GetChapters();
+            importTariffModels = await flSrv.GetAllTariffCodes();
+            IsLoading = false;
+            await InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+        }
+
+        //return base.OnAfterRenderAsync(firstRender);
+    }
+}
+

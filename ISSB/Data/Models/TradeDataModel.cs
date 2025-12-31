@@ -1,0 +1,16 @@
+﻿
+using System.Collections.Generic;
+
+namespace Data.Models
+{
+    public class TradeDataModel
+    {
+        public string _id { get; set; }
+        public int ID { get; set; }        public int TIME_ID { get; set; }        public int BATCH_NO { get; set; }        public string SC_GEO { get; set; }        public string MC_GEO { get; set; }        public string IMPORT_TARIFF { get; set; }        public string H_TARIFF { get; set; }        public string SIDE_OF_TRADE { get; set; }        public int PORT_ID { get; set; }        public double WEIGHT { get; set; }        public double MONETARY_VALUE { get; set; }        public double YTD_WEIGHT { get; set; }        public double YTD_MONETARY_VALUE { get; set; }        public string ESTIMATED { get; set; }        public string COO_GEO_CODE { get; set; }        public string CWC_GEO_CODE { get; set; }        public string IMP_UNIT { get; set; }        public int IMP_QTY { get; set; }        public double IMP_VALUE { get; set; }        public double MTH_EUR { get; set; }        public double YTD_EUR { get; set; }        public double MTH_USD { get; set; }        public double YTD_USD { get; set; }        public string CUSTOMS_DISTRICT { get; set; }        public string TRADER_LOCATION { get; set; }        public string TRANSPORT_MODE { get; set; }        public string STATE { get; set; }        public string SITC { get; set; }        public string ECONOMIC_CATEGORY { get; set; }        public string ANZSIC { get; set; }        public double CUSTOMS_VALUE { get; set; }        public double FOB { get; set; }        public int PORT_OF_DISCHARGE { get; set; }        public int PORT_OF_LANDING { get; set; }        public int PORT_OF_LOADING { get; set; }        public string NZ_PORT { get; set; }        public string APPENDED { get; set; }        public int SOURCE_COUNTRY_ID { get; set; }        public int MARKET_COUNTRY_ID { get; set; }        public int TARIFF_ID { get; set; }        public int YEAR { get; set; }        public int QUARTER { get; set; }        public int MONTH { get; set; }
+    }
+
+    public class TradeDataJsonModel
+    {
+        public List<TradeDataModel> TradeData { get; set; }
+    }
+}

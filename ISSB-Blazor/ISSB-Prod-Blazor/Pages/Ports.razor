@@ -1,0 +1,607 @@
+@page "/Ports"
+@inject PortsService PortsService
+<style>
+
+    .page-title-ports{
+        font-family: 'Assistant-SemiBold', sans-serif;
+        /*color: #a89f9f!important;*/
+        color: #34568B !important;
+        font-size: 15px;
+        font-weight: bolder;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        /*font-style:italic;*/
+        margin-top:20px;
+        margin-left:10px;
+    }
+
+    .selected-name-ports{
+        font-family: 'Assistant-SemiBold', sans-serif;
+        color: #34568B !important;
+        font-size: 15px;
+        font-weight: bolder;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        /*font-style:italic;*/
+        /*margin-top:20px;*/
+        margin-left:10px;
+        text-decoration: underline;
+        text-decoration-style: solid;
+        text-decoration-thickness: 3px;
+        text-underline-offset: 8px
+    }
+    
+    .btn-79,
+    .btn-79 *,
+    .btn-79 :after,
+    .btn-79 :before,
+    .btn-79:after,
+    .btn-79:before {
+        border: 0 solid;
+        box-sizing: border-box;
+    }
+    .btn-79.e-btn:focus,
+    .btn-79.e-btn:active {
+        border: none !important;
+        box-shadow: none !important;
+    }
+
+
+    .btn-79 .e-btn :hover{
+        /*color: #385273 !important;*/
+        color: #a89f9f!important;
+    }
+
+    .btn-79 {
+        -webkit-tap-highlight-color: transparent;
+        -webkit-appearance: button;
+        background-color: #FFFFFF !important;
+        background-image: none;
+        /*color: #079CAC!important;*/
+        color: #a89f9f!important;
+        cursor: pointer;
+        font-family: 'Assistant-Regular', sans-serif;
+        font-size: 100%;
+        font-weight: 900;
+        line-height: 1.5;
+        margin: 0;
+        -webkit-mask-image: -webkit-linear-gradient(#6f8fb8, #0dcaf0);
+        padding: 0;
+    }
+    .btn-79:disabled {
+        cursor: default;
+    }
+    .btn-79:-moz-focusring {
+        outline: auto;
+    }
+    .btn-79 svg {
+        display: block;
+        vertical-align: middle;
+    }
+    .btn-79 [hidden] {
+        display: none;
+    }
+    .btn-79 {
+        --height: 60px;
+        background: none;
+        border-radius: 999px;
+        box-sizing: border-box;
+        display: grid;
+        place-items: center;
+        height: var(--height);
+        -webkit-mask-image: none;
+        padding: 0 3rem;
+        position: relative;
+        text-transform: uppercase;
+    }
+    .btn-79  {
+        font-weight: 900;
+        mix-blend-mode: difference!important;
+    }
+
+    .span{
+        z-index:1000 !important;
+    }
+    .btn-79:before {
+        background: #34568b;
+        border-radius: 20px;
+        content: "";
+        height: calc(var(--height) / 1.7);
+        left: 0;
+        pointer-events: none;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        transition: 0.2s;
+        width: calc(var(--height) / 1.7);
+    }
+    .btn-79:hover:before {
+        left: 0;
+        width: 100%;
+    }
+
+    #addBtn{
+        background-color: #34568b;!important;
+        color: white;!important;
+        border-radius: 1px;
+        border: none;
+        font-weight: bolder;
+        font-family: 'Assistant-Regular', sans-serif;
+        padding: 8px;
+        float: right;
+        margin-bottom: 10px;
+        margin-right: 10px;
+        /*box-shadow: rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset;*/
+        box-shadow: rgba(50, 50, 93, 0.2) 0px 40px 80px -20px, rgba(0, 0, 0, 0.25) 0px 20px 50px -30px, rgba(10, 37, 64, 0.3) 0px -2px 4px 0px inset;
+    }
+
+    #addBtn:hover{
+        color: #FFFFFF;
+        font-weight: bolder;
+        /*padding: 10.5px;*/
+        margin-bottom: 10px;
+        background-color: #264c87;
+        /*box-shadow: rgba(50, 50, 93, 0.25) 0px 50px 100px -20px, rgba(0, 0, 0, 0.3) 0px 30px 60px -30px, rgba(10, 37, 64, 0.35) 0px -2px 6px 0px inset;*/
+    }
+
+    #addBtn:active {
+        transform: translateY(2px); /* Makes the element look like it's pressed */
+        box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 4px 0px; /* Reduces shadow for 'pressed' effect */
+    }
+
+    .GridCard{
+        /*padding: 20px;*/
+        margin-top: 40px;
+        margin-right: 8%;
+        /*max-width: 95% !important;*/
+        /*box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;*/
+        /*background-color: rgba(171, 198, 205, 0.2) !important;*/
+        /*border-radius: 10px;*/
+        box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+        z-index: 10000;!important;
+    }
+    .e-grid{
+        font-family: 'Assistant-Regular', sans-serif;!important;
+    }
+
+    .e-icons .e-plus{
+        font-weight: bolder;!important;
+        font-size: 1.2em;!important;
+        text-shadow: 0px 0px 1px black;!important;
+    }
+
+
+    .e-headertext{
+        color: #264c87 !important;
+    }
+
+    /*remove blue border on focused search box*/
+    .e-input-group.e-input-focus:not(.e-success):not(.e-warning):not(.e-error), .e-input-group.e-control-wrapper.e-input-focus:not(.e-success):not(.e-warning):not(.e-error){
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+        border:#F2F2F2!important;
+    }
+
+    .e-input-group:not(.e-disabled):active:not(.e-success):not(.e-warning):not(.e-error), .e-input-group.e-control-wrapper:not(.e-disabled):active:not(.e-success):not(.e-warning):not(.e-error){
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+        border:#F2F2F2!important;
+    }
+    .e-grid .e-focused:not(.e-menu-item){
+        box-shadow: none;!important;
+    }
+    .e-flat:focus{
+        border: none!important;
+        outline: 0 !important;
+        box-shadow: none!important;
+    }
+
+    .e-grid .e-pager{
+        background-color: #f5f7f8;
+    }
+
+    .e-input-group input.e-input, .e-input-group.e-control-wrapper input.e-input .e-focused{
+        border: none!important;
+    }
+
+
+    .e-grid td.e-rowcell.e-focus.e-focused {
+        box-shadow: none !important;
+    }
+
+
+    .e-grid td.e-groupcaption .e-focus.e-focused {
+        box-shadow: none !important;
+    }
+
+
+    .e-grid th.e-headercell.e-focus.e-focused {
+        box-shadow: none !important;
+    }
+
+    /*page arrows next*/
+    .e-pager div.e-icons.e-pager-default{
+        color: #264c87;
+    }
+    /*page arrows previous*/
+    .e-pager.sf-pager .e-pagercontainer .e-prev{
+        color: #264c87;
+    }
+    /*page numbers*/
+    .e-pager.sf-pager .e-numericcontainer a{
+        color: #264c87;
+    }
+    .e-link .e-numericitem .e-spacing .e-currentitem .e-active{
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+        border:#F2F2F2!important;
+    }
+
+    .e-pager .e-currentitem.e-numericitem.e-focused{
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+        background: #FBFBFB;
+    }
+
+    .e-pager .e-currentitem, .e-pager .e-currentitem:hover{
+        border-right-color: #264c87;
+        background: #FBFBFB;
+    }
+
+    .e-pager .e-currentitem {
+        border: 2px solid #264c87;
+    }
+
+    .e-grid .e-focused:not(.e-menu-item):not(.e-editedbachcell){
+        box-shadow: none;
+        border: none;
+    }
+
+    .e-headertext{
+        color: #264c87;
+    }
+
+    .PortsCard{
+        box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 20px, rgba(0, 0, 0, 0.23) 0px 6px 6px;
+        line-height: 30px;
+        font-family: 'Assistant-SemiBold', sans-serif;
+        width: 90%;
+        margin-left: 5%;
+        margin-top: 30px;
+    }
+
+    .save-button {
+        background-color: #fff;
+        color: #34568B;
+        border: 2px solid #34568B;
+        /*border-radius: 999px;*/
+        border-radius: 1px;
+        font-weight: bold;
+        font-family: 'Assistant-Regular', sans-serif;
+        padding: 10px 24px;
+        font-size: 15px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        margin: 5px 0;
+    }
+
+    .save-button:hover {
+        background-color: #34568B;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .save-button:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .label-ports{
+        font-family: 'Assistant-Regular', sans-serif;!important;
+        color: #34568b;
+    }
+    
+</style>
+<PageTitle>Ports</PageTitle>
+<AuthorizeView>
+    <Authorized>
+
+        <SfButton id="BackBtn" @onclick="GoBack" CssClass="btn-79" IconPosition="IconPosition.Left"><bold style="z-index: 1000 !important;">Go Back</bold>
+        </SfButton>
+
+        <label class="selected-name-ports">
+            <strong>@SelectedRow.Name</strong>
+        </label>
+
+        
+        
+        @* <SfButton id="BackBtn" @onclick="GoBack" CssClass="e-custom-back" IconPosition="IconPosition.Left" *@
+        @*           IconCss="e-icons e-chevron-left-double">Back *@
+        @* </SfButton> *@
+        @* <label style="margin-left:10px;font-size:20px;"> *@
+        @*     <strong>@SelectedRow.Name</strong> *@
+        @* </label> *@
+        @* <hr/> *@
+
+        @if (IsLoading)
+        {
+            <SfSkeleton CssClass="skeleton-default" Shape=Syncfusion.Blazor.Notifications.SkeletonType.Rectangle Width="100%"
+                        Height="80vh"></SfSkeleton>
+        }
+        else
+        {
+            @if (!_isEdit)
+            {
+                
+                <div>
+                    <div style="float:left">
+                        <h3 class="page-title-ports">Ports</h3>
+                    </div>
+                    
+                    <div style="float: right">
+                        <SfButton id="addBtn" @onclick="AddUser" IconPosition="IconPosition.Left"
+                                  IconCss="e-icons e-plus" CssClass="e-custom-remove">Add Port
+                        </SfButton>
+ 
+                    </div>
+                </div>
+                
+                <div style="padding-bottom:200px">
+                <SfCard CssClass="GridCard">
+                    <SfGrid ID="Grid"
+                            @ref="Grid"
+                            TValue="PortsModel"
+                            Toolbar="@_toolBar"
+                            DataSource="@_ports"
+                            AllowPaging="true"
+                            AllowSorting="true"
+                            AllowSelection="true"
+                            AllowFiltering="true"
+                            AllowExcelExport="true"
+                            AllowPdfExport="false"
+                            Height="500"
+                            Width="Auto">
+                        <GridPageSettings PageCount="10" PageSize="@_pageSize"></GridPageSettings>
+                        <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Excel"></GridFilterSettings>
+                        <GridEditSettings Mode="EditMode.Normal" AllowEditing="true"></GridEditSettings>
+                        <GridEvents RowSelected="OnRowSelected" PageChanged="PageChangedHandler"
+                                    CommandClicked="OnCommandClicked" OnToolbarClick="DataToolbarClickHandler"
+                                    TValue="PortsModel"></GridEvents>
+                        <GridColumns>
+                            @* <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn> *@
+                            <GridColumn Field=@nameof(PortsModel._id) HeaderText="_id" IsPrimaryKey="true" Visible="false"
+                                        TextAlign="TextAlign.Left"
+                                        Type="ColumnType.String"></GridColumn>
+
+                            <GridColumn TextAlign="TextAlign.Center" Width="3%" >
+                                <Template Context="UserModel">
+                                    @{
+                                        /*<div class="image">
+                                            <img src="@((UserModel as UserModel).ImageURL)" alt="User Image"/>
+                                        </div>*/
+                                    }
+                                </Template>
+                            </GridColumn>
+
+                            @*<GridColumn Field=@nameof(UserModel.ImageURL) HeaderText="" TextAlign="TextAlign.Left" AutoFit="true" Width="100" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>*@
+                            <GridColumn Field=@nameof(PortsModel.PortID) HeaderText="Port ID" TextAlign="TextAlign.Left"
+                                        Width="20%" AllowEditing="false"
+                                        Type="ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(PortsModel.AlphaCode) HeaderText="Alpha Code" TextAlign="TextAlign.Left"
+                                        Width="20%" AllowEditing="false"
+                                        Type="ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(PortsModel.Name) HeaderText="Name" TextAlign="TextAlign.Left"
+                                        Width="30%" AllowEditing="false"
+                                        Type="ColumnType.String"></GridColumn>
+                            <GridColumn Field=@nameof(PortsModel.GeoCode) HeaderText="GEO Code" TextAlign="TextAlign.Left"
+                                        Width="20%" AllowEditing="false"
+                                        Type="ColumnType.String"></GridColumn>
+
+                            <GridColumn HeaderText="Manage Records" Width="150">
+                                <GridCommandColumns>
+                                    <GridCommandColumns>
+                                        <GridCommandColumn
+                                            ButtonOption="@(new CommandButtonOptions { Content = "Edit", CssClass = "e-success" })"></GridCommandColumn>
+                                        <GridCommandColumn
+                                            ButtonOption="@(new CommandButtonOptions { Content = "Delete", CssClass = "e-danger" })"></GridCommandColumn>
+                                    </GridCommandColumns>
+                                </GridCommandColumns>
+                            </GridColumn>
+                        </GridColumns>
+                        <SfSpinner @bind-Visible="IsLoading">
+                        </SfSpinner>
+                    </SfGrid>
+                </SfCard>
+                </div>
+            }
+            else
+            {
+                <div style="padding-bottom:200px">
+                <SfCard CssClass="PortsCard">
+                <div class="card">
+                    <div class="form-horizontal">
+
+                        <div style="width: 50%; margin-top:5%; margin-left:25%; margin-right:25%" class="needs-validation">
+                            <fieldset>
+                                <div class="form-group">
+                                    <label>
+                                        <strong class="label-ports">Port ID</strong>
+                                    </label>
+
+                                    <SfNumericTextBox ShowSpinButton="false" Placeholder="Port ID" @bind-Value="@(SelectedRow.PortID)"
+                                                      FloatLabelType="FloatLabelType.Never" Format="f0"></SfNumericTextBox>
+
+                                </div>
+                                <br/>
+                                <div class="form-group">
+                                    <label>
+                                        <strong class="label-ports">Alpha Code</strong>
+                                    </label>
+                                    <SfTextBox Placeholder="Alpha Code" @bind-Value="@(SelectedRow.AlphaCode)"
+                                               FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                                </div>
+                                <br/>
+
+                                <div class="form-group">
+                                    <label>
+                                        <strong class="label-ports">Port Name</strong>
+                                    </label>
+                                    <SfTextBox Placeholder="Port Name" @bind-Value="@(SelectedRow.Name)"
+                                               FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                                </div>
+                                <br/>
+                                <div class="form-group">
+                                    <label>
+                                        <strong class="label-ports">GEO Code</strong>
+                                    </label>
+                                    <SfTextBox Placeholder="GEO Code" @bind-Value="@(SelectedRow.GeoCode)"
+                                               FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                                </div>
+                                <br/>
+                                <div class="form-group">
+                                    <button type="submit" class="save-button"><span>Save &nbsp;<i class="fas fa-file-import"></i></span></button>
+                                </div>
+                            </fieldset>
+                            <br/>
+                        </div>
+                    </div>
+                </div>
+                </SfCard>
+                </div>
+            }
+
+        }
+
+    </Authorized>
+    <NotAuthorized>
+        <p>Not Authorized</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    SfGrid<PortsModel> Grid { get; set; }
+    List<PortsModel> _ports = new();
+    PortsModel Country { get; set; } = new();
+    private List<object> _toolBar = new() { "ExcelExport", "Search" };
+    private bool IsLoading { get; set; } = true;
+    private RenderFragment _dynamicRenderFragment;
+
+    private PortsModel SelectedRow { get; set; } = new();
+    private Type SelectedComponent { get; set; }
+    private Dictionary<string, object> ComponentParameters { get; set; }
+    private bool _isEdit = false;
+    private bool _isAddUser = false;
+    private int RowIndex { get; set; }
+    private int SelectedRowIndexOnPage { get; set; }
+    private int PageIndex { get; set; }
+    private int _pageSize = 15;
+
+    public void Dispose()
+    {
+        Grid?.Dispose();
+    }
+
+    public void PageChangedHandler(GridPageChangedEventArgs args)
+    {
+        PageIndex = args.CurrentPage;
+    }
+
+    private void OnRowSelected(RowSelectEventArgs<PortsModel> args)
+    {
+        SelectedRow = args.Data;
+        RowIndex = args.RowIndex; // Global index
+        SelectedRowIndexOnPage = args.RowIndex % _pageSize + 1; // Index within current page
+    }
+
+    private async Task AddUser()
+    {
+        // // Set the Blazor component to load dynamically
+        // SelectedComponent = typeof(AddUser);
+        //
+        // _isEdit = true;
+        // _isAddUser = true;
+    }
+
+    private async Task GoBack()
+    {
+        _isEdit = false;
+        _isAddUser = false;
+        if (RowIndex > 0)
+        {
+            IsLoading = true;
+            SelectedRow.Name = string.Empty;
+            _ports = await PortsService.GetAllPorts();
+            IsLoading = false;
+            _isEdit = false;
+
+            await InvokeAsync(() => { StateHasChanged(); });
+            await Task.Delay(500);
+            await Grid.GoToPageAsync(PageIndex);
+
+            var rowForPage = RowIndex / PageIndex;
+            await Grid.SelectRowAsync(SelectedRowIndexOnPage - 1);
+
+            if (SelectedRowIndexOnPage >= 0)
+            {
+                await Grid.ScrollIntoViewAsync(SelectedRowIndexOnPage - 1);
+            }
+        }
+    }
+
+    public string ReturnUrl { get; set; }
+
+    public async void OnCommandClicked(CommandClickEventArgs<PortsModel> args)
+    {
+        if (args.CommandColumn.ButtonOption.Content.Equals("Delete"))
+        {
+            
+        }
+        if (args.CommandColumn.ButtonOption.Content.Equals("Edit"))
+        {
+            SelectedRow = args.RowData;
+            _isEdit = true;
+        }
+        
+        // SelectedRow = args.RowData;
+        // RowIndex = _users.FindIndex(item => item._id.Equals(SelectedRow._id));
+        // PageIndex = RowIndex / _pageSize + 1;
+        // await Grid.SelectRowAsync(RowIndex, true);
+        // var userSelected = Grid.SelectedRecords;
+        // ModelService.CurrentUserModel = SelectedRow;
+        // var gModel = new GridIndexModel { PageIndex = PageIndex, RowIndex = RowIndex };
+        // ModelService.CurrentGridModel = gModel;
+        // // Set the Blazor component to load dynamically
+        // SelectedComponent = typeof(SalesProfileModel);
+        //
+        // // Pass parameters to the component
+        // ComponentParameters = new Dictionary<string, object>
+        // {
+        //     { "userModel", SelectedRow }
+        // };
+        //
+        // _isEdit = true;
+    }
+
+    public async Task DataToolbarClickHandler(ClickEventArgs args)
+    {
+        if (args.Item.Text == "Excel Export")
+        {
+            await Grid.ExportToExcelAsync();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            IsLoading = true;
+            SelectedRow.Name = string.Empty;
+            _ports = await PortsService.GetAllPorts();
+            IsLoading = false;
+            _isEdit = false;
+            await InvokeAsync(() => { StateHasChanged(); });
+        }
+    }
+
+}

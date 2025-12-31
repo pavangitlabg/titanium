@@ -1,0 +1,209 @@
+﻿@using Infragistics.Web.Mvc
+@model Data.Models.IndustryUserModel
+
+@{ ViewData["Title"] = "Edit Industry User"; }
+<body>
+    <div class="card">
+        <div class="card-header">
+            <h3>@ViewData["Title"]</h3>
+        </div>
+        <div class="card-body">
+            <div class="container py-5">
+                <div class="row">
+                    <div class="col-md-10 mx-auto">
+                        @using (Html.BeginForm("Save", "IndustryUser"))
+                        {
+                            @Html.HiddenFor(x => x._id, new { id = "Id" })
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                            <div class="needs-validation">
+                                                <fieldset>
+                                                    <h5>Account Details</h5>
+                                                    <hr />
+                                                    <div class="form-group row">
+                                                        <div class="col-sm-2">
+                                                            <label>
+                                                                @Html.LabelFor(u => u.IsAdministrator, htmlAttributes: new { @class = "control-label" }) &nbsp;
+                                                                @Html.CheckBoxFor(u => u.IsAdministrator, "true")
+                                                            </label>
+                                                        </div>
+                                                        <div class="col-sm-2">
+                                                            <label>
+                                                                @Html.LabelFor(u => u.IsSystemUser, htmlAttributes: new { @class = "control-label" }) &nbsp;
+                                                                @Html.CheckBoxFor(u => u.IsSystemUser, "true")
+                                                            </label>
+                                                        </div>
+                                                        <div class="col-sm-2">
+                                                            <label>
+                                                                @Html.LabelFor(u => u.IsAdvancedUser, htmlAttributes: new { @class = "control-label" }) &nbsp;
+                                                                @Html.CheckBoxFor(u => u.IsAdvancedUser, "true")
+                                                            </label>
+                                                        </div>
+                                                        <div class="col-sm-2">
+                                                            <label>
+                                                                @Html.LabelFor(u => u.IsTradeInquiry, htmlAttributes: new { @class = "control-label" }) &nbsp;
+                                                                @Html.CheckBoxFor(u => u.IsTradeInquiry, "true")
+                                                            </label>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <label>
+                                                                @Html.LabelFor(u => u.TwoFactorAuth, htmlAttributes: new { @class = "control-label" }) &nbsp;
+                                                                @Html.CheckBoxFor(u => u.TwoFactorAuth, "true")
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <div class="col-sm-4">
+                                                            <label>@Html.LabelFor(u => u.AccountStatus, htmlAttributes: new { @class = "control-label" })</label>
+                                                            <div id="AccountStatus" ; class="editor-field">
+                                                                @Html.DropDownListFor(u => u.AccountStatus, new List<SelectListItem> {
+                                            new SelectListItem{Text="Open", Value="Open"},
+                                            new SelectListItem{Text="Closed", Value="Closed"}}, new { @class = "form-control" })
+                                                                @Html.ValidationMessageFor(u => u.AccountStatus, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <label>@Html.LabelFor(u => u.StartDate, htmlAttributes: new { @class = "control-label" })</label>
+                                                            <div id="StartDate" ; class="editor-field">
+                                                                @Html.EditorFor(u => u.StartDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                                                @Html.ValidationMessageFor(u => u.StartDate, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <label>@Html.LabelFor(u => u.ExpiryDate, htmlAttributes: new { @class = "control-label" })</label>
+                                                            <div id="ExpiryDate" ; class="editor-field">
+                                                                @Html.EditorFor(u => u.ExpiryDate, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                                                @Html.ValidationMessageFor(u => u.ExpiryDate, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <div class="col-sm-4">
+                                                            <label>@Html.LabelFor(u => u.UserName, htmlAttributes: new { @class = "control-label" })</label>
+                                                            <div id="UserName" ; class="editor-field">
+                                                                @Html.TextBoxFor(u => u.UserName, "", new { @class = "form-control" })
+                                                                @Html.ValidationMessageFor(u => u.UserName, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <label>@Html.LabelFor(u => u.Email, htmlAttributes: new { @class = "control-label" })</label>
+                                                            <div id="Email" ; class="editor-field">
+                                                                @Html.TextBoxFor(u => u.Email, htmlAttributes: new { @class = "form-control" })
+                                                                @Html.ValidationMessageFor(u => u.Email, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-4">
+                                                            <label>@Html.LabelFor(u => u.Password, htmlAttributes: new { @class = "control-label" })</label>
+                                                            <div id="Password" ; class="editor-field">
+                                                                @Html.TextBoxFor(u => u.Password, htmlAttributes: new { @class = "form-control", @type = "password" })
+                                                                @Html.ValidationMessageFor(u => u.Password, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <br />
+                                                    <hr />
+                                                    <h5>Personal Identifcation Details</h5>
+                                                    <hr />
+                                                    <div class="form-group row">
+                                                        <div class="col-sm-6">
+                                                            <label>@Html.LabelFor(u => u.FirstName, htmlAttributes: new { @class = "control-label" })</label>
+                                                            <div id="FirstName" ; class="editor-field">
+                                                                @Html.TextBoxFor(u => u.FirstName, new { @class = "form-control" })
+                                                                @Html.ValidationMessageFor(u => u.FirstName, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <label>@Html.LabelFor(u => u.LastName, htmlAttributes: new { @class = "control-label" })</label>
+                                                            <div id="LastName" ; class="editor-field">
+                                                                @Html.TextBoxFor(u => u.LastName, new { @class = "form-control" })
+                                                                @Html.ValidationMessageFor(u => u.LastName, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-sm-6">
+                                                            <label>@Html.LabelFor(u => u.CompanyName, htmlAttributes: new { @class = "control-label" })</label>
+                                                            <div id="CompanyName" ; class="editor-field">
+                                                                @Html.TextBoxFor(u => u.CompanyName, new { @class = "form-control" })
+                                                                @Html.ValidationMessageFor(u => u.CompanyName, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <label>@Html.LabelFor(u => u.Address1, htmlAttributes: new { @class = "control-label" })</label>
+                                                            <div id="Address1" ; class="editor-field">
+                                                                @Html.TextAreaFor(u => u.Address1, new { @class = "form-control", @rows = 1 })
+                                                                @Html.ValidationMessageFor(u => u.Address1, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <div class="col-sm-6">
+                                                            <label>@Html.LabelFor(u => u.PostalCode, htmlAttributes: new { @class = "control-label" })</label>
+                                                            <div id="PostalCode" ; class="editor-field">
+                                                                @Html.TextBoxFor(u => u.PostalCode, htmlAttributes: new { @class = "form-control" })
+                                                                @Html.ValidationMessageFor(u => u.PostalCode, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <label>@Html.LabelFor(u => u.Address2, htmlAttributes: new { @class = "control-label" })</label>
+                                                            <div id="Address2" ; class="editor-field">
+                                                                @Html.TextAreaFor(u => u.Address2, new { @class = "form-control", @rows = 1 })
+                                                                @Html.ValidationMessageFor(u => u.Address2, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <div class="col-sm-3">
+                                                            <label>@Html.LabelFor(u => u.Telephone, htmlAttributes: new { @class = "control-label" })</label>
+                                                            <div id="Comment" ; class="editor-field">
+                                                                @Html.TextBoxFor(u => u.Telephone, htmlAttributes: new { @class = "form-control", @type = "number" })
+                                                                @Html.ValidationMessageFor(u => u.Telephone, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-3">
+                                                            <label>@Html.LabelFor(u => u.Mobile, htmlAttributes: new { @class = "control-label" })</label>
+                                                            <div id="Mobile" ; class="editor-field">
+                                                                @Html.TextBoxFor(u => u.Mobile, htmlAttributes: new { @class = "form-control" })
+                                                                @Html.ValidationMessageFor(u => u.Mobile, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <label>@Html.LabelFor(u => u.Address3, htmlAttributes: new { @class = "control-label" })</label>
+                                                            <div id="Address3" ; class="editor-field">
+                                                                @Html.TextAreaFor(u => u.Address3, new { @class = "form-control", @rows = 1 })
+                                                                @Html.ValidationMessageFor(u => u.Address3, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-sm-6">
+                                                            <label>@Html.LabelFor(u => u.Costs, htmlAttributes: new { @class = "control-label" })</label>
+                                                            <div id="Costs" ; class="editor-field">
+                                                                @Html.TextBoxFor(u => u.Costs, new { type = "number", min = "0", step = "0.01", @class = "form-control" })
+                                                                @Html.ValidationMessageFor(u => u.Costs, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-6">
+                                                            <label>@Html.LabelFor(u => u.Address4, htmlAttributes: new { @class = "control-label" })</label>
+                                                            <div id="Address4" ; class="editor-field">
+                                                                @Html.TextAreaFor(u => u.Address4, new { @class = "form-control", @rows = 1 })
+                                                                @Html.ValidationMessageFor(u => u.Address4, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <hr />
+                                                    <div class="form-group">
+                                                        <div style="color: red; font-weight: bold"> @ViewData["Message"]</div>
+                                                        <button type="submit" class="btn btn-primary px-4"><span>Save &nbsp;<i class="fas fa-plus-circle"></i></span></button>
+                                                    </div>
+                                                </fieldset>
+                                            </div>}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+</body>

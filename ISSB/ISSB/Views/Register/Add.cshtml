@@ -1,0 +1,171 @@
+﻿@using Infragistics.Web.Mvc
+@model Data.Models.RegisterModel
+@{
+
+    ViewData["Title"] = "Register Online";
+
+}
+
+<body>
+    <div class="card">
+        <div class="card-header">
+            <div class="content-header">
+                <h2>@ViewData["Title"]</h2>
+                <h5 style="color: red">@ViewData["Message"]</h5>
+                <hr />
+
+                @using (Html.BeginForm("AddNew", "Register"))
+                {
+                    @Html.HiddenFor(x => x._id, new { id = "_id" })
+                    @Html.HiddenFor(x => x.RegisterID, new { RegisterID = "RegisterID" })
+                    @Html.HiddenFor(x => x.RegisDate, new { RegisDate = "RegisDate" })
+                    @Html.HiddenFor(x => x.Status, new { Status = "Status" })
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div class="needs-validation">
+                        <fieldset>
+                            <div class="container py-5">
+                                <p style="font-size: x-large; margin-top: -40px">User Credential Information</p>                                
+                                <div class="form-group row">
+                                    <div class="col-sm-2">
+                                        <label>@Html.LabelFor(u => u.Username, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-4 editor-field">
+                                        @Html.TextBoxFor(u => u.Username, htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(u => u.Username, "", new { @class = "text-danger" })
+                                    </div>                                  
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-2">
+                                        <label>@Html.LabelFor(u => u.Email, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-4 editor-field">
+                                        @Html.TextBoxFor(u => u.Email, htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(u => u.Email, "", new { @class = "text-danger" })
+                                    </div>                                    
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-2">
+                                        <label>@Html.LabelFor(u => u.Password, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-4 editor-field">
+                                        @Html.TextBoxFor(u => u.Password, htmlAttributes: new { @class = "form-control", @type="password" })
+                                        @Html.ValidationMessageFor(u => u.Password, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-2">
+                                        <label>@Html.LabelFor(u => u.ConfirmPassword, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-4 editor-field">
+                                        @Html.TextBoxFor(u => u.ConfirmPassword, htmlAttributes: new { @class = "form-control", @type="password" })
+                                        @Html.ValidationMessageFor(u => u.ConfirmPassword, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <hr />
+                                <p style="font-size: x-large">Personal Information</p>                                
+                                <div class="form-group row">
+                                    <div class="col-sm-2">
+                                        <label>@Html.LabelFor(u => u.FirstName, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-4 editor-field">
+                                        @Html.TextBoxFor(u => u.FirstName, htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(u => u.FirstName, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-sm-1 offset-sm-1">
+                                        <label>@Html.LabelFor(u => u.Address1, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-4 editor-field">
+                                        @Html.TextBoxFor(u => u.Address1, htmlAttributes: new { @class = "form-control" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-2">
+                                        <label>@Html.LabelFor(u => u.Lastname, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-4 editor-field">
+                                        @Html.TextBoxFor(u => u.Lastname, htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(u => u.Lastname, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-sm-1 offset-sm-1">
+                                        <label>@Html.LabelFor(u => u.Address2, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-4 editor-field">
+                                        @Html.TextBoxFor(u => u.Address2, htmlAttributes: new { @class = "form-control" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-2">
+                                        <label>@Html.LabelFor(u => u.Company, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-4 editor-field">
+                                        @Html.TextBoxFor(u => u.Company, htmlAttributes: new { @class = "form-control" })
+                                    </div>
+                                    <div class="col-sm-1 offset-sm-1">
+                                        <label>@Html.LabelFor(u => u.City, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-4 editor-field">
+                                        @Html.TextBoxFor(u => u.City, htmlAttributes: new { @class = "form-control" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-2">
+                                        <label>@Html.LabelFor(u => u.Phone, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-4 editor-field">
+                                        @Html.TextBoxFor(u => u.Phone, htmlAttributes: new { @class = "form-control", @type = "number" })
+                                    </div>
+                                    <div class="col-sm-1 offset-sm-1">
+                                        <label>@Html.LabelFor(u => u.Zip, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-4 editor-field">
+                                        @Html.TextBoxFor(u => u.Zip, htmlAttributes: new { @class = "form-control" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-2">
+                                        <label>@Html.LabelFor(u => u.Country, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-4 editor-field">
+                                        @Html.TextBoxFor(u => u.Country, htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(u => u.Country, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-sm-1 offset-sm-1">
+                                        <label>@Html.LabelFor(u => u.State, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-4 editor-field">
+                                        @Html.TextBoxFor(u => u.State, htmlAttributes: new { @class = "form-control" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-2">
+                                        <label>@Html.LabelFor(u => u.Info, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-4 editor-field">
+                                        @Html.TextAreaFor(u => u.Info, htmlAttributes: new { @class = "form-control", @rows = 4 })
+                                        @Html.ValidationMessageFor(u => u.Info, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-sm-1 offset-sm-1">
+                                        <label>@Html.LabelFor(u => u.Comment, htmlAttributes: new { @class = "control-label" })</label>
+                                    </div>
+                                    <div class="col-sm-4 editor-field">
+                                        @Html.TextAreaFor(u => u.Comment, htmlAttributes: new { @class = "form-control", @rows = 4 })
+                                        @Html.ValidationMessageFor(u => u.Comment, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <hr />
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary px-4"><span>Submit &nbsp;<i class="fas fa-share-square"></i></span></button>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</body>

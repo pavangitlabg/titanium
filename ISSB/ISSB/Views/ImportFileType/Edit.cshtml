@@ -1,0 +1,61 @@
+﻿@using Infragistics.Web.Mvc
+@model Data.Models.ImportFileTypeModel
+@{
+
+    ViewData["Title"] = "Import Type Record";
+
+}
+
+<!DOCTYPE html>
+<html>
+<body>
+    <div class="card">
+        <div class="card-header">
+            <h3>@ViewData["Title"]</h3>
+        </div>
+        @using (Html.BeginForm("Save", "ImportFileType"))
+        {
+            @Html.HiddenFor(x => x._id, new { _id = "_id" })
+            <div class="form-horizontal">
+
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div style="width: 50%; margin-top:5%; margin-left:25%; margin-right:25%" class="needs-validation">
+                    <fieldset>
+                       
+
+                        <div class="form-group">
+                            <div class="editor-label">
+                                @Html.LabelFor(u => u.KEY, htmlAttributes: new { @class = "control-label" })
+                            </div>
+
+                            <div class="editor-field">
+
+                                @Html.TextBoxFor(u => u.KEY, htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(u => u.KEY, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <div class="editor-label">
+                                @Html.LabelFor(u => u.NAME, htmlAttributes: new { @class = "control-label" })
+                            </div>
+                            <div class="editor-field">
+                                @Html.TextBoxFor(u => u.NAME, htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(u => u.NAME, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <hr />
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary px-4"><span>Save &nbsp;<i class="fas fa-file-import"></i></span></button>
+                        </div>
+                    </fieldset>
+                    <br />
+                </div>
+            </div>
+        }
+    </div>
+</body>
+</html>
+

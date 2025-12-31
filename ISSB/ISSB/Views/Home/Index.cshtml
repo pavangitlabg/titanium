@@ -1,0 +1,939 @@
+﻿<!doctype html>
+
+<!--
+ISSB/Views/ReportEngine/SearchResults.cshtml
+
+reporting engine view
+-->
+
+@using Infragistics.Web.Mvc
+@using Data.Models
+
+@model ReportEngineModel
+
+@{
+var search = Model.Search; // search criteria
+
+/*
+Set variable separately to indicate which groupable selection is not grouped (itemised separately). Values are as
+follows:
+
+    0. none
+    1. source countries
+    2. market countries
+    4. ports
+    8. products
+16. by month
+32. by quarter
+64. by year
+-1. more than one
+*/
+
+var separately = Model.Separately; // selection viewed separately
+var allSeparately = Model.AllSeparately; // all selections viewed separately
+var member = Model.Search.Values ? "MONETARY_VALUE" : "WEIGHT"; // y-axis member
+var oneSep = separately != 0 && separately != -1; // one groupable selection not grouped
+var defaultType = separately < 16 ? "column" : "line"; // default data chart type
+var tradeFlow = Model.Search.TradeFlow; // trade flow (import, export or both)
+}
+
+<html>
+<head>
+<!--map Chart style-->
+
+<style>
+
+
+#tooltipTable {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    #tooltipTable td, #tooltipTable th {
+        font-size: 9px;
+        border: 1px solid blue;
+        padding: 3px 7px 2px 7px;
+    }
+
+    #tooltipTable th {
+        font-weight: bold;
+        font-size: 11px;
+        text-align: left;
+        padding-top: 5px;
+        padding-bottom: 4px;
+        background-color: blue;
+        color: #ffffff;
+    }
+</style>
+
+<style>
+.horizontal-scroll-wrapper {
+    width: 100%;
+    height: 700px;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+.headerStyle {
+    text-align: center !important;
+}
+
+.numberStyle {
+    text-align: right !important;
+}
+
+.optionContainer {
+    display: inline-block;
+}
+
+.item {
+    display: inline-block;
+    height: 30px;
+}
+
+    .item ~ .item {
+        margin-left: 15px;
+    }
+
+.item-label {
+    display: block;
+    float: right;
+    margin-left: 5px;
+    line-height: 21px;
+}
+
+.exporting-overlay {
+    position: absolute;
+    background-color: rgba(181, 181, 181, 0.9);
+    top: 0;
+    left: 0;
+    z-index: 100000;
+    text-align: center;
+    vertical-align: top;
+    padding-top: 100px;
+}
+
+    .exporting-overlay:after {
+        content: "";
+        display: inline-block;
+        vertical-align: middle;
+        height: 100%;
+    }
+
+.exporting-text {
+    font-size: 46px;
+    font-weight: bold;
+    vertical-align: top;
+}
+</style>
+
+<style>
+
+
+#exportButton {
+    margin-bottom: 8px;
+}
+
+.optionContainer {
+    display: inline-block;
+}
+
+.item {
+    display: inline-block;
+    height: 30px;
+}
+
+    .item ~ .item {
+        margin-left: 15px;
+    }
+
+.item-label {
+    display: block;
+    float: right;
+    margin-left: 5px;
+    line-height: 21px;
+}
+
+.exporting-overlay {
+    position: absolute;
+    background-color: rgba(181, 181, 181, 0.9);
+    top: 0;
+    left: 0;
+    z-index: 100000;
+    text-align: center;
+    vertical-align: top;
+    padding-top: 100px;
+}
+
+    .exporting-overlay:after {
+        content: "";
+        display: inline-block;
+        vertical-align: middle;
+        height: 100%;
+    }
+
+.exporting-text {
+    font-size: 46px;
+    font-weight: bold;
+    vertical-align: top;
+}
+
+        
+</style>
+
+<script id="tooltipTemplate" type="text/x-jquery-tmpl">
+        
+<table id="tooltipTable">
+    <tr><th class="tooltipHeading" colspan="2">${item.CITY}, ${item.COUNTRY}</th></tr>
+    <tr>
+        <td>Tonns:</td>
+        <td> ${item.WEIGHT}</td>
+    </tr>
+    <tr>
+        <td>Value:</td>
+        <td>${item.MONEY}</td>
+    </tr>
+</table>
+
+</script>
+
+<script>
+var member      = "@member"                     ; // y-axis member
+var defaultType = "@defaultType"                ; // default chart type
+var data        = @Html.Raw( Model.Serialised ) ; // data from server
+var label       = "@Model.LabelMemberPath"      ; // label member path
+
+// trade flow (imports = 1, exports = 2, both = 3)
+
+@if( tradeFlow == TradeFlowOption.Imports ) { <text>var tradeFlow = 1 ;</text> }
+else if ( tradeFlow == TradeFlowOption.Exports ) { <text>var tradeFlow = 2 ;</text> }
+else { <text>var tradeFlow = 3 ;</text> }
+
+// series selections for combo
+
+var selections = [
+                    @if ( ( allSeparately & 1 ) != 0 )
+                    { <text> { "value" : "SC_GEO" , "text" : "Source Countries" } </text> }
+                    @if ( ( allSeparately & 2 ) != 0 )
+                    {
+                    if ( ( allSeparately & 1 ) != 0 ) { <text> , </text> }
+                    <text> { "value" : "MC_GEO" , "text" : "Market Countries" } </text>
+                    }
+                    @if ( ( allSeparately & 4 ) != 0 )
+                    {
+                    if ( ( allSeparately & 3 ) != 0 ) { <text> , </text> }
+                    <text> { "value" : "PORT_ID" , "text" : "Ports" } </text>
+                    }
+                    @if ( ( allSeparately & 8 ) != 0 )
+                    {
+                    if ( ( allSeparately & 7 ) != 0 ) { <text> , </text> }
+                    <text> { "value" : "TARIFF_CODE" , "text" : "Products" } </text>
+                    }
+                    @if ( ( allSeparately & 16 ) != 0 )
+                    {
+                    if ( ( allSeparately & 15 ) != 0 ) { <text> , </text> }
+                    <text> { "value" : "MONTH" , "text" : "Months" } </text>
+                    }
+                    @if ( ( allSeparately & 32 ) != 0 )
+                    {
+                    if ( ( allSeparately & 31 ) != 0 ) { <text> , </text> }
+                    <text> { "value" : "QUARTER" , "text" : "Quarters" } </text>
+                    }
+                    @if ( ( allSeparately & 64 ) != 0 )
+                    {
+                    if ( ( allSeparately & 63 ) != 0 ) { <text> , </text> }
+                    <text> { "value" : "YEAR" , "text" : "Years" } </text>
+                    }
+                ] ;
+</script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+<link href="../IgniteUI/css/themes/infragistics/infragistics.theme.css" rel="stylesheet" />
+<link href="../IgniteUI/css/structure/modules/infragistics.ui.chart.css" rel="stylesheet" />
+</head>
+<body>
+
+
+    <!--Header Items-->
+     @Html.Raw(ViewBag.TopContent)
+   
+    <div class="card-header">
+        <h2>@ViewBag.Title</h2>
+    </div>
+
+    <br />
+
+    <input type="hidden" value="@ViewBag.DestinationMapData" id="DestinationMapData" />
+    <input type="hidden" value="@ViewBag.SourceMapData" id="SourceMapData" />
+    <input type="hidden" value="@ViewBag.SourceMapStatus" id="SourceMapStatus" />
+    <!-- map chart -->
+    <div id="mapContainer" class="col-lg-12">
+        <div class="card">
+            <div class="card-body">
+                <div id="map" class="chart" style="width : 100% ; height : 600px"></div>
+            </div>
+
+        </div>
+
+    </div>
+    <!-- selection combo -->
+    <div class="content">
+        @if (separately == -1)
+        {
+            @* more than one groupable selection is not grouped *@
+
+            <select id="selection"></select>
+            <br />
+        }
+
+        <!-- trade flow combo -->
+
+        @if (tradeFlow == TradeFlowOption.Both)
+        {
+            <select id="tradeFlow">
+                <option value="import" selected> Import </option>
+                <option value="export"> Export </option>
+            </select>
+            <br />
+        }
+
+        <!-- y-axis member combo -->
+
+        @if (member == "MONETARY_VALUE")
+        {
+            <select id="member">
+                <option value="monetary" selected> Values </option>
+                <option value="weight"> Tonnes </option>
+            </select>
+            <br />
+        }
+
+        <br />
+    </div>
+
+    <div class="content">
+
+        <div class="container-fluid">
+            <div class="row">
+                <!-- data chart -->
+
+                <div id="dataChartContainer" class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <select id="chartTypePicker"></select>
+                            <div id="dataChart" class="chart" style="width : 100% ; height : 600px"></div>
+                        </div>
+                        <input id="exportDataChartButton" value="Export as image" type="button" />
+                    </div>
+                </div>
+
+                <!-- pie chart -->
+
+                <div id="pieChartContainer" class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <table id="optionsID" class="options">
+                                        <tr>
+                                            <td>Start Angle:</td>
+                                            <td><div id="pieAngle" class="slider"></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Radius:</td>
+                                            <td><div id="pieRadius" class="slider"></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Exploded Radius</td>
+                                            <td><div id="pieExplodedRadius" class="slider"></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Label Extent</td>
+                                            <td><div id="pieLabelExtent" class="slider"></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Label Position:</td>
+                                            <td>
+                                                <div class="comboContainer">
+                                                    <select id="pieLabelPosition">
+                                                        <option value="none">None</option>
+                                                        <option value="center">Center</option>
+                                                        <option value="insideEnd">Inside End</option>
+                                                        <option value="outsideEnd" selected="selected">Outside End</option>
+                                                        <option value="bestFit">Best Fit</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Leader Line:</td>
+                                            <td>
+                                                <div class="comboContainer">
+                                                    <select id="pieLeaderLine">
+                                                        <option value="straight">Straight</option>
+                                                        <option value="arc" selected="selected">Arc</option>
+                                                        <option value="spline">Spline</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-7">
+                                    <div id="pieChart" class="chart" style="width : 100% ; height : 600px"></div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div id="legend"></div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <input id="exportPieChartButton" value="Export as image" type="button" />
+                    </div>
+
+                </div>
+
+                <!-- doughnut chart -->
+
+                <div id="doughnutChartContainer" class="col-lg-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="doughnutChart" class="chart" style="width : 100% ; height : 400px"></div>
+                        </div>
+                        <input id="exportDoughnutButton" value="Export as image" type="button" />
+                    </div>
+
+                </div>
+
+                <!-- funnel chart -->
+
+                <div id="funnelChartContainer" class="col-lg-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="funnelChart" class="chart" style="width : 100% ; height : 400px"></div>
+                        </div>
+                        <input id="exportfunnelButton" value="Export as image" type="button" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Footer Items-->
+ 
+    @Html.Raw(ViewBag.FooterContent)
+
+
+    <!-- tooltip template for value series (both import and export) -->
+
+    <script id="tooltipValue" type="text/x-jquery-tmpl">
+        ${item.LEGEND}: ${item.valueFormatted}
+    </script>
+
+    <!-- tooltip template for import series -->
+
+    <script id="tooltipImport" type="text/x-jquery-tmpl">
+        ${item.LEGEND}
+        <br />Import: ${item.importFormatted}
+    </script>
+
+    <!-- tooltip template for export series -->
+
+    <script id="tooltipExport" type="text/x-jquery-tmpl">
+        ${item.LEGEND}
+        <br />Export: ${item.exportFormatted}
+    </script>
+
+    <script>
+
+$(function()
+{
+    $("#exportDoughnutButton").on
+        (
+            "click", function () {
+                $("#exportDoughnutButton").hide();
+
+
+                html2canvas($('#doughnutChartContainer'),
+                    {
+                        onrendered: function (canvas) {
+                            var a = document.createElement('a');
+                            // toDataURL defaults to png, so we need to request a jpeg, then convert for file download.
+                            a.href = canvas.toDataURL("image/jpeg").replace("image/jpeg", "image/octet-stream");
+                            a.download = 'DoughnutChart.jpg';
+                            a.click();
+                            $("#exportDoughnutButton").show();
+
+                        }
+
+                    });
+
+            }
+    );
+
+    $("#exportfunnelButton").on
+        (
+            "click", function () {
+                $("#exportfunnelButton").hide();
+
+
+                html2canvas($('#funnelChartContainer'),
+                    {
+                        onrendered: function (canvas) {
+                            var a = document.createElement('a');
+                            // toDataURL defaults to png, so we need to request a jpeg, then convert for file download.
+                            a.href = canvas.toDataURL("image/jpeg").replace("image/jpeg", "image/octet-stream");
+                            a.download = 'FunnelChart.jpg';
+                            a.click();
+                            $("#exportfunnelButton").show();
+
+                        }
+
+                    });
+
+            }
+    );
+
+    $("#exportPieChartButton").on
+        (
+            "click", function () {
+                $("#exportPieChartButton").hide();
+                $("#optionsID").hide();
+
+                html2canvas($('#pieChartContainer'),
+                    {
+                        onrendered: function (canvas) {
+                            var a = document.createElement('a');
+                            // toDataURL defaults to png, so we need to request a jpeg, then convert for file download.
+                            a.href = canvas.toDataURL("image/jpeg").replace("image/jpeg", "image/octet-stream");
+                            a.download = 'PieChart.jpg';
+                            a.click();
+                            $("#exportPieChartButton").show();
+                            $("#optionsID").show();
+                        }
+
+                    });
+
+            }
+    );
+
+    $("#exportDataChartButton").on
+    (
+    "click", function()
+    {
+            var img = $('#dataChart').igDataChart("exportImage", $('#dataChart').width(), $('#dataChart').height());
+
+            // atob to base64_decode the data-URI
+            var image_data = atob(img.src.split(',')[1]);
+
+            // Use typed arrays to convert the binary data to a Blob
+
+            var arraybuffer = new ArrayBuffer(image_data.length);
+            var view = new Uint8Array(arraybuffer);
+            for (var i = 0; i < image_data.length; i++) {
+                view[i] = image_data.charCodeAt(i) & 0xff;
+            }
+
+            var blob = new Blob([arraybuffer], { type: 'image/jpeg' });
+            saveAs(blob, "DataChart.jpg");
+    }
+    );
+
+
+    function addCommas(nStr) {
+        nStr += '';
+        x = nStr.split('.');
+        x1 = x[0];
+        x2 = x.length > 1 ? '.' + x[1] : '';
+        var rgx = /(\d+)(\d{3})/;
+        while (rgx.test(x1)) {
+            x1 = x1.replace(rgx, '$1' + ',' + '$2');
+        }
+        return x1 + x2;
+    };
+    // grid
+
+    function showOverlay( grid , exportingOverlay )
+    {
+    var $gridContainer = $('#' + grid.attr( 'id' ) + '_container') ;
+
+    exportingOverlay.css
+    (
+        {
+        "width" : $gridContainer.outerWidth() ,
+        "height" : $gridContainer.outerHeight()
+        }
+    ).html( '<span class="exporting-text">Exporting...</span>' ) ;
+
+    exportingOverlay.addClass( "exporting-overlay" ) ;
+
+    $gridContainer.append( exportingOverlay ) ;
+    }
+
+    function hideOverlay( exportingOverlay ) { exportingOverlay.remove() ; }
+
+    @if ( oneSep )
+    {
+    @* exactly one groupable selection is not grouped *@
+
+    <text>
+        refresh(
+                data ,
+                tradeFlow ,
+                member ,
+                selections[ 0 ].value ,
+                "#dataChart" ,
+                "#pieChart" ,
+                "#doughnutChart" ,
+                "#funnelChart"
+                ) ;
+    </text>
+    }
+    else
+    {
+    <text>
+        $("#selection").igCombo(
+                                {
+                                    dataSource : selections ,
+                                    mode       : "dropdown" ,
+                                    valueKey   : "value"    ,
+                                    textKey    : "text"     ,
+                                    // placeHolder : "Select chart series" ,
+                                    // dropDownOnFocus: true,
+                                    // initialSelectedItems : [ { index : chartTypeIndex } ] ,
+                                    selectionChanged : function( evt , ui )
+                                    {
+                                    refresh(
+                                            data ,
+                                            tradeFlow ,
+                                            member ,
+                                            $("#selection").igCombo( "value" ) ,
+                                            "#dataChart" ,
+                                            "#pieChart" ,
+                                            "#doughnutChart" ,
+                                            "#funnelChart"
+                                            ) ;
+
+                                    }
+                                }
+                                ) ;
+
+        refresh(
+                data ,
+                tradeFlow ,
+                member ,
+                $("#selection").igCombo( "value" ) ,
+                "#dataChart" ,
+                "#pieChart" ,
+                "#doughnutChart" ,
+                "#funnelChart"
+                ) ;
+    </text>
+    }
+
+    @if ( tradeFlow == TradeFlowOption.Both )
+    {
+    <text>
+        $("#tradeFlow").igCombo(
+                                {
+                                    mode : "dropdown" ,
+                                    selectionChanged : function( evt , ui )
+                                    {
+                                    flow( "#pieChart" , "#funnelChart" , $("#tradeFlow").igCombo( "value" ) ) ;
+                                    }
+                                }
+                                ) ;
+    </text>
+    }
+
+    @if ( member == "MONETARY_VALUE" )
+    {
+    <text>
+        $("#member").igCombo(
+        {
+        mode : "dropdown" ,
+        selectionChanged : function( evt , ui )
+        {
+            member = $("#member").igCombo( "value" ) == "monetary" ? "MONETARY_VALUE" : "WEIGHT" ;
+
+            refresh(
+                    data ,
+                    tradeFlow ,
+                    member ,
+                    @if ( oneSep ) { <text>selections[ 0 ].value ,</text> }
+                    else { <text>$("#selection").igCombo( "value" ) ,</text> }
+                    "#dataChart" ,
+                    "#pieChart" ,
+                    "#doughnutChart" ,
+                    "#funnelChart"
+                    ) ;
+        }
+        }
+        ) ;
+    </text>
+    }
+
+    // data chart
+
+    var chartTypeIndex = -1 ;
+
+    // - default chart type
+
+    for ( var i = 0 ; i < chartTypes.length ; i ++ )
+    if ( chartTypes[ i ].Value == defaultType ) chartTypeIndex = i ;
+
+    // - chart
+
+    if ( tradeFlow == 3 )
+    $("#chartTypePicker").igCombo(
+                                    {
+                                        dataSource           : chartTypes ,
+                                        mode                 : "dropdown" ,
+                                        valueKey             : "Value" ,
+                                        textKey              : "Text" ,
+                                        // placeHolder : "Select chart type" ,
+                                        // dropDownOnFocus: true,
+                                        initialSelectedItems : [ { index : chartTypeIndex } ] ,
+                                        selectionChanged     : function( evt , ui )
+                                        {
+                                        setSeries(
+                                                    "#dataChart" ,
+                                                    $("#chartTypePicker").igCombo( "value" ) ,
+                                                    [ "import" , "export" ]
+                                                ) ;
+                                        }
+                                    }
+                                    ) ;
+    else
+    $("#chartTypePicker").igCombo(
+                                    {
+                                        dataSource           : chartTypes ,
+                                        mode                 : "dropdown" ,
+                                        valueKey             : "Value" ,
+                                        textKey              : "Text" ,
+                                        initialSelectedItems : [ { index : chartTypeIndex } ] ,
+                                        selectionChanged     : function( evt , ui )
+                                        {
+                                        setSeries(
+                                                    "#dataChart" ,
+                                                    $("#chartTypePicker").igCombo( "value" ) ,
+                                                    [ "value" ]
+                                                ) ;
+                                        }
+                                    }
+                                    ) ;
+
+    // pie chart
+
+    setPieHandlers(
+                    "#pieChart" ,
+                    "#pieAngle" ,
+                    "#pieRadius" ,
+                    "#pieLabelExtent" ,
+                    "#pieExplodedRadius" ,
+                    "#pieLabelPosition" ,
+                    "#pieLeaderLine"
+        );
+        //Map Chart
+
+        var worldCities = [];
+        var startCountry = [];
+        var mapStatus = $('#SourceMapStatus').val();
+
+        if (mapStatus === 'True') {
+            $("#mapContainer").hide();
+
+        }
+        else {
+            $("#mapContainer").show();
+            worldCities = $.parseJSON($('#DestinationMapData').val());
+            startCountry = $.parseJSON($('#SourceMapData').val());
+            generateConnections();
+
+            $("#map").igMap({
+                width: "100%",
+                height: "700px",
+                overviewPlusDetailPaneVisibility: "visible",
+                overviewPlusDetailPaneBackgroundImageUri: "https://www.igniteui.com/images/samples/maps/world.png",
+                windowRect: {
+                    left: 0.30,
+                    top: 0.20,
+                    height: 0.45,
+                    width: 0.45
+                },
+                backgroundContent: {
+                    type: "bing",
+                    key: "AtD4uTmZrTuLVdF6BFYL7WLDYYJ3S_zf2sWjuXoVFxNW6InFrffIYhrYFqOj-z7_",
+                    bingUrl: "https://dev.virtualearth.net/rest/v1/imagery/metadata/",
+                    imagerySet: "Road"
+                },
+                series: [{
+                    type: "geographicPolyline",
+                    name: "worldConnections",
+                    shapeMemberPath: "points",
+                    dataSource: worldConnections,
+                    shapeFilterResolution: 5.0,
+                    outline: "rgba(20,20,20,0.5)",
+                    outline: "blue",
+                    thickness: 0.75,
+                    showTooltip: false,
+                },
+                    {
+                        type: "geographicProportionalSymbol",
+                        name: "worldExports",
+                        dataSource: worldAirports,
+                        longitudeMemberPath: "LONGITUDE",
+                        latitudeMemberPath: "LATITUDE",
+                        RadioNodeList: "WEIGHT",
+                        radiusMemberPath: "WEIGHT",
+                        markerType: "circle",
+                        // markerCollisionAvoidance: "fade",
+                        markerBrush: "red",
+                        markerOutline: "blue",
+                        showTooltip: true,
+                        tooltipTemplate: "tooltipTemplate",
+                        radiusScale: {
+                            minimumValue: 10,
+                            maximumValue: 40,
+                        },
+                    }
+
+
+                ]
+            });
+
+            function generateConnections() {
+
+                var count = worldCities.length;
+                var airports = [];
+                var flights = [];
+                var minDistance = 200;
+                var maxDistance = 7000;
+                var maxConnections = 300;
+                var total = 0;
+
+
+                for (var i = 0; i < count; i++) {
+                    var connections = [];
+
+                    var dest = worldCities[i];
+
+                    //if (startCountry.CITY != dest.CITY) {
+
+                    var hasConnection = false;
+
+                    hasConnection = true;
+
+                    if (hasConnection) {
+                        var path = [];
+                        path = calcGeoPath(startCountry, dest);
+
+                        connections.push(path);
+                        airports.push(dest);
+                        total++;
+                    }
+
+                    //}
+                    if (connections.length > 0) {
+                        flights.push({ CITY: startCountry.CITY, points: connections });
+                        airports.push(dest);
+                    }
+                    if (total > maxConnections) break;
+                }
+
+                worldConnections = flights;
+                worldAirports = airports;
+            }
+            // calculate geo-path between two locations
+            function calcGeoPath(origin, dest) {
+                var interval = 200;
+                var path = [];
+                var distance = calcGeoDistance(origin, dest);
+
+                // path.push({ x: origin.LONGITUDE, y: origin.LATITUDE, z: origin.WEIGHT });
+                // path.push({ x: dest.LONGITUDE, y: dest.LATITUDE, z: origin.WEIGHT });
+
+                path.push({ x: origin.LONGITUDE, y: origin.LATITUDE });
+                path.push({ x: dest.LONGITUDE, y: dest.LATITUDE });
+                return path;
+            }
+            // calculate bearing angle between two locations
+
+            function calcBearing(origin, dest) {
+                origin = toRadianLocation(origin);
+                dest = toRadianLocation(dest);
+                var dLon = (dest.LONGITUDE - origin.LONGITUDE);
+                var y = Math.sin(dLon) * Math.cos(dest.LATITUDE);
+                var x = Math.cos(origin.LATITUDE) * Math.sin(dest.LATITUDE) -
+                    Math.sin(origin.LATITUDE) * Math.cos(dest.LATITUDE) * Math.cos(dLon);
+                var angle = Math.atan2(y, x);
+                return toDegreesNormalized(angle);
+            }
+
+            // calculate distance between two locations
+
+            function calcGeoDistance(origin, dest) {
+
+                origin = toRadianLocation(origin);
+                dest = toRadianLocation(dest);
+
+                var sinProd = Math.sin(origin.LATITUDE) * Math.sin(dest.LATITUDE);
+                var cosProd = Math.cos(origin.LATITUDE) * Math.cos(dest.LATITUDE);
+                var dLon = (dest.LONGITUDE - origin.LONGITUDE);
+
+                var angle = Math.acos(sinProd + cosProd * Math.cos(dLon));
+                var distance = angle * 6371.0;
+                return distance; // * 6371.0; // in km
+            }
+
+            function toRadianLocation(geoPoint) {
+                var longitude = toRadians(geoPoint.LONGITUDE);
+                var latitude = toRadians(geoPoint.LATITUDE);
+
+                return { LONGITUDE: longitude, LATITUDE: latitude };
+            }
+            function toRadians(degrees) {
+                return degrees * Math.PI / 180;
+            }
+            function toDegrees(radians) {
+                return (radians * 180.0 / Math.PI);
+            }
+            function toDegreesNormalized(radians) {
+                var degrees = toDegrees(radians);
+                degrees = (degrees + 360) % 360;
+                return degrees;
+            }
+        }
+    });
+
+    </script>
+
+    <script type="text/javascript">$.getJSON("https://jsonip.com?callback=?", function (data) {
+            // $(".ip").text(data.ip);
+
+            $.ajax({
+                url: "/Home/SetIP",
+                type: "POST",
+                dataType: "json",
+                async: true,
+                data: {
+
+                    ipAddress: data.ip,
+
+                },
+
+                success: function (data) {
+
+
+                },
+                error: function () {
+                    //alert("No Data");
+                }
+            });
+
+        });</script>
+
+
+</body>
+</html>

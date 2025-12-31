@@ -1,0 +1,192 @@
+﻿@page "/database"
+@using FilterType = Syncfusion.Blazor.Grids.FilterType
+@using SkeletonType = Syncfusion.Blazor.Notifications.SkeletonType
+
+<AuthorizeView>
+    <Authorized>
+        <h3>Database Stats</h3>
+        <SfTab CssClass="default-tab">
+            <TabItems>
+                <TabItem>
+                    <ChildContent>
+                        <TabHeader Text="Database Stats"></TabHeader>
+                    </ChildContent>
+                    <ContentTemplate>
+                        @if (IsLoading)
+                        {
+                            <SfSkeleton CssClass="skeleton-default" Shape=SkeletonType.Rectangle Width="100%"
+                                        Height="80vh"></SfSkeleton>
+                        }
+                        else
+                        {
+                            <h5 style="color:blue;">Storage Size (GIB): @StorageSize, Data Size (GIB): @DataSize,
+                                Records on system: @Records</h5>
+                            <SfButton id="BackBtn" @onclick="RefreshData" CssClass="e-custom-refresh"
+                                      IconPosition="IconPosition.Left" IconCss="e-icons e-refresh">Refresh
+                            </SfButton>
+                            <br/>
+                            <br/>
+
+                            <SfGrid ID="Grid"
+                                    @ref="Grid"
+                                    TValue="StatsModel"
+                                    Toolbar="@toolBar"
+                                    DataSource="@data"
+                                    AllowPaging="true"
+                                    AllowSorting="true"
+                                    AllowFiltering="true"
+                                    AllowExcelExport="true"
+                                    AllowPdfExport="false"
+                                    Height="500"
+                                    Width="Auto">
+                                <GridPageSettings PageCount="10" PageSize="15"></GridPageSettings>
+                                <GridFilterSettings Type="FilterType.Excel"></GridFilterSettings>
+                                <GridEvents OnToolbarClick="DataToolbarClickHandler" TValue="StatsModel"></GridEvents>
+                                <GridColumns>
+
+                                    <GridColumn Field=@nameof(StatsModel.CollectionName) HeaderText="Data Collection"
+                                                IsPrimaryKey="true" TextAlign="TextAlign.Left" AutoFit="true"
+                                                Width="120" Type="ColumnType.String"></GridColumn>
+                                    <GridColumn Field=@nameof(StatsModel.Count) HeaderText="Records"
+                                                TextAlign="TextAlign.Right" AutoFit="true" Format="N0"
+                                                AllowEditing="false" Type="ColumnType.Double"></GridColumn>
+                                    <GridColumn Field=@nameof(StatsModel.CountAsText) HeaderText="Records (n)"
+                                                TextAlign="TextAlign.Right" AutoFit="true" AllowEditing="false"
+                                                Type="ColumnType.String"></GridColumn>
+
+                                    <GridColumn Field=@nameof(StatsModel.Size) HeaderText="Size (Bytes)"
+                                                TextAlign="TextAlign.Right" AutoFit="true" Format="N2"
+                                                AllowEditing="false" Type="ColumnType.Double"></GridColumn>
+                                    <GridColumn Field=@nameof(StatsModel.StorageSize) HeaderText="Storage Size (Bytes)"
+                                                TextAlign="TextAlign.Right" AutoFit="true" Format="N2"
+                                                AllowEditing="false" Type="ColumnType.Double"></GridColumn>
+                                </GridColumns>
+                                <SfSpinner @bind-Visible="IsLoading">
+                                </SfSpinner>
+                            </SfGrid>
+                        }
+                    </ContentTemplate>
+                </TabItem>
+            </TabItems>
+        </SfTab>
+    </Authorized>
+    <NotAuthorized>
+        <h3>Not Authorised</h3>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    SfGrid<StatsModel> Grid { get; set; }
+    private List<object> toolBar = new() { "ExcelExport", "Search" };
+    List<StatsModel> data = new();
+    private bool IsLoading = true;
+    private double StorageSize = 0;
+    private double DataSize = 0;
+    private double RecordsOnSystem = 0;
+    private string Records = string.Empty;
+
+    public async Task DataToolbarClickHandler(ClickEventArgs args)
+    {
+        if (args.Item.Text == "Excel Export")
+        {
+            var ExcelProperties = new ExcelExportProperties();
+            ExcelProperties.FileName = "ISSB_DataBaseStats.xlsx";
+            await Grid.ExportToExcelAsync(ExcelProperties);
+        }
+    }
+
+    private async Task RefreshData()
+    {
+        IsLoading = true;
+        var statsService = new DBStatsService();
+        data = await statsService.GetStats();
+
+        StorageSize = 0;
+        DataSize = 0;
+        RecordsOnSystem = 0;
+
+        foreach (var item in data)
+        {
+            StorageSize += item.StorageSize;
+            DataSize += item.Size;
+            RecordsOnSystem += item.Count;
+        }
+
+        StorageSize = Math.Round(StorageSize / 1024, 2);
+        DataSize = Math.Round(DataSize / 1024, 2);
+        Records = FormatNumber(RecordsOnSystem);
+
+        IsLoading = false;
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            IsLoading = true;
+            var statsService = new DBStatsService();
+            data = await statsService.GetStats();
+
+            StorageSize = 0;
+            DataSize = 0;
+            RecordsOnSystem = 0;
+
+            foreach (var item in data)
+            {
+                StorageSize += item.StorageSize;
+                DataSize += item.Size;
+                RecordsOnSystem += item.Count;
+            }
+
+            StorageSize = Math.Round(StorageSize / 1024, 2);
+            DataSize = Math.Round(DataSize / 1024, 2);
+            Records = FormatNumber(RecordsOnSystem);
+
+            IsLoading = false;
+            await InvokeAsync(() => { StateHasChanged(); });
+        }
+    }
+
+    private string FormatNumber(double num)
+    {
+        if (num >= 1_000_000_000)
+            return $"{num / 1_000_000_000:F2} Billion";
+        if (num >= 1_000_000)
+            return $"{num / 1_000_000:F2} Million";
+        if (num >= 1_000)
+            return $"{num / 1_000:F2} Thousand";
+        if (num >= 1_00)
+            return $"{num / 1_00:F2} Hundred";
+        return $"{num}";
+    }
+
+}
+
+<style>
+    .e-custom-refresh {
+        border-radius: 0;
+        height: 30px;
+        width: 150px;
+    }
+
+    .e-custom-refresh, .e-custom:hover, .e-custom:focus, .e-custom:active {
+        background-color: green;
+        color: #fff;
+    }
+
+    .skeleton-default .col-sm-6 {
+        padding: 20px;
+        min-height: 150px;
+        position: relative;
+    }
+
+    .skeletonRectangleMediumRight {
+        float: right;
+    }
+
+    .skeletonRectangleMedium {
+        float: left;
+    }
+</style>

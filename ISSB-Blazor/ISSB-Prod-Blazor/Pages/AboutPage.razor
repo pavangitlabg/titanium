@@ -1,0 +1,63 @@
+﻿@page "/about"
+
+<AuthorizeView>
+    <Authorized>
+        <h3>About Page</h3>
+        <SfTab CssClass="default-tab">
+            <TabItems>
+                <TabItem>
+                    <ChildContent>
+                        <TabHeader Text="About"></TabHeader>
+                    </ChildContent>
+                    <ContentTemplate>
+                        <h4>About Info</h4>
+                    </ContentTemplate>
+                </TabItem>
+
+            </TabItems>
+        </SfTab>
+    </Authorized>
+    <NotAuthorized>
+        <h3>NotAbout Page</h3>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await InvokeAsync(() => { StateHasChanged(); });
+        }
+    }
+
+}
+
+<style>
+    .e-custom-refresh {
+        border-radius: 0;
+        height: 30px;
+        width: 150px;
+    }
+
+    .e-custom-refresh, .e-custom:hover, .e-custom:focus, .e-custom:active {
+        background-color: green;
+        color: #fff;
+    }
+
+    .skeleton-default .col-sm-6 {
+        padding: 20px;
+        min-height: 150px;
+        position: relative;
+    }
+
+    .skeletonRectangleMediumRight {
+        float: right;
+    }
+
+    .skeletonRectangleMedium {
+        float: left;
+    }
+</style>

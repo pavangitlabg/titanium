@@ -1,0 +1,203 @@
+﻿
+@using Infragistics.Web.Mvc
+@model IQueryable<Data.Models.OpenAverageExchangeRatesModel>
+<!DOCTYPE html>
+<html>
+<head>
+    <style type="text/css">
+        .headerStyle {
+            text-align: center !important;
+        }
+
+        .numberStyle {
+            text-align: right !important;
+        }
+        .center {
+            margin: auto;
+            width: 60%;
+            border: 3px solid #323030;
+            padding: 10px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            height: 500px;
+            width: 50%;
+        }
+        .optionContainer {
+            display: inline-block;
+        }
+
+        .item {
+            display: inline-block;
+            height: 30px;
+        }
+
+            .item ~ .item {
+                margin-left: 15px;
+            }
+
+        .item-label {
+            display: block;
+            float: right;
+            margin-left: 5px;
+            line-height: 21px;
+        }
+
+        .exporting-overlay {
+            position: absolute;
+            background-color: rgba(181, 181, 181, 0.9);
+            top: 0;
+            left: 0;
+            z-index: 100000;
+            text-align: center;
+            vertical-align: top;
+            padding-top: 100px;
+        }
+
+            .exporting-overlay:after {
+                content: "";
+                display: inline-block;
+                vertical-align: middle;
+                height: 100%;
+            }
+
+        .exporting-text {
+            font-size: 46px;
+            font-weight: bold;
+            vertical-align: top;
+        }
+    </style>
+
+    <script id="dialogTemplate" type="text/html">
+
+        <div style="        float: left;">
+            <table style="        width: 100%;">
+                <colgroup>
+                    <col style="        width: 30%;" />
+                    <col style="        width: 70%;" />
+                </colgroup>
+                <tbody data-render-tmpl="true">
+                </tbody>
+            </table>
+        </div>
+    </script>
+
+    <script id="editorsTemplate" type="text/html">
+        <tr>
+            <td><strong>${headerText}</strong></td>
+            <td><input data-editor-for-${key}="true" /></td>
+        </tr>
+    </script>
+
+</head>
+<body>
+
+    @{
+        ViewData["Title"] = "Exchange Rates";
+    }
+
+    <div class="content-header">
+        <h2>@ViewData["Title"]</h2>
+
+    </div>
+
+ @(Html.Infragistics().TreeGrid(Model)
+        .ID("treegrid1")
+        .Height("600px")
+        .Width("100%")
+        .AutoGenerateColumns(false)
+        .PrimaryKey("ReportDate")
+        //.ForeignKey("Date")
+        .ChildDataKey("Rates")
+        .RenderExpansionIndicatorColumn(true)
+        .InitialExpandDepth(0)
+        .Columns(column =>
+        {
+            column.For(x => x._id).Hidden(true);
+            column.For(x => x.Currency).HeaderText("Currency").Width("10%");
+            column.For(x => x.Country).HeaderText("Name").Width("25%");
+            column.For(x => x.Value).HeaderText("Value").Width("20%").Format("#,##0.0000").HeaderCssClass("numberStyle").ColumnCssClass("numberStyle"); ;
+            column.For(x => x.Date).HeaderText("Date Modified").Width("20%");
+            column.For(x => x.ReportDate).HeaderText("Report Date").Width("20%");
+
+        })
+         .Features(features =>
+         {
+             //features.Paging().Type(OpType.Local).Mode(TreeGridPagingMode.AllLevels).PageSize(50);
+             features.Filtering().Type(OpType.Local).DisplayMode(TreeGridFilteringDisplayMode.ShowWithAncestorsAndDescendants);
+             // features.Sorting().Type(OpType.Local);
+         })
+        .DataBind()
+        .Render()
+    )
+
+     <hr />
+        <div class="form-group row">
+            <div class="col-md-5">
+                <button id="refreshBtn" class="btn btn-outline-primary btn-md">Refresh Rates &nbsp;<span><i class="fas fa-sync"></i></span></button>
+                <button id="exportButton" class="btn btn-outline-success btn-md">Export to Excel &nbsp;<span><i class="fas fa-file-export"></i></span></button>
+            </div>                       
+        </div>      
+
+    <script>$(function () {
+
+        $("#refreshBtn").on("click", function () {
+            window.location.href = 'ExchangeRate/RebuildRates';
+            return false;
+        });
+
+        $("#exportButton").on("click", function () {
+            var exportingOverlay = $('<div>');
+            $.ig.GridExcelExporter.exportGrid($("#treegrid1"), {
+                columnsToSkip: ["_id"],
+                fileName: "ExchangeRateData",
+                worksheetName: "ExchangeRate",
+
+                gridFeatureOptions: { sorting: "applied", filtering: "applied" },
+            },
+                {
+                    exportStarting: function (e, args) {
+                        showOverlay(args.grid, exportingOverlay);
+                    },
+                    success: function () {
+                        hideOverlay(exportingOverlay);
+                    },
+                    cellExported: function (e, args) {
+                        if (args.xlRow.index() == 0) {
+                            return;
+                        }
+
+                    },
+                    exportEnding: function (e, args) {
+                        //args.worksheet.columns().item(2).cellFormat().formatString("dd-MM-yyyy");
+                        //args.worksheet.columns().item(3).cellFormat().formatString("dd-MM-yyyy");
+                    },
+                });
+
+        });
+
+        function showOverlay(grid, exportingOverlay) {
+            var $gridContainer = $('#' + grid.attr('id') + '_container');
+
+            exportingOverlay.css({
+                "width": $gridContainer.outerWidth(),
+                "height": $gridContainer.outerHeight()
+            }).html('<span class="exporting-text">Exporting...</span>');
+            exportingOverlay.addClass("exporting-overlay");
+
+            $gridContainer.append(exportingOverlay);
+        }
+        function hideOverlay(exportingOverlay) {
+            exportingOverlay.remove();
+        }       
+
+    });</script>
+
+    <script></script>
+</body>
+</html>

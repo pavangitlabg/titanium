@@ -1,0 +1,26 @@
+﻿
+@model Data.Models.ReportOutModelJsonModel
+
+<!DOCTYPE html>
+<html>
+@{
+    // Layout = "~/Views/Shared/_ReportLayout.cshtml";
+    Layout = "";
+}
+<head>
+    <script src="https://unpkg.com/chart.js@2.7.3/dist/Chart.min.js"></script>
+    <style>
+       @Html.Raw(Model.CSS)
+    </style>
+</head>
+<body>
+    @Html.Raw(Model.HTML)
+    <script>
+    @Html.Raw(Model.JQUERY)
+    </script>
+</body>
+</html>
+
+
+
+

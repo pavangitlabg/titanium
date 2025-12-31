@@ -1,0 +1,526 @@
+﻿@using Infragistics.Web.Mvc
+@model IQueryable<Data.Models.ProductAllFilterModel>
+@{
+    ViewData["Title"] = "Broad Product Filters";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+
+
+        .icon-trash {
+            width: 48px;
+            height: 48px;
+            position: relative;
+            overflow: hidden;
+            margin-left: 25px;
+            margin-bottom: 25px;
+        }
+
+            .icon-trash .trash-lid {
+                width: 62%;
+                height: 10%;
+                position: absolute;
+                left: 50%;
+                margin-left: -31%;
+                top: 10.5%;
+                background-color: #000;
+                border-top-left-radius: 80%;
+                border-top-right-radius: 80%;
+                -webkit-transform: rotate(-5deg);
+                -moz-transform: rotate(-5deg);
+                -ms-transform: rotate(-5deg);
+                transform: rotate(-5deg);
+            }
+
+                .icon-trash .trash-lid:after {
+                    content: "";
+                    width: 26%;
+                    height: 100%;
+                    position: absolute;
+                    left: 50%;
+                    margin-left: -13%;
+                    margin-top: -10%;
+                    background-color: inherit;
+                    border-top-left-radius: 30%;
+                    border-top-right-radius: 30%;
+                    -webkit-transform: rotate(-1deg);
+                    -moz-transform: rotate(-1deg);
+                    -ms-transform: rotate(-1deg);
+                    transform: rotate(-1deg);
+                }
+
+            .icon-trash .trash-container {
+                width: 56%;
+                height: 65%;
+                position: absolute;
+                left: 50%;
+                margin-left: -28%;
+                bottom: 10%;
+                background-color: #000;
+                border-bottom-left-radius: 15%;
+                border-bottom-right-radius: 15%;
+            }
+
+                .icon-trash .trash-container:after {
+                    content: "";
+                    width: 110%;
+                    height: 12%;
+                    position: absolute;
+                    left: 50%;
+                    margin-left: -55%;
+                    top: 0;
+                    background-color: inherit;
+                    border-bottom-left-radius: 45%;
+                    border-bottom-right-radius: 45%;
+                }
+
+            .icon-trash .trash-line-1 {
+                width: 4%;
+                height: 50%;
+                position: absolute;
+                left: 38%;
+                margin-left: -2%;
+                bottom: 17%;
+                background-color: #252527;
+            }
+
+            .icon-trash .trash-line-2 {
+                width: 4%;
+                height: 50%;
+                position: absolute;
+                left: 50%;
+                margin-left: -2%;
+                bottom: 17%;
+                background-color: #252527;
+            }
+
+            .icon-trash .trash-line-3 {
+                width: 4%;
+                height: 50%;
+                position: absolute;
+                left: 62%;
+                margin-left: -2%;
+                bottom: 17%;
+                background-color: #252527;
+            }
+    </style>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        .column {
+            float: left;
+            width: 50%;
+            padding: 10px;
+            height: auto;
+        }
+
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+    </style>
+
+
+    <style type="text/css">
+
+
+        .clear {
+            clear: both;
+        }
+
+        #trash {
+            margin-top: 10px;
+            height: 50px;
+            padding: 1%;
+        }
+
+        .containerTree {
+            margin-top: 10px;
+            overflow: auto;
+        }
+
+        #tree {
+            width: 500px;
+        }
+
+        #left {
+            margin-right: 150px;
+        }
+
+        #right {
+            width: 150px;
+            float: right;
+        }
+
+        .containerModalDialog {
+            overflow: auto;
+            width: 220px;
+            margin: 0 auto;
+            padding-top: 5px;
+            height: 35px;
+        }
+
+        #leftYes {
+            float: left;
+        }
+
+        #rightNo {
+            float: right;
+        }
+
+        @@media screen and (max-width: 500px) {
+            #right {
+                float: none;
+            }
+
+            #trash {
+                margin-bottom: 10px;
+            }
+
+            .containerModalDialog {
+                width: 160px;
+            }
+
+                .containerModalDialog #leftYes, .containerModalDialog #rightNo {
+                    width: 70px;
+                }
+
+            #yesModalDialog, #noModalDialog {
+                width: 65px !important;
+            }
+        }
+    </style>
+
+
+</head>
+<body>
+
+    <div class="content-header">
+        <h2>@ViewData["Title"]</h2>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-5">
+            <div class="card card-outline card-success">
+
+                @*<div class ="column" style="background-color: #ffffff;">*@
+
+                <div class="card-body">
+                    <div id="trash" class="icon-trash" style="float: left">
+                        <div class="trash-lid" style="background-color: #02A7D7"></div>
+                        <div class="trash-container" style="background-color: #02A7D7"></div>
+                        <div class="trash-line-1"></div>
+                        <div class="trash-line-2"></div>
+                        <div class="trash-line-3"></div>
+                    </div>
+                    @*<h4>Broad filter details</h4>*@
+
+
+                    @(Html.Infragistics().Tree()
+                                                .ID("tree")
+                                                .DataSource(@ViewData["TreeData"])
+                                                .CheckboxMode(CheckboxMode.TriState)
+                                                .SingleBranchExpand(true)
+                                                .DragAndDrop(true)
+                                                .Height("470px")
+                                                .DragAndDropSettings(d =>
+                                                {
+                                                    d.DragAndDropMode(DragAndDropMode.Move);
+                                                        //d.Revert(true);
+                                                        d.CustomDropValidation("customDropValidation");
+                                                })
+                                                .PathSeparator('.')
+
+                                                .Bindings(b =>
+                                                    b.PrimaryKey("Idx")
+                                                    .TextKey("Name")
+                                                    .ValueKey("Name")
+                                                    .ChildDataProperty("Items")                                                    
+                                                    .Bindings(b2 =>
+                                                        b2.TextKey("Description").PrimaryKey("Idx")
+                                                        .ValueKey("Idx")
+                                                    )
+                                                )
+
+                                                .DataBind()
+                                                .Render()
+                    )
+
+                    <!--igDialog target element-->
+                    <div id="modalDialog">
+                        <div class="containerModalDialog">
+                            <div id="leftYes">
+                                <button id="yesModalDialog">
+                                </button>
+                            </div>
+
+                            <div id="rightNo">
+                                <button id="noModalDialog">
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-2">
+           <div class="form-group row">
+               <div class="btn-group-vertical col-md-10 offset-sm-1" style="margin-top: 100%">
+                   <!--     <button id="addSCBtn" type="button" class="btn btn-outline-success">&nbsp Add<span><i class="fas fa-angle-double-right"></i></span></button>
+             <button id="removeSCBtn" type="button" class="btn btn-outline-danger"><span><i class="fas fa-angle-double-left"></i>Remove &nbsp</span></button>
+        -->
+               </div> 
+               </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="card card-outline card-danger">
+                @*<div class="column" style="background-color:#ffffff;">*@
+                <div class="card-header">
+                    <button id="copyBtn" class="btn btn-outline-primary btn-sm">Copy Selected</button>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fas fa-minus"></i></button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @(Html.Infragistics().Grid(Model)
+                                 .ID("Products")
+                                 .Width("100%")
+                                 .Height("500px")
+                                 .DataBind()
+                                 .PrimaryKey("Idx")
+                                 .AutoGenerateColumns(false)
+                                 .AutoGenerateLayouts(false)
+                                 .Columns(column =>
+                                 {
+                                     column.For(x => x.Idx).HeaderText("").Width("10%");
+                                     column.For(x => x.TariffCode).HeaderText("Tariff Code").Width("20%");
+                                     column.For(x => x.Name).HeaderText("Name").Width("20%");
+
+                                 })
+                                 .Features(features =>
+                                 {
+                                     features.Sorting().Type(OpType.Local).Mode(SortingMode.Multiple);
+                                     features.Sorting().Type(OpType.Local);
+                                     features.Paging().Type(OpType.Local);
+                                     features.Filtering().Type(OpType.Local);
+
+                                     features.Selection().MultipleSelection(true);
+                                     features.Selection().Mode(SelectionMode.Row);
+                                         // features.GroupBy().Type(OpType.Local);
+
+                                     })
+
+                                .Render())
+                </div>
+            </div>
+        </div>
+    </div>
+    @*</div>*@
+
+
+
+    <script>
+        $(function () {
+
+            var helperText,selectedCode;
+
+            // Initialize the igDialog
+            $("#modalDialog").igDialog({
+                imageClass: "ui-icon ui-icon-alert",
+                state: "closed",
+                modal: true,
+                draggable: true,
+                resizable: false
+            });
+
+            $("#yesModalDialog").igButton({ labelText: "Yes", width: 80 });
+            $("#noModalDialog").igButton({ labelText: "No", width: 80 });
+
+            $("#yesModalDialog").on("click", function (e) {
+
+                var node = $("#tree").igTree("selectedNode");
+
+                if(node.path == null)
+                {
+                   return;
+                }
+
+               @*if (node.path.indexOf(".") >= 0)
+               {
+                   return;
+               }*@
+
+                $("#tree").igTree("removeAt", node.path);
+
+                var nPath = node.path;
+                $.ajax({
+                        type: "GET",
+                        url: '@Url.Action("Delete", "ProductFilter")',
+                        async: false,
+                        data: { nodePath: nPath },
+                        dataType: "json",
+                        success: function (data) {
+                            // alert(data.success);
+                            $("#modalDialog").igDialog("close");
+                             window.location.href = '/ProductFilter/BroadFilter';
+
+
+                           // $("#tree").igTree('option', 'dataSource', data);
+                           // $("#tree").igTree('dataBind');
+                        }
+
+                });
+
+
+
+                //$("#tree").igTree('option', 'dataSource', '@ViewData["TreeData"]');
+               // $("#tree").igTree('dataBind');
+              // $("#modalDialog").igDialog("close");
+              // window.location.href = '/ProductFilter/BroadFilter';
+            });
+
+            $("#noModalDialog").on("click", function (e) {
+
+                $("#modalDialog").igDialog("close");
+            });
+
+            $("#trash").droppable({
+                tolerance: "pointer",
+                activeClass: "ui-state-highlight",
+                accept: function (element) {
+                    var path = $(element).attr("data-path");
+
+                    if (path == "0") {
+
+                        return false;
+                    }
+
+                    return true;
+                },
+                over: function (event, ui) {
+                    markup = $(ui.helper.html());
+                    markup.find("span").removeClass("ui-icon-cancel").addClass("ui-icon-trash").siblings("strong");
+                    ui.helper.
+                        removeClass("ui-widget ui-igtree-dropindicator ui-state-error ui-corner-all").
+                        addClass("ui-widget ui-igtree-dropindicator ui-state-highlight ui-corner-all").
+                        html(markup);
+                },
+                out: function (event, ui) {
+                    markup = $(ui.helper.html());
+                    markup.find("span").removeClass("ui-icon-trash").addClass("ui-icon-cancel").siblings("strong");
+
+                    ui.helper.
+                        removeClass("ui-widget ui-igtree-dropindicator ui-state-highlight ui-corner-all").
+                        addClass("ui-widget ui-igtree-dropindicator ui-state-error ui-corner-all").
+                        html(markup);
+                },
+                drop: function (event, ui) {
+                    helperText = ui.helper.text();
+
+
+                    var displayText = helperText.split(" -");
+                    // alert(displayText[0]);
+
+                    if (helperText.indexOf(" - ") >= 0) {
+                        $("#modalDialog").igDialog("option", "headerText", displayText[0] + " Delete?");
+                        $("#modalDialog").igDialog("open");
+                    }
+
+                }
+            });
+
+
+
+         $("#Products").click(function (evt) {
+
+                var row = $('#Products').igGridSelection("activeRow");
+
+                selectedCode = $("#Products").igGrid("getCellValue", row.id, "TariffCode") + " - " + $("#Products").igGrid("getCellValue", row.id, "Name");
+
+          });
+
+          $("#copyBtn").click(function () {
+               var node = $("#tree").igTree("selectedNode");
+               if (node.path != null)
+                   {
+                       if (node.path.indexOf(".") >= 0)
+                       {
+                           return;
+                       }
+                       if(selectedCode == null)
+                        {
+                            return;
+                        }
+
+                      var parentNode = $("#tree").igTree("selectedNode").element;
+                      if (parentNode != null) {
+                          $("#tree").igTree("addNode", { Description:  selectedCode }, parentNode);
+                          $("#tree").igTree("expand", parentNode);
+                      }
+
+
+                     $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("SaveNode", "ProductFilter")',
+                        async: false,
+                        data: { nodeText: selectedCode , nodePath: node.path },
+                        dataType: "json",
+                        success: function (data) {
+                             //alert(data.success);
+                            // $("#tree").igTree('option', 'dataSource', '');
+                            // $("#tree").igTree('dataBind');
+                        }
+
+                        });
+                   }
+
+          });
+
+        });</script>
+
+    <script>function customDropValidation(element) {
+            // alert(element);
+            // Validates the drop target
+            var droppableNode = $(this),
+                draggableNode = $(element),
+                listContainer = droppableNode.closest("ul");
+
+            if (draggableNode.attr("data-path") == "0") {
+                return false;
+            }
+
+            deletedNode = $("#tree").igTree("findNodesByText", "Deleted");
+            if (deletedNode.length > 0) {
+                var nodePathArray = draggableNode.attr("data-path").split(".");
+                var deletedNodePathArray = deletedNode[0].path.split(".");
+                if (nodePathArray[0] == deletedNodePathArray[0] &&
+                    nodePathArray[1] == deletedNodePathArray[1]) {
+                    return false;
+                }
+            }
+
+            if (droppableNode.is('a') && droppableNode.closest('li[data-role=node]').attr('data-value') === 'File') {
+                return false;
+            }
+
+            if (!droppableNode.is('a') && listContainer.length && listContainer.attr("data-depth") === "0") {
+                return false;
+            }
+
+            return true;
+        }</script>
+
+
+</body>
+</html>

@@ -1,0 +1,111 @@
+﻿@using Infragistics.Web.Mvc
+@model Data.Models.DashBoardLayOutModel
+@{
+
+    ViewData["Title"] = "Add Port Record";
+
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+
+        h3 {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div class="card-header">
+            <div class="content-header">
+                <h2>@ViewData["Title"]</h2>
+                <h3>@ViewData["Message"]</h3>
+                <hr />
+
+                @using (Html.BeginForm("Save", "DashBoardCreator"))
+    {
+            @Html.HiddenFor(x => x.ID, new { id = "Id" })
+            <div class="form-horizontal">
+
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div style="width: 50%; margin-top:5%; margin-left:25%; margin-right:25%" class="needs-validation">
+                    <fieldset>
+                        <div class="form-group">
+
+                            <div class="editor-label">
+                                @Html.LabelFor(u => u.ID, htmlAttributes: new { @class = "control-label " })
+                            </div>
+
+                            <div class="editor-field">
+                                @(Html.Infragistics().NumericEditor()
+                .ID("ID")
+                .DataMode(NumericEditorDataMode.Int)
+                .Value(Model.ID)
+                .AddClientEvent(NumericEditorClientEvents.ValueChanged, "changingValue")
+                .Render())
+
+                                @Html.ValidationMessageFor(u => u.ID, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="editor-label">
+                                @Html.LabelFor(u => u.Description, htmlAttributes: new { @class = "control-label" })
+                            </div>
+                            <div class="editor-field">
+
+                                @Html.Infragistics().TextEditorFor(u => u.Description).Render()
+                                @Html.ValidationMessageFor(u => u.Description, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+
+
+                        <div class="form-group">
+                            <div class="editor-label">
+                                @Html.LabelFor(u => u.HTML, htmlAttributes: new { @class = "control-label" })
+                            </div>
+                            <div class="editor-field">
+
+                                @Html.Infragistics().TextEditorFor(u => u.HTML).Render()
+
+                                @Html.ValidationMessageFor(u => u.HTML, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="editor-label">
+                                @Html.LabelFor(u => u.ImageUrl, htmlAttributes: new { @class = "control-label" })
+                            </div>
+                            <div class="editor-field">
+
+                                @Html.Infragistics().TextEditorFor(u => u.ImageUrl).Render()
+
+                                @Html.ValidationMessageFor(u => u.ImageUrl, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="submit" class="btn btn-primary btn-md " form-control" value="Save" />
+                        </div>
+                    </fieldset>
+                    <br />
+                </div>
+            </div>
+}
+            </div>
+        </div>
+    </div>
+
+    <script>function changingValue() {
+
+            var portID = $("#ID").igNumericEditor("value");
+            $("#Id").val(portID);
+
+        }</script>
+</body>
+</html>
+

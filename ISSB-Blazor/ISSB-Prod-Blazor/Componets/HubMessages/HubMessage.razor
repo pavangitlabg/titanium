@@ -1,0 +1,70 @@
+
+@using Microsoft.AspNetCore.SignalR.Client
+@using Syncfusion.Blazor.ProgressBar
+
+@inject NavigationManager Nav
+
+@if (_isVisable)
+{
+    <div style="border: 1px solid black; padding: 10px; margin: 10px;color: white;background: #34568B">
+        <h5>File Import Status</h5>
+        <h6>@HeaderMessage</h6>
+        
+        <SfProgressBar Height="50px" Width="100%" Value="@_progressPercentage" Type="ProgressType.Linear"
+                       TrackThickness="15"
+                       ProgressThickness="15">
+            <ProgressBarAnimation Enable="true" Duration="2000" Delay="0"/>
+            
+        </SfProgressBar>
+        <div>Progress: @(_progressPercentage.ToString("0.0"))%</div>
+    </div>
+}
+
+@code {
+    private HubConnection _hubConnection;
+
+    //private HubMessageModel _message = new();
+    private double _progressPercentage = 0;
+    private bool _isVisable = false;
+    private string HeaderMessage { get; set; } = string.Empty; 
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Create the connection to the same host
+        _hubConnection = new HubConnectionBuilder()
+            .WithUrl(Nav.ToAbsoluteUri("/hubs/messagehub"))
+            .WithAutomaticReconnect()
+            .Build();
+
+        try
+        {
+            await _hubConnection.StartAsync();
+
+            if (_hubConnection.State == HubConnectionState.Connected)
+            {
+                _hubConnection.On<HubMessageModel>("MessageReceived", (model) =>
+                {
+                    Task.Run(async () =>
+                    {
+                        HeaderMessage = model.Message.ToString();
+                        _progressPercentage = model.Progress;
+                        _isVisable = model.IsVisible;
+                        await Task.Delay(1000);
+                        await InvokeAsync(StateHasChanged);
+                    });
+
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            HeaderMessage = "Error connecting to hub";
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_hubConnection is not null)
+            await _hubConnection.DisposeAsync();
+    }
+}
