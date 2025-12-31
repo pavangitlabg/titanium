@@ -1,0 +1,54 @@
+<div class="card-body">
+    <div class="form-group">
+
+        <div class="form-row">
+            <div class="bar-horizontal">
+                <div class="form-group col-md-3">
+                    <SfRadioButton Label="Select Imports Only" Name="tfgroup" Value="SelectImportsOnly" TChecked="string" @onchange="SelectGroup" @bind-Checked="SelectGroupType"></SfRadioButton>
+                </div>
+                <div class="form-group col-md-6">
+                    <SfRadioButton Label="Select Exports Only" Name="tfgroup" Value="SelectExportsOnly" TChecked="string" @onchange="SelectGroup" @bind-Checked="SelectGroupType"></SfRadioButton>
+                </div>
+                <div class="form-group col-md-6">
+                    <SfRadioButton Label="Select Both Imports and Exports" Name="tfgroup" Value="SelectBothImportsandExports" TChecked="string" @onchange="SelectGroup" @bind-Checked="SelectGroupType"></SfRadioButton>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@code {
+    [Parameter] public EventCallback<object> OnMessage { get; set; }
+    [Parameter] public QueryModel Data { get; set; }
+    [Parameter] public SavedQueryModel ReportModel { get; set; }
+    
+    private string SelectGroupType { get; set; }
+    
+    private async Task SelectGroup(Microsoft.AspNetCore.Components.ChangeEventArgs args)
+    {
+        await NotifyParent();
+    }
+    
+    private async Task NotifyParent()
+    {
+        
+        var delegateModel = new SelectionQueryModel
+        {
+            Id = "TF",
+            SelectedSourceCountries = new List<SaveQuerySourceCountriesModel>(),
+            SelectedMarketCountries = new List<SaveQueryMarketCountriesModel>(),
+            Selection = SelectGroupType
+        };
+        
+        if (OnMessage.HasDelegate)
+        {
+            await OnMessage.InvokeAsync(delegateModel);
+        }
+    }
+    
+    protected override async void OnInitialized()
+    {
+        SelectGroupType = ReportModel.TradeFlowType;
+    }
+}

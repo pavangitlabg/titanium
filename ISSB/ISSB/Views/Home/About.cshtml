@@ -1,0 +1,49 @@
+﻿@{
+    ViewData["Title"] = "About Us";
+}
+
+<html>
+<body>
+    <style>
+        #pp {
+            float: right;
+            margin-top: -45px;
+        }
+    </style>
+    <div class="container-fluid row mb-2">
+        <div class="col-md-12">
+            <button id="pp" class="btn btn-md btn-primary btn-border" onclick=" printtag('printArea')" target="_blank"><span class="btn-label"><i class="fas fa-print"></i></span>Print</button>
+        </div>
+    </div>    
+        <div class="card">
+            <div class="card-header">
+                <h3>@ViewData["Title"]</h3>
+            </div>
+            <div class="container py-5">
+                <p>
+                    ISSB offers a wide range of publications and custom reports covering UK, European and Global trade in steel and raw materials.
+                    The company maintains a comprehensive database of international trade in steel and steelmaking products. Any queries regarding any aspects of ISSB's trade data, please use the contact us page and one of our team will get back to you.
+                </p>
+
+                <p>
+                    Clients include companies within the industry; suppliers and consuming sectors; consultancies; financial and investment businesses; shipping companies; the European Commission and the UK Government. ISSB is also able to provide speakers to present analysis of latest statistical trends for national and international conferences and events. For more information, please use the contact us page and one of our team will get back to you.
+                </p>
+
+                <hr />
+                <p><strong>Geographic Coverage and Product Categories</strong></p>
+                <p>
+                    The company maintains a detailed database of the imports and exports of steel and steelmaking raw materials for more than 60 major steel producing nations, collectively accounting for 97% of global steel output.  This high level of coverage also allows an accurate assessment of the trade flows for those countries where national trade data is not readily available and enables ISSB to map the worlds movements of steel and steelmaking raw materials.
+                    Please download our country and product guides for full details of our coverage:
+                </p>
+                <p>
+                    <a href="~/resources/Pdf/ISSB_COUNTRY_GUIDE.pdf" target="_blank">ISSB Country Guide</a>
+                    <br />
+                    <a href="~/resources/Pdf/ISSB_PRODUCT_CODES.pdf" target="_blank">ISSB Product Guide</a>
+                </p>
+                <p>
+                    ISSB holds trade data at 6-digit HS tariff code level (and to 8-digit CN tariff code level for EU countries) and can analyse the international movements of steel and steelmaking raw materials using any combination of tariffs and any combination of countries.
+                </p>
+            </div>
+        </div>    
+</body>
+</html>

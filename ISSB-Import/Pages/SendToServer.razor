@@ -1,0 +1,176 @@
+﻿@page "/sendtoserver"
+@using Services
+@using Data.Models
+@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Notifications
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.Spinner
+@using Syncfusion.Blazor.Cards
+
+<h1>Send to server</h1>
+@if (!IsLocked)
+{
+    <SfTab>
+        <TabItems>
+            <TabItem>
+                <ChildContent>
+                    <TabHeader Text="Staging Data">
+                    </TabHeader>
+                </ChildContent>
+                <ContentTemplate>
+                    <SfGrid @ref="Grid"
+                            DataSource="dataList"
+                            TValue="FinalImportModel"
+                            Toolbar="@toolBar"
+                            ShowColumnChooser="true"
+                            AllowPaging="true"
+                            AllowSorting="true"
+                            AllowFiltering="true"
+                            AllowExcelExport="true"
+                            AllowPdfExport="false"
+                            AllowSelection="true"
+                            AllowGrouping="true"
+                            Height="450"
+                            Width="Auto">
+                        @*<GridPageSettings PageCount="10" PageSize="15"></GridPageSettings>*@
+                        <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Excel"></GridFilterSettings>
+                        <GridPageSettings PageCount="10"></GridPageSettings>
+                        <GridEvents OnToolbarClick="DataToolbarClickHandler" TValue="FinalImportModel"></GridEvents>
+                        @*<GridEvents DataBound="OnChapterDataBound" RowSelected="GetSelectedChapterRecords" TValue="ChaptersModel"></GridEvents>*@
+                    <GridColumns>
+
+                        <GridColumn Field=@nameof(FinalImportModel.Id1) HeaderText="Id" IsPrimaryKey="true" Visible="true" TextAlign="TextAlign.Left" AutoFit="true" Width="120"></GridColumn>
+                        <GridColumn Field=@nameof(FinalImportModel.DataFlow) HeaderText="Data Flow" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        <GridColumn Field=@nameof(FinalImportModel.TIME_ID) HeaderText="Time ID" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.Integer"></GridColumn>
+                        <GridColumn Field=@nameof(FinalImportModel.IMPORT_TARIFF) HeaderText="Product" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        <GridColumn Field=@nameof(FinalImportModel.LastUpdate) HeaderText="Last Update" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        <GridColumn Field=@nameof(FinalImportModel.Freq) HeaderText="Freq" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        <GridColumn Field=@nameof(FinalImportModel.Reporter) HeaderText="Reporter" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        <GridColumn Field=@nameof(FinalImportModel.Partner) HeaderText="Partner" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        <GridColumn Field=@nameof(FinalImportModel.SC_GEO) HeaderText="Source Country" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        <GridColumn Field=@nameof(FinalImportModel.MC_GEO) HeaderText="Market Country" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+
+                        <GridColumn Field=@nameof(FinalImportModel.SIDE_OF_TRADE) HeaderText="Flow" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        <GridColumn Field=@nameof(FinalImportModel.Qty) HeaderText="Qty KG" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        <GridColumn Field=@nameof(FinalImportModel.Value) HeaderText="Value Euro" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+
+                        <GridColumn Field=@nameof(FinalImportModel.TimePeriod) HeaderText="Time Period" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        <GridColumn Field=@nameof(FinalImportModel.BATCH_NO) HeaderText="Batch No" TextAlign="TextAlign.Right" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.Integer"></GridColumn>
+                    </GridColumns>
+                        <SfSpinner @bind-Visible="@IsLoading"></SfSpinner>
+                    </SfGrid>
+                    <div style="padding-top:1%">
+                        @*<SfButton @ref="BtnBack" @onclick="Back" CssClass="e-flat" IsPrimary="true" Content="Back"></SfButton>*@
+                        @*<SfButton @ref="BtnPost" @onclick="PostData" CssClass="e-flat" Disabled="IsLoading" IsPrimary="true" Content="Post to Staging Data"></SfButton>*@
+                    </div>
+                </ContentTemplate>
+            </TabItem>
+            <TabItem>
+                <ChildContent>
+                    <TabHeader Text="Batch Upload">
+                    </TabHeader>
+                </ChildContent>
+                <ContentTemplate>
+                    <div class="row">
+                        <div class="column">
+                            <div class="form-row">
+                                <SfCard Title="Address">
+                                    <CardHeader Title="Batch Details">
+                                    </CardHeader>
+                                    <CardContent>
+                                        <SfNumericTextBox ID="InvoiceNo" Placeholder="Next Batch Number" @bind-Value="@(BatchNumber)" Enabled="false" FloatLabelType="FloatLabelType.Always" Width="200px"></SfNumericTextBox>
+                                    </CardContent>
+                                    <CardFooter>
+                                        <CardFooterContent>
+                                            <SfButton CssClass="e-btn e-outline e-primary" Disabled="IsLoading" OnClick="@PostBatch">Post Batch</SfButton>
+                                            <p style="color:red">@StatusMessage</p>
+                                            @foreach (var Item in codesNotFound)
+                                            {
+                                                <p style="color:red">@Item</p>
+                                            }
+                                        </CardFooterContent>
+                                    </CardFooter>
+                                </SfCard>
+                            </div>
+                        </div>
+                    </div>
+
+                </ContentTemplate>
+            </TabItem>
+        </TabItems>
+    </SfTab>
+}
+else
+{
+    <h5 style="color:Red">System is Processing, try again later.</h5>
+}
+@code {
+
+    SfGrid<FinalImportModel> Grid;
+    bool IsLoading = false;
+    bool IsLocked = false;
+    string StatusMessage { get; set; } = string.Empty;
+    public long BatchNumber { get; set; } = 0;
+    SystemControlModel systemControl { get; set; } = new SystemControlModel();
+    private List<object> toolBar = new List<object> { "Search", "ExcelExport", "ColumnChooser" };
+
+    private List<string> codesNotFound { get; set; } = new List<string>();
+    public List<FinalImportModel> dataList { get; set; } = new List<FinalImportModel>();
+
+    public async Task DataToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
+    {
+        if (args.Item.Text == "Excel Export")
+        {
+            await Grid.ExportToExcelAsync();
+        }
+    }
+
+    async Task PostBatch()
+    {
+        IsLoading = true;
+        StatusMessage = "Updating data to TES. Please wait...";
+
+        var tDataSrv = new TradeDataService();
+        var bResult = await tDataSrv.UpsertToProduction((int)BatchNumber);
+        if (!bResult.Posted)
+        {
+            StatusMessage = bResult.ErrorCode;
+        }
+        else
+        {
+            StatusMessage = "Data Import Complete";
+            codesNotFound = bResult.CodesNotFound;
+        }
+        IsLoading = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var stSrv = SystemLockService.Instance;
+            var sModel = await stSrv.GetLockStatus();
+            IsLocked = sModel.IsProcessing;
+            IsLoading = true;
+            var flSrv = new ImportService();
+            dataList = await flSrv.GetUnposted();
+            var sysSrv = new SystemControlService();
+            systemControl = await sysSrv.GetSystemControl();
+            BatchNumber = systemControl.ImportBatch + 1;
+            IsLoading = false;
+            await InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+        }
+
+        //return base.OnAfterRenderAsync(firstRender);
+    }
+}
+

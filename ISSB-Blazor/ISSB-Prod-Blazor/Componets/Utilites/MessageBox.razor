@@ -1,0 +1,39 @@
+
+    @if (MessageModel != null)
+    {
+            <SfToast @ref="_toastInstance" Width="400px" Timeout="ToastTimeout" ShowCloseButton="true">
+                <ToastPosition X="@MessageModel.PosX" Y="@MessageModel.PosY"></ToastPosition>
+                <ToastTemplates>
+                    <Template>
+                        <div class="toast-rows">
+                            <div class="@MessageModel.Style">
+                                <h2>@MessageModel.Title</h2>
+                            </div>
+                            <hr/>
+                            <div class="toast-row toast-container ">
+                                <h4>@MessageModel.Content</h4>
+                            </div>
+                        </div>
+                    </Template>
+                </ToastTemplates>
+            </SfToast>
+    }
+
+    @code {
+
+        [Parameter] public MessageModel MessageModel { get; set; } = new();
+        private const int ToastTimeout = 2000; // Extract Constant for Timeout
+        private SfToast _toastInstance; // Renamed for clarity
+
+        protected override async Task OnAfterRenderAsync(bool firstRender)
+        {
+            await InitializeToast();
+        }
+
+        private async Task InitializeToast() // Extract Method
+        {
+            await _toastInstance.ShowAsync();
+        }
+
+    }
+

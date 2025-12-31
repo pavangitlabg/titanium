@@ -1,0 +1,111 @@
+<h3>SaveUpdateComponent</h3>
+<form class="form-horizontal" id="saveQform">
+    <div class="form-row">
+        <SfTextBox Placeholder="Name" @bind-Value="@(ReportModel.Name)"
+                   FloatLabelType="FloatLabelType.Always"></SfTextBox>
+        <br/>
+    </div>
+    
+    <div class="form-row">
+        <SfTextBox Placeholder="Description" @bind-Value="@(ReportModel.Description)"
+                   FloatLabelType="FloatLabelType.Always"></SfTextBox>
+        <br/>
+    </div>
+    <div class="form-row">
+        <SfTextArea Placeholder="Comments"
+                    @bind-Value="@(ReportModel.Comments)"
+                    FloatLabelType="FloatLabelType.Always"
+                    RowCount="5"
+                    Width="100%"
+                    CssClass="e-custom-textarea">
+        </SfTextArea>
+        <br/>
+    </div>
+    <div class="form-row">
+        <br/>
+        <div class="form-group col-md-3">
+        <fieldset>
+            <SfCheckBox Label="Run in Schedule" @bind-Checked="@IsScheduled"></SfCheckBox>
+            <SfComboBox TValue="SheduleDayModel"
+                        TItem="SheduleDayModel"
+                        DataSource="@Data.SheduleDays"
+                        Placeholder="Select Day"
+                        Width="50%"
+                        ValueChanged="@(new EventCallback<SheduleDayModel>(this, DayChanged))">
+                <ComboBoxFieldSettings Text="Day"
+                                       Value="Code"></ComboBoxFieldSettings>
+            </SfComboBox>
+        </fieldset>
+        </div>
+    </div>
+
+</form>
+<br/>
+<SfButton  @onclick="RunQuery" IconPosition="IconPosition.Left"
+          IconCss="e-icons e-clock" CssClass="e-custom-remove">Run Query
+</SfButton>
+<SfButton Type="Submit" @onclick="SaveQuery" IconPosition="IconPosition.Left"
+          IconCss="e-icons e-save" CssClass="e-custom-update">Save
+</SfButton>
+<SfButton @onclick="Delete" IconPosition="IconPosition.Left"
+          IconCss="e-icons e-trash" CssClass="e-custom-remove">Delete
+</SfButton>
+
+<div id="error_message_save" style="color: red; font-weight: bold"></div>
+
+@code {
+    [Parameter] public EventCallback<object> OnMessage { get; set; }
+    [Parameter] public QueryModel Data { get; set; }
+    [Parameter] public SavedQueryModel ReportModel { get; set; }
+    private bool IsScheduled { get; set; }
+    private int RunDay   { get; set; }
+    private string NotifyType { get; set; } = "SAVE";
+
+    private async Task NotifyParent()
+    {
+        var delegateModel = new SelectionQueryModel
+        {
+            Id = NotifyType,
+            IsScheduled = IsScheduled,
+            Name = ReportModel.Name,
+            Description = ReportModel.Description,
+            Comments = ReportModel.Comments,
+            RunDay = RunDay
+        };
+
+        if (OnMessage.HasDelegate)
+        {
+            await OnMessage.InvokeAsync(delegateModel);
+        }
+    }
+
+    private async Task RunQuery()
+    {
+        NotifyType = "RUN";
+        await NotifyParent();
+    }
+    private async Task SaveQuery()
+    {
+        NotifyType = "SAVE";
+        await NotifyParent();
+    }
+    
+    private async Task Delete()
+    {
+        NotifyType = "DELETE";
+        await NotifyParent();
+    }
+    private async Task DayChanged(SheduleDayModel args)
+    {
+        NotifyType = "SAVE";
+        RunDay = args.Day; 
+        await NotifyParent();
+    }
+    
+    protected override async void OnInitialized()
+    {
+       
+       // SelectGroupType = ReportModel.TonnesValuesGroup;
+        //SelectedCurrency = ReportModel.SelectedCurrency;
+    }
+}

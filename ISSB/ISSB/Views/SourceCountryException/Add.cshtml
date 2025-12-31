@@ -1,0 +1,129 @@
+﻿@using Infragistics.Web.Mvc
+@model Data.Models.SourceCountryExceptionModel
+
+@{
+
+    ViewData["Title"] = "Add Source Country Exception";
+
+}
+
+<body>
+    <br />
+    <div class="card">
+        <div class="card-header">
+            <h3>@ViewData["Title"]</h3>
+        </div>
+
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-md-10 mx-auto">
+
+                    @using (Html.BeginForm("AddNew", "SourceCountryException"))
+                    {
+                        @Html.HiddenFor(x => x.SOURCE_COUNTRY_ID, new { id = "Id" })
+
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="needs-validation">
+                            <fieldset>
+                            <div class="form-group row">
+                                <div class="col-sm-6">
+                                    <label for="ACTIVE">Active</label>                                  
+                                    <div id="ACTIVE"; class="editor-field">
+                                        @Html.DropDownListFor(u => u.ACTIVE, new List<SelectListItem> {
+                                        new SelectListItem{Text="True", Value="True"},
+                                        new SelectListItem{Text="False", Value="False"}}, "Please Select", new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(u => u.ACTIVE, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="SOURCE_COUNTRY_ID">Source Country ID</label>
+                                    <div id="SOURCE_COUNTRY_ID" ; class="editor-field">
+                                        @Html.TextBoxFor(u => u.SOURCE_COUNTRY_ID, "", new { @class = "form-control", id = "upperBox", onkeyup = "upperCase()", @readonly = "readonly" })
+                                        @Html.ValidationMessageFor(u => u.SOURCE_COUNTRY_ID, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="GEO_CODE">GEO Code</label>
+                                    <div id="GEO_CODE" ; class="editor-field">
+                                        @Html.TextBoxFor(u => u.GEO_CODE, new { @class = "form-control", id = "upperBox", onkeyup = "upperCase()" })
+                                        @Html.ValidationMessageFor(u => u.GEO_CODE, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-6">
+                                    <label for="NAME">Name</label>
+                                    <div id="NAME" ; class="editor-field">
+                                        @Html.TextBoxFor(u => u.NAME, new { @class = "form-control", id = "upperBox", onkeyup = "upperCase()" })
+                                        @Html.ValidationMessageFor(u => u.NAME, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="REGION_NAME">Region Name</label>
+                                    <div id="REGION_NAME" ; class="editor-field">
+                                        @Html.TextBoxFor(u => u.REGION_NAME, htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(u => u.REGION_NAME, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-6">
+                                    <label for="SHORT_LEGEND">Short Legend</label>
+                                    <div id="SHORT_LEGEND" ; class="editor-field">
+                                        @Html.TextBoxFor(u => u.SHORT_LEGEND, htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(u => u.SHORT_LEGEND, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="LONG_LEGEND">Long Legend</label>
+                                    <div id="LONG_LEGEND" ; class="editor-field">
+                                        @Html.TextBoxFor(u => u.LONG_LEGEND, htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(u => u.LONG_LEGEND, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <div class="col-sm-6">
+                                    <label for="REPLACED_GEO_CODE">Replaced Geo Code</label>
+                                    <div id="REPLACED_GEO_CODE" ; class="editor-field">
+                                        @Html.TextBoxFor(u => u.REPLACED_GEO_CODE, htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(u => u.REPLACED_GEO_CODE, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="START_DATE">Start Date</label>
+                                    <div id="START_DATE" ; class="editor-field">
+                                        @Html.EditorFor(u => u.START_DATE,  new { htmlAttributes = new { @class = "form-control datepicker"} }) 
+                                        @Html.ValidationMessageFor(u => u.START_DATE, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="DISCONTINUED_DATE">First Date</label>
+                                    <div id="DISCONTINUED_DATE" ; class="editor-field">
+                                        @Html.EditorFor(u => u.DISCONTINUED_DATE,  new { htmlAttributes = new { @class = "form-control datepicker"} }) 
+                                        @Html.ValidationMessageFor(u => u.DISCONTINUED_DATE, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>                          
+
+                            <hr />
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary px-4"><span>Add &nbsp;<i class="fas fa-plus-circle"></i></span></button>
+                            </div>
+                        </fieldset>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+
+    @*<script>$(function () {
+
+            var url = window.location;
+
+            $('ul.nav-treeview a[href^="/' + location.pathname.split("/")[1] + '"]').addClass('active').parentsUntil(".nav-sidebar > .nav-treeview").addClass('menu-open').prev('a').addClass('');
+
+        });</script>*@
+</body>

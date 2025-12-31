@@ -1,0 +1,338 @@
+﻿@using Infragistics.Web.Mvc
+@model IQueryable<Data.Models.SourceCountryModel>
+@{
+
+    ViewData["Title"] = "Edit Filter";
+
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+
+<style>
+    h3 {
+        font-size: 20px;
+        margin-bottom: 20px;
+    }
+
+    .group-fields {
+        margin-bottom: 10px;
+    }
+
+        .group-fields label {
+            display: block;
+            line-height: 18px;
+        }
+
+        .group-fields .inline {
+            display: inline;
+        }
+
+        .group-fields .ui-igcheckbox-normal {
+            margin-right: 5px;
+            float: left;
+        }
+
+        .group-fields .ui-igedit-container {
+            width: 250px;
+        }
+
+    .loading h2 {
+        color: red;
+        font-size: 20px;
+    }
+
+    img {
+        width: 25px;
+        height: 25px;
+    }
+
+    </style>
+
+</head>
+
+<body>
+    <div class="content-header">
+        <h2>@ViewData["Title"]</h2>
+
+    </div>
+     <input type="hidden" value="@ViewBag.ObjId" id="objectIndex" />
+    <div id="splitter">
+        <div class="card">
+            <div class="card-body">
+                <div class="loading" id="grid_label">
+                    <h2>Loading Data .... <img src="../img/Loading.gif"></h2>
+                    </div>
+                <h3>Query filter details</h3>
+                <form id="validationForm" action="" method="post">
+                    <div class="group-fields">
+                        <label for="filterName">Filter Name</label>
+                        <input id="filterName" />
+                    </div>
+
+                    <div class="group-fields">
+                        <label for="note">Note (Optional)</label>
+                        <div id="note"></div>
+                    </div>
+                    <div class="group-fields">
+                        <input id="readonly" />
+                        <label for="readonly" id="lock" class="inline">Lock for editing</label>
+                    </div>
+                    <div class="group-fields">
+                        <input id="enabled" />
+                        <label for="enabled" id="enabled" class="inline">Enabled</label>
+                    </div>
+                    @*<input id="saveBtn" type="submit" value="Add Filter"></input>*@
+                    <button id="saveBtn" class="btn btn-outline-primary btn-sm"> Save Filter</button>
+                    <button id="indexBtn" class="btn btn-outline-secondary btn-sm" type="reset">Index Page</button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div id="grid">
+
+                @(Html.Infragistics().Grid(Model)
+                                       .ID("Countries")
+                                       .Width("100%")
+                                       .Height("500px")
+                                       .DataBind()
+                                       .PrimaryKey("GEO_CODE")
+                                       .AutoGenerateColumns(false)
+                                       .AutoGenerateLayouts(false)
+                                       .Columns(column =>
+                                       {
+
+                                           column.For(x => x.GEO_CODE).HeaderText("GEO CODE").Width("20%");
+                                           column.For(x => x.NAME).HeaderText("Name").Width("50%");
+
+                                       })
+                                       .Features(features =>
+                                       {
+                                       features.Sorting().Type(OpType.Local);
+                                       @*features.Paging().Type(OpType.Local);*@
+                                       features.Filtering().Type(OpType.Local);
+                                       features.RowSelectors().EnableCheckBoxes(true);
+                                       features.Selection().MultipleSelection(true);
+                                       })
+
+
+                         .Render())
+            </div>
+        </div>
+
+  
+    <script>
+
+        $('document').ready(function () {
+            var selectedItems = '@ViewData["SelectedItems"]';
+            //alert(selectedItems);
+            var rows = $("#Countries").igGrid("rows");
+
+            setTimeout(
+                function () {
+                    $(rows).each(function (index, el) {
+                     
+                        if (selectedItems.indexOf($(el).attr("data-id")) >= 0) {
+                            $("#Countries").igGridSelection("selectRow", index);
+                        }
+                    });
+                    $("#Countries").show();
+                   // alert("Loaded");
+                    $("#grid_label").hide();
+                    $(window).trigger('resize');
+                }, 1000);
+        
+
+        });
+         $(function () {
+             var bValid = false;
+             var bLocked = false;
+             var bEnabled = false;
+           
+             $("#Countries").hide();
+             
+
+             if('@ViewData["Locked"]' == 'True')
+                 bLocked = true;
+
+             if('@ViewData["Active"]' == 'True')
+                 bEnabled = true;
+
+             $("#splitter").igSplitter({
+                 height: "500px",
+                 width: "100%",
+                 panels: [
+                     { size: 500, min: 500, max: 1000 }
+                     
+                 ]
+             });
+
+            @*$("#saveBtn").igButton();*@
+            @*$("#indexBtn").igButton();*@
+
+            $("#filterName").igTextEditor({
+                placeHolder: "Enter Filter Name",
+                value : '@ViewData["Name"]',
+                readOnly : true
+
+            });
+
+            $("#note").igTextEditor({
+                textMode: "multiline",
+                height: 100,
+                visibleItemsCount: 5,
+                value : '@ViewData["Notes"]'
+            });
+
+            $('#readonly').igCheckboxEditor({
+                valueChanged: function (evt, ui) {
+                    if (ui.newState == true) {
+                      
+                        bLocked = true;
+                    }
+                    else {
+                       
+                        bLocked = false;
+                    }
+
+                },
+                checked: bLocked
+            });
+
+             $('#enabled').igCheckboxEditor({
+
+
+                valueChanged: function (evt, ui) {
+                    if (ui.newState == true) {
+
+                        bEnabled = true;
+                    }
+                    else {
+
+                        bEnabled = false;
+                    }
+
+                },
+                  checked:  bEnabled
+            });
+
+            $('#lock').igNotifier({
+                direction: "top",
+                showOn: "mouseenter",
+                state: "info",
+                showIcon: true,
+                locale: {
+                    infoMsg: "Checking this will block this filter from being edited."
+                }
+            });
+
+             $('#validationForm').igValidator({
+                    onsubmit: true,
+                    successMessage: "Valid",
+                    fields: [{
+                        required: true,
+                        selector: "#filterName",
+                        valueRange: [5],
+                        onblur: true,
+                        custom: function (value, fieldOptions) {
+                            @*var myRegEx = /^[a-zA-Z]+$/;
+                            var isValid = myRegEx.test(value);*@
+                            bValid = true;
+                            return true;
+                        }
+                    }]
+            });
+
+            $("#indexBtn").click(function () {
+                 var newUrl= '@Url.Action("Index","SourceCountryFilter")';
+                 window.location.href = newUrl;
+            });
+
+            $("#btn").click(function () {
+                $("#filterName").igTextEditor("option", "value", "");
+
+                $("#readonly").igCheckboxEditor("option", "checked", false);
+
+                $("#note").igTextEditor("option", "disabled", false);
+                $("#note").igTextEditor("option", "readOnly", false);
+            });
+
+            $("#saveBtn").on("click", function () {
+
+                var formArray = "";
+                var objId = $("#objectIndex").val();
+                formArray = objId + "|" + $("#filterName").igTextEditor("option", "value") + "|" +  $("#note").igTextEditor("option", "value") + "|" + bLocked + "|" + bEnabled;
+
+                var selectedRows = $("#Countries").igGrid("selectedRows");
+
+                if (selectedRows.length > 0) {
+
+                    var selectionArray = "";
+
+                    //For each item selected in the grid
+                    for (var i = 0; i < selectedRows.length; i++) {
+
+                        //Get the id from the row
+                        var selection = selectedRows[i].element.data().id;
+
+                        //if this is not the last element in the array
+                        if (i !== selectedRows.length - 1) {
+                            //Add the element to the existing string and add a pipe separator
+                            selectionArray = selectionArray + selection + "|";
+                        } else {
+                            //This is the last element so don't bother with the separator
+                            selectionArray = selectionArray + selection;
+                        }
+                    }
+
+
+                    SendDataCountryone(selectionArray,formArray);
+
+                }
+
+                 $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("Index", "SourceCountryFilter")',
+                    async: false,
+                    success: function(data) {
+                    }
+                 });
+              
+            });
+
+     function SendDataCountryone(selectionArray,formData) {
+
+
+                $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("UpdateFilter", "SourceCountryFilter")',
+                        async: false,
+                        data: { selectionData: selectionArray , formData:formData },
+                        success: function (data) {
+
+
+
+                        }
+
+                }).done(function (r) {
+
+
+                });
+        }
+
+        });</script>
+
+        <script>$(function () {
+
+            var url = window.location;
+
+            $('ul.nav-treeview a[href^="/' + location.pathname.split("/")[1] + '"]').addClass('active').parentsUntil(".nav-sidebar > .nav-treeview").addClass('menu-open').prev('a').addClass('active');
+
+            });</script>
+
+        </div>
+</body>
+
+</html>

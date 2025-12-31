@@ -1,0 +1,416 @@
+@using FilterType = Syncfusion.Blazor.Grids.FilterType
+<div class="card-body">
+    <div class="form-group">
+        <div id="SourceForm">
+            <div class="form-row">
+                <div class="bar-horizontal">
+                    <div class="form-group col-md-3">
+                        <SfCheckBox Label="Group By Month"  TChecked="bool" @onchange="InIncludedMonth" @bind-Checked="GroupByMonth" ></SfCheckBox>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <SfCheckBox Label="Group By Quarter"  TChecked="bool" @onchange="IncludedQuarter" @bind-Checked="GroupByQuarter" ></SfCheckBox>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <SfCheckBox Label="Group By Year"  TChecked="bool" @onchange="IncludedYear" @bind-Checked="GroupByYear" ></SfCheckBox>
+                    </div>
+                </div>
+                <div class="form-group col-md-4">
+                    <br/>
+                    <p style=" font-size: large">Select Months</p>
+                    @*<div id="cbMonths"></div>*@
+                    <div class="btn-group" role="group" aria-label="Qselection">
+                        <button type="button" class="btn btn-default" onclick="@SetQ1">Q1</button>
+                        <button type="button" class="btn btn-default" onclick="@SetQ2">Q2</button>
+                        <button type="button" class="btn btn-default" onclick="@SetQ3">Q3</button>
+                        <button type="button" class="btn btn-default" onclick="@SetQ4">Q4</button>
+                        <button type="button" class="btn btn-default" onclick="@SetAll">All</button>
+                        <button type="button" class="btn btn-default" onclick="@ClearAll">Clear All</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <SfGrid ID="PortsGrid"
+                @attributes="@GridAttributes"
+                                    @ref="Grid"
+                                    TValue="QueryDateMonthModel"
+                                    Toolbar="@_toolBar"
+                                    DataSource="@Data.YearTable"
+                                    AllowPaging="false"
+                                    AllowSorting="true"
+                                    AllowSelection="true"
+                                    AllowFiltering="true"
+                                    AllowExcelExport="true"
+                                    AllowPdfExport="false"
+                                    Height="300"
+                                    Width="Auto">
+        
+                                <GridFilterSettings
+                                    Type="FilterType.Excel"></GridFilterSettings>
+                                <GridEditSettings Mode="EditMode.Normal" AllowEditing="true"></GridEditSettings>
+                                @* <GridEvents RowSelected="OnPortRowSelected" RowDeselected="OnPortRowDeselected" *@
+                                @*             TValue="QueryDateMonthModel"></GridEvents> *@
+                                <GridColumns>
+                                    <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
+                                    <GridColumn Field=@nameof(QueryDateMonthModel.Id) HeaderText="Id"
+                                                IsPrimaryKey="true"
+                                                TextAlign="TextAlign.Left"
+                                                Width="10%"
+                                                Visible="false"
+                                                Type="ColumnType.String"></GridColumn>
+        
+                                    <GridColumn Field=@nameof(QueryDateMonthModel.Year) HeaderText="Year"
+                                                TextAlign="TextAlign.Left"
+                                                Width="10%"
+                                                Type="ColumnType.None"></GridColumn>
+                                    
+                                    <GridColumn Field=@nameof(QueryDateMonthModel.January)
+                                                HeaderText="Jan"
+                                                Type="ColumnType.Boolean"
+                                                DisplayAsCheckBox="true"
+                                                EditType="EditType.BooleanEdit"
+                                                TextAlign="TextAlign.Center"
+                                                AllowEditing="true"
+                                                Width="10%">
+                                    </GridColumn>
+                                    
+                                    <GridColumn Field=@nameof(QueryDateMonthModel.February) HeaderText="Feb"
+                                                Type="ColumnType.Boolean"
+                                                DisplayAsCheckBox="true"
+                                                EditType="EditType.BooleanEdit"
+                                                TextAlign="TextAlign.Center"
+                                                AllowEditing="true"
+                                                Width="10%"></GridColumn>
+                                    <GridColumn Field=@nameof(QueryDateMonthModel.March) HeaderText="Mar"
+                                                Type="ColumnType.Boolean"
+                                                DisplayAsCheckBox="true"
+                                                EditType="EditType.BooleanEdit"
+                                                TextAlign="TextAlign.Center"
+                                                AllowEditing="true"
+                                                Width="10%"></GridColumn>
+                                    <GridColumn Field=@nameof(QueryDateMonthModel.April) HeaderText="Apr"
+                                                Type="ColumnType.Boolean"
+                                                DisplayAsCheckBox="true"
+                                                EditType="EditType.BooleanEdit"
+                                                TextAlign="TextAlign.Center"
+                                                AllowEditing="true"
+                                                Width="10%"></GridColumn>
+                                    <GridColumn Field=@nameof(QueryDateMonthModel.May) HeaderText="May"
+                                                Type="ColumnType.Boolean"
+                                                DisplayAsCheckBox="true"
+                                                EditType="EditType.BooleanEdit"
+                                                TextAlign="TextAlign.Center"
+                                                AllowEditing="true"
+                                                Width="10%"></GridColumn>
+                                    <GridColumn Field=@nameof(QueryDateMonthModel.June) HeaderText="Jun"
+                                                Type="ColumnType.Boolean"
+                                                DisplayAsCheckBox="true"
+                                                EditType="EditType.BooleanEdit"
+                                                TextAlign="TextAlign.Center"
+                                                AllowEditing="true"
+                                                Width="10%"></GridColumn>
+                                    <GridColumn Field=@nameof(QueryDateMonthModel.July) HeaderText="Jul"
+                                                Type="ColumnType.Boolean"
+                                                DisplayAsCheckBox="true"
+                                                EditType="EditType.BooleanEdit"
+                                                TextAlign="TextAlign.Center"
+                                                AllowEditing="true"
+                                                Width="10%"></GridColumn>
+                                    <GridColumn Field=@nameof(QueryDateMonthModel.August) HeaderText="Aug"
+                                                Type="ColumnType.Boolean"
+                                                DisplayAsCheckBox="true"
+                                                EditType="EditType.BooleanEdit"
+                                                TextAlign="TextAlign.Center"
+                                                AllowEditing="true"
+                                                Width="10%"></GridColumn>
+                                    <GridColumn Field=@nameof(QueryDateMonthModel.September) HeaderText="Sep"
+                                                Type="ColumnType.Boolean"
+                                                DisplayAsCheckBox="true"
+                                                EditType="EditType.BooleanEdit"
+                                                TextAlign="TextAlign.Center"
+                                                AllowEditing="true"
+                                                Width="10%"></GridColumn>
+                                    <GridColumn Field=@nameof(QueryDateMonthModel.October) HeaderText="Oct"
+                                                Type="ColumnType.Boolean"
+                                                DisplayAsCheckBox="true"
+                                                EditType="EditType.BooleanEdit"
+                                                TextAlign="TextAlign.Center"
+                                                AllowEditing="true"
+                                                Width="10%"></GridColumn>
+                                    <GridColumn Field=@nameof(QueryDateMonthModel.November) HeaderText="Nov"
+                                                Type="ColumnType.Boolean"
+                                                DisplayAsCheckBox="true"
+                                                EditType="EditType.BooleanEdit"
+                                                TextAlign="TextAlign.Center"
+                                                AllowEditing="true"
+                                                Width="10%"></GridColumn>
+                                    <GridColumn Field=@nameof(QueryDateMonthModel.December) HeaderText="Dec"
+                                                Type="ColumnType.Boolean"
+                                                DisplayAsCheckBox="true"
+                                                EditType="EditType.BooleanEdit"
+                                                TextAlign="TextAlign.Center"
+                                                AllowEditing="true"
+                                                Width="10%"></GridColumn>
+                                </GridColumns>
+                                <SfSpinner @bind-Visible="IsLoading">
+                                </SfSpinner>
+                            </SfGrid>
+    </div>
+</div>
+
+
+@code {
+    [Parameter] public EventCallback<object> OnMessage { get; set; }
+    [Parameter] public QueryModel Data { get; set; }
+    [Parameter] public SavedQueryModel ReportModel { get; set; }
+
+    private Dictionary<string, object> GridAttributes { get; set; } = new Dictionary<string, object>();
+    private List<object> _toolBar = new() { "Search" };
+    SfGrid<QueryDateMonthModel> Grid { get; set; }
+    private QueryDateMonthModel SelectedRow { get; set; }
+    private IEnumerable<QueryDateMonthModel> _yearData;
+    private bool IsLoading { get; set; } = true;
+    private bool IsBusy { get; set; } = false;
+    private bool GroupByMonth { get; set; } = false;
+    private bool GroupByQuarter { get; set; } = false;
+    private bool GroupByYear { get; set; } = false;
+    private bool SelectGroupType { get; set; }
+
+    private async Task SetAll()
+    {
+        var records = await Grid.GetSelectedRecordsAsync();
+        foreach (var record in records)
+        {
+            record.January = true;
+            record.February = true;
+            record.March = true;
+            record.April = true;
+            record.May = true;
+            record.June = true;
+            record.July = true;
+            record.August = true;
+            record.September = true;
+            record.October = true;
+            record.November = true;
+            record.December = true;
+        }
+
+        await Grid.Refresh();
+        await NotifyParent();
+    }
+    
+    private async Task ClearAll()
+    {
+        var records = await Grid.GetSelectedRecordsAsync();
+        foreach (var record in records)
+        {
+            record.January = false;
+            record.February = false;
+            record.March = false;
+            record.April = false;
+            record.May = false;
+            record.June = false;
+            record.July = false;
+            record.August = false;
+            record.September = false;
+            record.October = false;
+            record.November = false;
+            record.December = false;
+        }
+
+        await Grid.Refresh();
+        await NotifyParent();
+    }
+    
+    private async Task SetQ1()
+    {
+        var records = await Grid.GetSelectedRecordsAsync();
+        foreach (var record in records)
+        {
+            record.January = true;
+            record.February = true;
+            record.March = true;
+            record.April = false;
+            record.May = false;
+            record.June = false;
+            record.July = false;
+            record.August = false;
+            record.September = false;
+            record.October = false;
+            record.November = false;
+            record.December = false;
+        }
+
+        await Grid.Refresh();
+        await NotifyParent();
+    }
+    
+    private async Task SetQ2()
+    {
+        var records = await Grid.GetSelectedRecordsAsync();
+        foreach (var record in records)
+        {
+            record.January = false;
+            record.February = false;
+            record.March = false;
+            record.April = true;
+            record.May = true;
+            record.June = true;
+            record.July = false;
+            record.August = false;
+            record.September = false;
+            record.October = false;
+            record.November = false;
+            record.December = false;
+        }
+
+        await Grid.Refresh();
+        await NotifyParent();
+    }
+    
+    private async Task SetQ3()
+    {
+        var records = await Grid.GetSelectedRecordsAsync();
+        foreach (var record in records)
+        {
+            record.January = false;
+            record.February = false;
+            record.March = false;
+            record.April = false;
+            record.May = false;
+            record.June = false;
+            record.July = true;
+            record.August = true;
+            record.September = true;
+            record.October = false;
+            record.November = false;
+            record.December = false;
+        }
+        
+        await Grid.Refresh();
+        await NotifyParent();
+    }
+    
+    private async Task SetQ4()
+    {
+        var records = await Grid.GetSelectedRecordsAsync();
+        foreach (var record in records)
+        {
+            record.January = false;
+            record.February = false;
+            record.March = false;
+            record.April = false;
+            record.May = false;
+            record.June = false;
+            record.July = false;
+            record.August = false;
+            record.September = false;
+            record.October = true;
+            record.November = true;
+            record.December = true;
+        }
+        
+        await Grid.Refresh();
+        await NotifyParent();
+    }
+    
+    private async Task InIncludedMonth(Microsoft.AspNetCore.Components.ChangeEventArgs args)
+    {
+        // if (GroupByMonth)
+        // {
+        //     GridAttributes["disable"] = "no";
+        // }
+        // else
+        // {
+        //     GridAttributes["disable"] = "yes";
+        // }
+        await NotifyParent();
+    }
+    
+    private async Task IncludedQuarter(Microsoft.AspNetCore.Components.ChangeEventArgs args)
+    {
+        await NotifyParent();
+    }
+    
+    private async Task IncludedYear(Microsoft.AspNetCore.Components.ChangeEventArgs args)
+    {
+        await NotifyParent();
+    }
+    
+    private async Task NotifyParent()
+    {
+        GetSelectedRows();
+        var delegateModel = new SelectionQueryModel
+        {
+            Id = "YEAR",
+            GroupByMonth = GroupByMonth,
+            GroupByQuarter = GroupByQuarter,
+            GroupByYear = GroupByYear,
+            SelectedSourceCountries = new List<SaveQuerySourceCountriesModel>(),
+            SelectedMarketCountries = new List<SaveQueryMarketCountriesModel>(),
+            SelectedYears = Data.YearTable,
+           // Selection = SelectGroupType
+        };
+
+        if (OnMessage.HasDelegate)
+        {
+            await OnMessage.InvokeAsync(delegateModel);
+        }
+    }
+    
+    private async Task OnPortRowSelected(RowSelectEventArgs<QueryDateMonthModel> args)
+    {
+        if (IsBusy)
+            return;
+        
+            SelectedRow = args.Data;
+            await NotifyParent();
+    }
+
+    // private async Task OnPortRowDeselected(RowDeselectEventArgs<QueryDateMonthModel> args)
+    // {
+    //     await NotifyParent(); 
+    // }
+
+    private void GetSelectedRows()
+    {
+        ReportModel.Ports = new();
+
+        foreach (var item in Grid.SelectedRecords)
+        {
+            // var model = Data.Ports.FirstOrDefault(p => p.PortID.Equals(item.PortID));
+            // if (model is not null)
+            // {
+            //     var sqModel = new SaveQueryPortModel()
+            //     {
+            //         PortID = model.PortID
+            //     };
+            //     ReportModel.Ports.Add(sqModel);
+            // }
+        }
+    }
+    
+    protected override async void OnInitialized()
+    {
+
+        SelectGroupType = ReportModel.GroupByYear;
+        GroupByMonth = ReportModel.IncludePorts;
+        _yearData = Data.YearTable;
+        
+       // InitSelectedRows();
+        IsLoading = false;
+    }
+
+}
+
+<style>
+    .e-grid[disable="yes"] {
+        opacity: .5;
+        pointer-events: none;
+        -ms-touch-action: none;
+        touch-action: none;
+        cursor: no-drop;
+    }
+</style>

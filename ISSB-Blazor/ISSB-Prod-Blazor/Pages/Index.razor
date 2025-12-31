@@ -1,0 +1,450 @@
+﻿@page "/"
+@page "/Index"
+@using ISSB_Prod_Blazor.Componets.HubMessages
+@using ISSB_Prod_Blazor.Pages.User
+@using ISSB_Prod_Blazor.Pages
+@implements IDisposable
+@inject NavigationManager navigateManager 
+
+
+<PageTitle>Index</PageTitle>
+
+<style>
+    /*body {*/
+    /*    font-family: Arial, sans-serif;*/
+    /*    line-height: 1.6;*/
+    /*    margin: 20px;*/
+    /*    background-color: #f4f4f9;*/
+    /*    color: #333;*/
+    /*}*/
+    
+    /*h1 {*/
+    /*    color: #444;*/
+    /*}*/
+    
+    /*.container {*/
+    /*    display: flex;*/
+    /*    justify-content: flex-start;*/
+    /*    align-items: flex-start;*/
+    /*    gap: 20px;*/
+    /*    padding: 20px;*/
+    /*}*/
+    
+    /*.card-1 {*/
+    /*    width: 20%;*/
+    /*    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);*/
+    /*    border-radius: 8px;*/
+    /*    overflow: hidden;*/
+    /*    height: 600px;*/
+    /*}*/
+    
+    /*.card-2 {*/
+    /*    width: auto;*/
+    /*    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);*/
+    /*    border-radius: 10px;*/
+    /*    overflow: hidden;*/
+    /*    background-color: #f9f9f9;*/
+    /*    border: 1px solid #ddd;*/
+    /*}*/
+    
+    
+    /*.card-3 {*/
+    /*    width: 300px;*/
+    /*    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);*/
+    /*    border-radius: 8px;*/
+    /*    overflow: hidden;*/
+    /*    background-color: #fff;*/
+    /*}*/
+    
+    /*.right-column {*/
+    /*    display: flex;*/
+    /*    flex-direction: column; !* Stack Card 2 and Card 3 vertically *!*/
+    /*    gap: 20px; !* Add spacing between the two cards *!*/
+    /*}*/
+    
+    
+    /*!* Profile Picture *!*/
+    /*.profile-picture {*/
+    /*    width: 80px;*/
+    /*    height: 80px;*/
+    /*    border-radius: 50%;*/
+    /*    object-fit: cover;*/
+    /*    margin: 10px auto;*/
+    /*    display: block;*/
+    /*}*/
+    
+    /*!* Card Content *!*/
+    /*.card-content {*/
+    /*    text-align: center;*/
+    /*}*/
+    
+    /*!* Username Title and Welcome Message *!*/
+    /*.card-content h2 {*/
+    /*    font-size: 20px;*/
+    /*    margin: 10px 0;*/
+    /*    color: #333;*/
+    /*}*/
+    
+    /*.card-content p {*/
+    /*    font-size: 16px;*/
+    /*    color: #555;*/
+    /*}*/
+    
+    /*!* User Summary List *!*/
+    /*.user-summary {*/
+    /*    list-style: none;*/
+    /*    padding: 0;*/
+    /*    margin: 10px 0;*/
+    /*    text-align: left;*/
+    /*    font-size: 14px;*/
+    /*    color: #666;*/
+    /*}*/
+    
+    /*.user-summary li {*/
+    /*    margin: 5px 0;*/
+    /*}*/
+    
+    /*!* Log Out Button *!*/
+    /*.login-button {*/
+    /*    width: 100%;*/
+    /*    padding: 10px;*/
+    /*    background-color: #dc3545;*/
+    /*    color: white;*/
+    /*    border: none;*/
+    /*    border-radius: 4px;*/
+    /*    cursor: pointer;*/
+    /*    font-size: 16px;*/
+    /*    margin: 10px 0;*/
+    /*}*/
+    
+    /*.login-button:hover {*/
+    /*    background-color: #a71d2a;*/
+    /*}*/
+    
+    /*!* Small Links *!*/
+    /*.links {*/
+    /*    text-align: center;*/
+    /*}*/
+    
+    /*.links a {*/
+    /*    color: #007BFF;*/
+    /*    text-decoration: none;*/
+    /*    font-size: 14px;*/
+    /*    margin: 0 5px;*/
+    /*}*/
+    
+    /*.links a:hover {*/
+    /*    text-decoration: underline;*/
+    /*}*/
+    
+    
+    /*.card-header {*/
+    /*    padding: 10px;*/
+    /*    color: white;*/
+    /*    font-weight: bold;*/
+    /*}*/
+    
+    /*.card-content {*/
+    /*    padding: 15px;*/
+    /*}*/
+    
+    /*!* Color variations for headers *!*/
+    /*.card-header-blue {*/
+    /*    background-color: #007BFF; !* Blue *!*/
+    /*}*/
+    
+    /*.card-header-green {*/
+    /*    background-color: #28A745; !* Green *!*/
+    /*}*/
+    
+    /*.card-header-red {*/
+    /*    background-color: #DC3545; !* Red *!*/
+    /*}*/
+    
+    /*.highlight {*/
+    /*    color: #0066cc;*/
+    /*    font-weight: bold;*/
+    /*}*/
+    
+
+    .login-logo-img {
+        max-width: 160px;      /* adjust size to match design */
+        height: auto;
+        display: block; 
+        padding-bottom: 10px;
+    }
+
+    /* layout */
+    .landing{
+        width:100%;
+        margin:24px auto;
+        padding:0 16px;
+        max-width:1200px;
+    }
+
+    /* card */
+    .card{
+        background:#fff;
+        border:1px solid #e6edf6;
+        border-radius:12px;
+        box-shadow:0 6px 18px rgba(52,86,139,.01);
+        padding:30px 32px;
+        margin-bottom:22px;
+        display:block;
+        width:90%;
+    }
+
+    /* accent bar */
+    .card--accent{ position:relative; }
+    .card--accent::before{
+        content:"";
+        position:absolute; left:0; top:0;
+        height:4px; width:100%;
+        border-radius:12px 12px 0 0;
+        background:linear-gradient(90deg,#34568B,#6f8fb8 60%,rgba(13,202,240,.45));
+    }
+
+    /* inner layout */
+    .card--full{
+        display:flex;
+        justify-content:space-between;
+        gap:24px;
+        align-items:flex-start;
+        height:auto;
+    }
+    .card__left{ flex:1 1 auto; }
+    .card__right{ flex:0 0 auto; display:flex; flex-direction:column; gap:10px; align-items:flex-start; }
+    .btn-col .link{ margin-left:4px; }
+
+    /* tighter spacing */
+    .card--tight .title{ margin:2px 0 6px; }
+    .card--tight .h2{ margin:0 0 6px; }
+    .card--tight .muted{ margin:0 0 8px; }
+
+    /* type */
+    .title{ color:#34568B; font-weight:800; letter-spacing:.01em; }
+    .title--xl{ font-size:2.4rem; line-height:1.15;padding-bottom: 10px  }
+    .h2{ color:#34568B; font-weight:800; font-size:1.6rem; }
+    .h2--underline{ position:relative; padding-bottom:4px; }
+    .h2--underline::after{
+        content:""; position:absolute; left:0; bottom:0;
+        width:48px; height:3px; border-radius:2px; background:#34568B; opacity:.75;
+    }
+    .muted{ color:#6C757D; }
+
+    /* key/value */
+    .kv{ display:grid; gap:6px; margin:6px 0 0; }
+    .kv dt{ color:#34568B; font-weight:700; }
+    .kv dd{ margin:0; }
+
+    /* tags */
+    .tag{ display:inline-block; padding:2px 10px; border-radius:999px; font-size:.85rem; border:1px solid transparent; }
+    .tag--ok{ color:#2f6f3a; background:#e9f6ee; border-color:#cfead7; }
+
+    /* primary button */
+    .data-button{
+        background:#fff; color:#34568B; border:2px solid #34568B;
+        border-radius:1px; font-weight:700; font-family:'Assistant-Regular',sans-serif;
+        padding:10px 24px; font-size:15px; display:inline-flex; align-items:center; justify-content:center;
+        cursor:pointer; transition:all .2s ease-in-out; margin:4px 0 2px;
+        padding-bottom: 10px;
+    }
+.data-button:hover{
+    background-color: rgba(52, 86, 139, 0.1);
+    color: #34568B;
+    box-shadow: none;
+    border: 1px solid #34568B;
+}
+
+    .link{ color:#34568B; text-decoration:none; font-weight:600; }
+    .link:hover{ text-decoration:underline; }
+
+    /* timeline */
+    .timeline{
+        list-style:none; margin:10px 0 12px; padding:0; display:grid; gap:14px; position:relative;
+    }
+    .timeline li{
+        display:grid; grid-template-columns:16px 1fr; gap:10px; position:relative;
+    }
+    .tl-dot{
+        width:10px; height:10px; border-radius:50%; margin-top:6px; display:inline-block;
+    }
+    .tl-dot--add{ background:#2e7d32; }
+    .tl-dot--edit{ background:#34568B; }
+    .tl-dot--del{ background:#9c2b2b; } /* switch to #6f8fb8 if avoiding red */
+    .tl-body p{ margin:0; }
+    .tl-body time{ color:#6C757D; font-size:.9rem; }
+
+    /* responsive */
+    @@media (max-width:1100px){
+        .card--full{ flex-direction:column; }
+        .card__right{ width:100%; flex:0 0 auto; align-items:flex-start; }
+    }
+
+    /* hide the left nav + its toggle just on this page */
+    /*.sidebar-treeview.e-sidebar { display: none !important; }*/
+    /*#hamburger { display: none !important; }*/
+
+    /* remove any reserved space/push effect */
+    /*.main-content { margin-left: 0 !important; }*/
+
+</style>
+<AuthorizeView>
+    <Authorized>
+        <div class="container">
+            
+            @* <div class="card-1"> *@
+            @*     <!-- Profile Picture --> *@
+            @*     <img class="profile-picture" src="userimages/blonde.png" alt="Profile Picture"/> *@
+            @* *@
+            @*     <!-- Logged-In User Information --> *@
+            @*     <div class="card-content"> *@
+            @*         <!-- Username and Welcome Message --> *@
+            @*         <h2>@context.User.Identity.Name</h2> *@
+            @*         <p>Welcome back! Here's a quick summary:</p> *@
+            @* *@
+            @*         <!-- Useful Actionable Summary --> *@
+            @*         <ul class="user-summary"> *@
+            @*             <li>Last login: 2 hours ago</li> *@
+            @*             <li>Rewards Points: 120</li> *@
+            @*             <li>Active since: Jan 2022</li> *@
+            @*         </ul> *@
+            @* *@
+            @*         <!-- Log Out Button --> *@
+            @*         <button class="login-button">Log Out</button> *@
+            @* *@
+            @*         <!-- Links --> *@
+            @*         <div class="links"> *@
+            @*             <a href="/profile">View Profile</a> | <a href="/settings">Account Settings</a> *@
+            @*         </div> *@
+            @*     </div> *@
+            @* </div> *@
+            @* *@
+            @* *@
+            @* <div class="right-column"> *@
+            @*     <div class="card-2"> *@
+            @*         <div class="card-header card-header-green">Card 2 Header</div> *@
+            @*         <div class="card-content"> *@
+            @* *@
+            @*         </div> *@
+            @*     </div> *@
+            @* </div> *@
+            @* *@
+            @* <div class="card-3"> *@
+            @*     <div class="card-content"> *@
+            @*         <h2>New Card Header</h2> *@
+            @*         <p>This is some content for the new card placed below card 2.</p> *@
+            @*     </div> *@
+            @* </div> *@
+
+
+            <div class="landing">
+                <!-- Welcome -->
+                <section class="card card--full card--tight card--accent">
+                    <div class="card__left">
+                        <div class="login-logo">
+                            <a href="/Home/Index">
+                                <img src="/userimages/ISSB.Logo.png" alt="ISSB Logo" class="login-logo-img"/>
+                            </a>
+                        </div>
+                        <HubMessage/>
+                        <h1 class="title title--xl">Welcome back, @context.User.Identity.Name</h1>
+
+                        <dl class="kv">
+                            <div><dt>Last login</dt><dd>2 hours ago</dd></div>
+                            <div><dt>Customer Name:</dt><dd>@context.User.Identity.Name</dd></div>
+                            <div><dt>Company Name:</dt><dd> *Company goes here*</dd></div>
+                            <div><dt>Membership</dt><dd><span>*See user profile</span></dd></div>
+                            <div><dt>Renewal date</dt><dd><span>*Add renewal date here*</span></dd></div>
+
+                        </dl>
+                    </div>
+
+                    <div class="card__right btn-col">
+                        <button class="data-button">Access Data Portal</button>
+                        <a class="link" href="#">Contact Support</a>
+                        @* <button class="btn btn-primary" @onclick="Navigate">Ports</button> *@
+                    </div>
+                </section>
+
+                <!-- Recent Changes -->
+                <section class="card card--full card--tight card--accent">
+                    <h2 class="h2 h2--underline">Recent Changes</h2>
+                    <p class="muted">Latest updates to your enquiries</p>
+
+                    <ul class="timeline">
+                        <li>
+                            <span class="tl-dot tl-dot--add" aria-hidden="true"></span>
+                            <div class="tl-body">
+                                <p><strong>New enquiry</strong> added by <em>J. Smith</em></p>
+                                <time>Today · 10:15</time>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="tl-dot tl-dot--edit" aria-hidden="true"></span>
+                            <div class="tl-body">
+                                <p><strong>Tariff code</strong> updated for enquiry <em>#TE-4921</em></p>
+                                <time>Yesterday · 16:02</time>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="tl-dot tl-dot--del" aria-hidden="true"></span>
+                            <div class="tl-body">
+                                <p><strong>Attachment</strong> removed from enquiry <em>#TE-4888</em></p>
+                                <time>2 days ago · 09:41</time>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <a class="link" href="#">View full history</a>
+                </section>
+            </div>
+            
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+
+
+
+@code {
+    private System.Timers.Timer? timer; // Timer for refreshing the time
+    private DateTime currentTime;      // Current time displayed on the clock
+  
+    
+    // Calculated rotation angles for the clock hands
+    public double HourRotation => (currentTime.Hour % 12) * 30 + (currentTime.Minute / 60.0) * 30; // Degrees = hours * 30 + minute-adjusted degrees
+    public double MinuteRotation => currentTime.Minute * 6 + (currentTime.Second / 60.0) * 6;       // Degrees = minutes * 6 + second-adjusted degrees
+    public double SecondRotation => currentTime.Second * 6;                                        // Degrees = seconds * 6
+
+    protected override void OnInitialized()
+    {
+        currentTime = DateTime.Now;
+
+        // Initialize timer (fires every second)
+        timer = new System.Timers.Timer(1000);
+        timer.Elapsed += UpdateTime; // Attach the handler to update the clock
+        timer.Start();
+    }
+
+    private void UpdateTime(object? sender, System.Timers.ElapsedEventArgs e)
+    {
+        currentTime = DateTime.Now; // Update the current time
+        InvokeAsync(StateHasChanged); // Refresh the UI on the main thread
+    }
+
+    // Proper disposal of the timer to prevent memory leaks
+    public void Dispose()
+    {
+        timer?.Dispose();
+    }
+    //
+    // private void Navigate()
+    // {
+    //     navigateManager.NavigateTo("Ports");
+    // }
+    //
+    
+    
+}
+

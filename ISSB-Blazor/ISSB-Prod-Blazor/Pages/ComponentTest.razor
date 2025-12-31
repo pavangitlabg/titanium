@@ -1,0 +1,196 @@
+@page "/test"
+
+
+<h3>Component Test Page</h3>
+<hr/>
+<br/>
+
+<SfButton @onclick="MessageUpdate" IconPosition="IconPosition.Left" IconCss="e-icons e-save" CssClass="e-custom-update">
+    Toast Message
+</SfButton>
+<SfButton @onclick="MessageWarning" IconPosition="IconPosition.Left" IconCss="e-icons e-save"
+          CssClass="e-custom-update">Toast Warning
+</SfButton>
+<SfButton @onclick="MessageError" IconPosition="IconPosition.Left" IconCss="e-icons e-save" CssClass="e-custom-update">
+    Toast Error
+</SfButton>
+<br/>
+<br/>
+<SfButton @onclick="YesNo" IconPosition="IconPosition.Left" IconCss="e-icons e-save" CssClass="e-custom-update">Test Yes
+    / No
+</SfButton>
+<SfButton @onclick="YesNoWarning" IconPosition="IconPosition.Left" IconCss="e-icons e-save" CssClass="e-custom-update">
+    Test Yes / No (Warning)
+</SfButton>
+<SfButton @onclick="YesNoDanger" IconPosition="IconPosition.Left" IconCss="e-icons e-save" CssClass="e-custom-update">
+    Test Yes / No (Danger)
+</SfButton>
+<p>@MessaheResponse</p>
+
+@if (IsMessage)
+{
+    <DynamicComponent Type="@SelectedComponent" Parameters="@ComponentParameters"/>
+}
+
+@* @if (IsMessage) *@
+@* { *@
+@*     <MessageBox Type="@SelectedComponent"  MessageModel="@MessageModel"/> *@
+@* } *@
+
+@if (IsAnswer)
+{
+    <AnswerBox AnswerResult="Callback" MessageModel="@MessageModel"/>
+}
+
+@code {
+    MessageModel MessageModel { get; set; }
+    bool IsMessage { get; set; }
+    bool IsAnswer { get; set; }
+    private Type SelectedComponent { get; set; }
+    private Dictionary<string, object> ComponentParameters { get; set; }
+    private string MessaheResponse { get; set; }
+
+    void MessageUpdate()
+    {
+        IsAnswer = false;
+        IsMessage = false;
+        SelectedComponent = typeof(MessageBox);
+        MessageModel = new MessageModel
+        {
+            Content = "Updating ....",
+            Title = "Message",
+            PosX = "Right",
+            PosY = "Bottom",
+            Type = "Message",
+            Style = MessaageBoxEnum.Message
+        };
+
+        ComponentParameters = new Dictionary<string, object>
+        {
+            { "MessageModel", MessageModel }
+        };
+
+        IsMessage = true;
+    }
+
+    void YesNo()
+    {
+        IsAnswer = false;
+        IsMessage = false;
+        SelectedComponent = typeof(AnswerBox);
+        MessageModel = new MessageModel
+        {
+            Content = "Are you sure you want to save this?",
+            Title = "Update Record",
+            PosX = "Ok",
+            PosY = "Cancel",
+            Type = "None",
+            Style = MessaageBoxEnum.None
+        };
+
+        ComponentParameters = new Dictionary<string, object>
+        {
+            { "MessageModel", MessageModel }
+        };
+
+        IsAnswer = true;
+    }
+
+    void YesNoWarning()
+    {
+        IsAnswer = false;
+        IsMessage = false;
+        SelectedComponent = typeof(AnswerBox);
+        MessageModel = new MessageModel
+        {
+            Content = "Are you sure you want to save this?",
+            Title = "Update Record",
+            PosX = "Ok",
+            PosY = "Cancel",
+            Type = "Warning",
+            Style = MessaageBoxEnum.Warning
+        };
+
+        ComponentParameters = new Dictionary<string, object>
+        {
+            { "MessageModel", MessageModel }
+        };
+
+        IsAnswer = true;
+    }
+
+    void MessageWarning()
+    {
+        IsAnswer = false;
+        IsMessage = false;
+        SelectedComponent = typeof(MessageBox);
+        MessageModel = new MessageModel
+        {
+            Content = "Updating ....",
+            Title = "Warning",
+            PosX = "Right",
+            PosY = "Bottom",
+            Style = MessaageBoxEnum.Warning
+        };
+
+        ComponentParameters = new Dictionary<string, object>
+        {
+            { "MessageModel", MessageModel }
+        };
+
+        IsMessage = true;
+    }
+
+    void YesNoDanger()
+    {
+        IsAnswer = false;
+        IsMessage = false;
+        SelectedComponent = typeof(AnswerBox);
+        MessageModel = new MessageModel
+        {
+            Content = "Are you sure you want to delete this?",
+            Title = "Delete Record",
+            PosX = "Are You Sure?",
+            PosY = "Cancel",
+            Type = "Error",
+            Style = MessaageBoxEnum.Error
+        };
+
+        ComponentParameters = new Dictionary<string, object>
+        {
+            { "MessageModel", MessageModel }
+        };
+
+        IsAnswer = true;
+    }
+
+    void MessageError()
+    {
+        IsAnswer = false;
+        IsMessage = false;
+        SelectedComponent = typeof(MessageBox);
+        MessageModel = new MessageModel
+        {
+            Content = "Updating ....",
+            Title = "Error",
+            PosX = "Right",
+            PosY = "Bottom",
+            Style = MessaageBoxEnum.Error
+        };
+
+        ComponentParameters = new Dictionary<string, object>
+        {
+            { "MessageModel", MessageModel }
+        };
+
+        IsMessage = true;
+    }
+
+    private void Callback(string obj)
+    {
+        IsAnswer = false;
+        IsMessage = false;
+        MessaheResponse = obj;
+    }
+
+}

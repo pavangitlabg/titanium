@@ -1,0 +1,179 @@
+﻿<!doctype html>
+
+<!--
+    ISSB/Views/Dashboard/Chart.cshtml
+
+    dashboard chart view
+-->
+
+@using Infragistics.Web.Mvc
+
+@model ISSB.Models.ChartModel
+
+@{ ViewData[ "Title" ] = "My Chart" ; }
+
+<html>
+  <head>
+    <script type="text/javascript">
+      var type = @Model.Type ;
+      var query = "@Model.Query" ;
+    </script>
+    <script src="../js/charts.js" type="text/javascript" ></script>
+  </head>
+  <body>
+    <div class="content-header" >
+      <h2>@ViewData[ "Title" ]</h2>
+      <h3>@ViewData[ "Message" ]</h3>
+    </div>
+
+    <style type="text/css" >
+      .chart { display : inline-block ; }
+      .legend { display : inline-block ; }
+    </style>
+
+    <div>
+      @switch ( Model.Type )
+      {
+        /*
+          // AJAX is not being used. This code is retained in case it is reinstated.
+
+          case 1 :
+            // grid
+
+            <table id="gridAJAX" ></table>
+
+            break ;
+
+          case 2 :
+            // bar chart
+
+            <div id="columnChart" class="chart" ></div>
+            <div id="legend" class="legend" ></div>
+
+            break ;
+        */
+
+        case 1 :
+          // grid
+
+          @(
+             Html.Infragistics().Grid( Model.EngineModel.Data )
+//                                .ID( "grid" )
+                                .Width( "100%" )
+                                .Height( "1000px" )
+                                .DataBind()
+                                .PrimaryKey( "ID" )
+//                                .AutoGenerateColumns( false )
+.AutoGenerateColumns( true )
+                                .AutoGenerateLayouts( false )
+//                                .Columns( column => Model.EngineModel.Columns( column ) )
+                                .Features(
+                                           features =>
+                                           {
+                                             features.Sorting().Type( OpType.Local ).Mode( SortingMode.Multiple ) ;
+                                             features.Sorting().Type( OpType.Local ) ;
+                                             features.Paging().Type( OpType.Local ) ;
+                                             features.Filtering().Type( OpType.Local ) ;
+                                             features.Selection().MultipleSelection( true ) ;
+                                             features.Selection().Mode( SelectionMode.Row ) ;
+                                             features.GroupBy().Type( OpType.Local ) ;
+                                           }
+                                         )
+                                .Render()
+           )
+
+          break ;
+
+        case 2 :
+          // bar chart
+
+<!--          <div id="columnChart" class="chart" > -->
+@(
+@* *{
+var xAxis = new CategoryXAxis() ; *@
+
+            Html.Infragistics().DataChart( Model.EngineModel.Data ).Width( "320px" ).Height( "350px" )
+            //.Axes.Add( new NumericXAxis { Name } )
+//.Axes( axes => { axes.CategoryX("xAxis").Label( "Year" ) ; axes.NumericY( "priceAxis" ) ; })
+.Axes( axes => { axes.CategoryX("xAxis").Label( "Year" ) ; axes.NumericY( "yAxis" ).MinimumValue( 0 ).Title( "Quadrillion Btu" ) ; })
+.Series( series => { series.Line( "valueSeries" ).XAxis( "xAxis" ).YAxis( "yAxis" ).ValueMemberPath( item => item.MONETARY_VALUE ) ; } )
+            .DataBind()
+            .Render()
+
+//                $( "#columnChart" ).igDataChart(
+//                {
+//                    width : "320px" ,
+//                    height : "350px" ,
+//                    dataSource : dataChartData ,
+//                    dataSourceType : "json" ,
+//                    responseDataKey : "data" ,
+//                    legend : { element : "legend" } ,
+//                    title : "Energy Production Per Country" ,
+//                    subtitle : "Column" ,
+//                    axes: [
+//                              { name : "xAxis" , type : "categoryX" , label : "Year" , labelTopMargin : 5 } ,
+//                              { name : "yAxis" , type : "numericY" , minimumValue : 0 , title : "Quadrillion Btu" }
+//                          ],
+//                    series : [
+//                               CreateSeries( "column" , "MONETARY_VALUE" ) ,
+//                             ]
+//                }) ;
+@* } *@
+)
+<!--          </div>
+          <div id="legend" class="legend" ></div>-->
+
+          break ;
+
+        case 7 :
+          // funnel chart
+
+          <div id="chartWeighted" ></div>
+
+          break ;
+
+case 9 :
+
+// line chart
+
+<!--          <div id="columnChart" class="chart" > -->
+@(
+@* *{
+var xAxis = new CategoryXAxis() ; *@
+
+            Html.Infragistics().DataChart( Model.EngineModel.Data ).Width( "320px" ).Height( "350px" )
+            //.Axes.Add( new NumericXAxis { Name } )
+//.Axes( axes => { axes.CategoryX("xAxis").Label( "Year" ) ; axes.NumericY( "priceAxis" ) ; })
+.Axes( axes => { axes.CategoryX("xAxis").Label( "Year" ) ; axes.NumericY( "yAxis" ).MinimumValue( 0 ).Title( "Quadrillion Btu" ) ; })
+.Series( series => { series.Line( "valueSeries" ).XAxis( "xAxis" ).YAxis( "yAxis" ).ValueMemberPath( item => item.MONETARY_VALUE ) ; } )
+            .DataBind()
+            .Render()
+
+//                $( "#columnChart" ).igDataChart(
+//                {
+//                    width : "320px" ,
+//                    height : "350px" ,
+//                    dataSource : dataChartData ,
+//                    dataSourceType : "json" ,
+//                    responseDataKey : "data" ,
+//                    legend : { element : "legend" } ,
+//                    title : "Energy Production Per Country" ,
+//                    subtitle : "Column" ,
+//                    axes: [
+//                              { name : "xAxis" , type : "categoryX" , label : "Year" , labelTopMargin : 5 } ,
+//                              { name : "yAxis" , type : "numericY" , minimumValue : 0 , title : "Quadrillion Btu" }
+//                          ],
+//                    series : [
+//                               CreateSeries( "column" , "MONETARY_VALUE" ) ,
+//                             ]
+//                }) ;
+@* } *@
+)
+<!--          </div>
+          <div id="legend" class="legend" ></div>-->
+
+break ;
+      }
+    </div>
+  </body>
+</html>

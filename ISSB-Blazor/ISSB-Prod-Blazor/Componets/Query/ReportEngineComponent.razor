@@ -1,0 +1,19 @@
+@using Syncfusion.Blazor.Grids
+
+<h3>ReportEngineComponent</h3>
+
+@* <SfGrid DataSource="@ReportModel"  *@
+@*         AllowPaging="true"  *@
+@*         AllowSorting="true"  *@
+@*         AllowFiltering="true"  *@
+@*         AllowGrouping="true" *@
+@*         AllowResizing="true"> *@
+@*     <GridPageSettings PageSize="10"></GridPageSettings> *@
+@*     <GridSelectionSettings Type="SelectionType.Multiple"></GridSelectionSettings> *@
+@* </SfGrid> *@
+
+
+@code {
+    [Parameter] public QueryModel Data { get; set; }
+    [Parameter] public SavedQueryModel ReportModel { get; set; }
+}

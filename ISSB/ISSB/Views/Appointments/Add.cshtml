@@ -1,0 +1,86 @@
+﻿@model Data.Models.AppointmentsModel
+@{
+
+    ViewData["Title"] = "Add Appointment";
+
+}
+
+<body>
+    <br />
+    <div class="card sourceC">
+        <div class="card-header">
+            <h3>@ViewData["Title"]</h3>
+        </div>
+
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-md-10 mx-auto">
+                    @using (Html.BeginForm("AddNew", "Appointments"))
+                    {
+                        @Html.HiddenFor(x => x._id, new { _id = "_id" })
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div class="needs-validation">
+                            <fieldset>
+                                <div class="form-group row">
+                                    <div class="col-sm-3">
+                                        <label>@Html.LabelFor(u => u.Date, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.EditorFor(u => u.Date, new { htmlAttributes = new { @class = "form-control datepicker" } })
+                                            @Html.ValidationMessageFor(u => u.Date, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-6">
+                                        <label class="editor-label">@Html.LabelFor(u => u.Title, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.Title, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(u => u.Title, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-6">
+                                        <label class="editor-label">@Html.LabelFor(u => u.Description, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.TextBoxFor(u => u.Description, new { @class = "form-control" })
+                                            @Html.ValidationMessageFor(u => u.Description, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-3">
+                                        <label>@Html.LabelFor(u => u.IsPublished, htmlAttributes: new { @class = "control-label" })</label>
+                                        <div class="editor-field">
+                                            @Html.CheckBoxFor(u => u.IsPublished)
+                                            @Html.ValidationMessageFor(u => u.IsPublished, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+                                    <div class="form-group row">
+                                        <div class="col-sm-6">
+                                            <label>@Html.LabelFor(u => u.Notes, htmlAttributes: new { @class = "control-label" })</label>
+                                            <div class="editor-field">
+                                                @Html.TextAreaFor(u => u.Notes, new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(u => u.Notes, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <hr />
+                                    <div class="form-group">
+                                        <button type="submit" class="btn btn-primary px-4"><span>Add &nbsp;<i class="fas fa-plus-circle"></i></span></button>
+                                    </div>
+                            </fieldset>
+                        </div>
+                    }
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <br />
+</body>

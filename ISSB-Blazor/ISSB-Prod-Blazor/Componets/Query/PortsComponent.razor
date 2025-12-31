@@ -1,0 +1,215 @@
+@using AngleSharp.Common
+@using FilterType = Syncfusion.Blazor.Grids.FilterType
+
+<div class="card-body">
+    <div class="form-group">
+        <div id="SourceForm">
+            <div class="form-row">
+                <div class="bar-horizontal">
+                    <div class="form-group col-md-3">
+                        <SfCheckBox Label="Use Ports in Query"  TChecked="bool" @onchange="InIncluded" @bind-Checked="UsePorts" ></SfCheckBox>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <SfRadioButton Label="Group Ports Together" Name="portgroup" Value="GroupPortsTogether" TChecked="string" @onchange="SelectGroup" @bind-Checked="SelectGroupType"></SfRadioButton>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <SfRadioButton Label="View Ports Separately" Name="portgroup" Value="ViewPortsSeparately" TChecked="string" @onchange="SelectGroup" @bind-Checked="SelectGroupType"></SfRadioButton>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <SfGrid ID="PortsGrid"
+                @attributes="@GridAttributes"
+                                    @ref="Grid"
+                                    TValue="PortsModel"
+                                    Toolbar="@_toolBar"
+                                    DataSource="@Data.Ports"
+                                    AllowPaging="false"
+                                    AllowSorting="true"
+                                    AllowSelection="true"
+                                    AllowFiltering="true"
+                                    AllowExcelExport="true"
+                                    AllowPdfExport="false"
+                                    Height="300"
+                                    Width="Auto">
+        
+                                <GridFilterSettings
+                                    Type="FilterType.Excel"></GridFilterSettings>
+                                <GridEditSettings Mode="EditMode.Normal" AllowEditing="true"></GridEditSettings>
+                                <GridEvents RowSelected="OnPortRowSelected" RowDeselected="OnPortRowDeselected"
+                                            TValue="PortsModel"></GridEvents>
+                                <GridColumns>
+                                    <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
+                                    <GridColumn Field=@nameof(PortsModel.PortID) HeaderText="ID"
+                                                IsPrimaryKey="true"
+                                                TextAlign="TextAlign.Left"
+                                                Width="10%"
+                                                Type="ColumnType.String"></GridColumn>
+        
+                                    <GridColumn Field=@nameof(PortsModel.GeoCode) HeaderText="Geo Code"
+                                                TextAlign="TextAlign.Left"
+                                                Width="15%" AllowEditing="false"
+                                                Type="ColumnType.Date"></GridColumn>
+        
+                                    <GridColumn Field=@nameof(PortsModel.Name) HeaderText="Name"
+                                                TextAlign="TextAlign.Left"
+                                                Width="80%" AllowEditing="false"
+                                                Type="ColumnType.Date"></GridColumn>
+        
+                                </GridColumns>
+                                <SfSpinner @bind-Visible="IsLoading">
+                                </SfSpinner>
+                            </SfGrid>
+    </div>
+</div>
+
+@code {
+    [Parameter] public EventCallback<object> OnMessage { get; set; }
+    [Parameter] public QueryModel Data { get; set; }
+    [Parameter] public SavedQueryModel ReportModel { get; set; }
+
+    private List<object> _toolBar = new() { "Search" };
+    SfGrid<PortsModel> Grid { get; set; }
+    private PortsModel SelectedRow { get; set; }
+    private IEnumerable<PortsModel> _portData;
+    private bool UsePorts { get; set; }
+    
+    private int[] _indexPortArray;
+    private bool IsLoading { get; set; } = true;
+    private bool IsBusy { get; set; } = false;
+    private Dictionary<string, object> GridAttributes { get; set; } = new Dictionary<string, object>();
+    
+    private async Task SelectGroup(Microsoft.AspNetCore.Components.ChangeEventArgs args)
+    {
+        await NotifyParent();
+    }
+
+    private async Task InIncluded(Microsoft.AspNetCore.Components.ChangeEventArgs args)
+    {
+        if (UsePorts)
+        {
+            GridAttributes["disable"] = "no";
+        }
+        else
+        {
+            GridAttributes["disable"] = "yes";
+        }
+        await NotifyParent();
+    }
+    
+    private string SelectGroupType { get; set; }
+
+    private async Task NotifyParent()
+    {
+        GetSelectedRows();
+        var delegateModel = new SelectionQueryModel
+        {
+            Id = "PORT",
+            IsSelected = UsePorts,
+            SelectedSourceCountries = new List<SaveQuerySourceCountriesModel>(),
+            SelectedMarketCountries = new List<SaveQueryMarketCountriesModel>(),
+            SelectedPorts = ReportModel.Ports,
+            Selection = SelectGroupType
+        };
+
+        if (OnMessage.HasDelegate)
+        {
+            await OnMessage.InvokeAsync(delegateModel);
+        }
+    }
+
+    private void OnPortRowSelected(RowSelectEventArgs<PortsModel> args)
+    {
+        if (IsBusy)
+            return;
+        
+        Task.Run(async () =>
+        {
+            SelectedRow = args.Data;
+            await NotifyParent();
+        });
+    }
+
+    private void OnPortRowDeselected(RowDeselectEventArgs<PortsModel> args)
+    {
+        Task.Run(async () =>
+        {
+           await NotifyParent();
+        });
+    }
+
+    protected override async void OnInitialized()
+    {
+
+        SelectGroupType = ReportModel.PortGroup;
+        UsePorts = ReportModel.IncludePorts;
+        _portData = Data.Ports;
+        
+        InitSelectedRows();
+        IsLoading = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            GridAttributes["disable"] = "no";
+            
+            if(!UsePorts)
+                GridAttributes["disable"] = "yes";
+            
+            IsBusy = true;
+            if (_indexPortArray is not null)
+                await Grid.SelectRowsAsync(_indexPortArray);
+
+            IsBusy = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void InitSelectedRows()
+    {
+        List<int> portIndexes = new();
+        foreach (var portModel in ReportModel.Ports)
+        {
+            var index = Data.Ports.FindIndex(sc => sc.PortID.Equals(portModel.PortID) );
+            if (index != -1)
+            {
+                portIndexes.Add(index);
+            }
+        }
+
+        portIndexes = portIndexes.OrderBy(x => x).ToList();
+        _indexPortArray = portIndexes.ToArray();
+    }
+
+    private void GetSelectedRows()
+    {
+        ReportModel.Ports = new();
+
+        foreach (var item in Grid.SelectedRecords)
+        {
+            var model = Data.Ports.FirstOrDefault(p => p.PortID.Equals(item.PortID));
+            if (model is not null)
+            {
+                var sqModel = new SaveQueryPortModel()
+                {
+                    PortID = model.PortID
+                };
+                ReportModel.Ports.Add(sqModel);
+            }
+        }
+    }
+}
+<style>
+    .e-grid[disable="yes"] {
+        opacity: .5;
+        pointer-events: none;
+        -ms-touch-action: none;
+        touch-action: none;
+        cursor: no-drop;
+    }
+</style>

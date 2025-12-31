@@ -1,0 +1,947 @@
+@using System.Collections.Immutable
+@using System.Security.Claims
+@using Newtonsoft.Json
+@using FilterType = Syncfusion.Blazor.Grids.FilterType
+@using SkeletonType = Syncfusion.Blazor.Notifications.SkeletonType
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<PageTitle>Query Builder</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        
+        @if (IsLoading)
+        {
+            <SfSkeleton CssClass="skeleton-default" Shape=SkeletonType.Rectangle
+                        Width="100%"
+                        Height="80vh"></SfSkeleton>
+        }
+        else
+        {
+            @if (!_isEdit)
+            {
+                <div class="container-fluid">
+                    <h3>Query Builder</h3>
+                    <div class="card card-secondary" id="SC">
+                        <div class="card-header">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <header id="labSourceCountries">@SourceCountryTitle</header>
+                                <button type="button" class="btn btn-flat float-end"
+                                        style="border: none; background: none; box-shadow: none;"
+                                        @onclick="SetScVisible">
+                                    <i class="@CloseScOpenIco"></i>
+                                </button>
+                            </div>
+                        </div>
+                        @if (_isScVisible)
+                        {
+                            <ScComponent OnMessage="HandleScSelectedMessage"  Data="Model" ReportModel="ReportModel" />
+                        }
+                    </div>
+                    <br/>
+
+                    <div class="card card-secondary" id="TFS">
+                        <div class="card-header">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <header id="labSourceCountries">Trade Flow Section</header>
+                                <button type="button" class="btn btn-flat float-end"
+                                        style="border: none; background: none; box-shadow: none;"
+                                        @onclick="SetTfVisible">
+                                    <i class="@CloseTfOpenIco"></i>
+                                </button>
+                            </div>
+                        </div>
+                        @if(_isTfVisible)
+                        {
+                            <div class="card-body">
+                                <TfComponent OnMessage="HandleScSelectedMessage"  Data="Model" ReportModel="ReportModel" />
+                            </div>
+                        }
+                        </div>
+                    <br/>
+                    
+                    <div class="card card-secondary" id="MC">
+                        <div class="card-header">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <header id="labSourceCountries">@MarketCountryTitle</header>
+                                <button type="button" class="btn btn-flat float-end"
+                                        style="border: none; background: none; box-shadow: none;"
+                                        @onclick="SetMcVisible">
+                                    <i class="@CloseMcOpenIco"></i>
+                                </button>
+                            </div>
+                        </div>
+                        @if (_isMcVisible)
+                        {
+                            <div class="card-body">
+                                <McComponent OnMessage="HandleScSelectedMessage"  Data="Model" ReportModel="ReportModel" />
+                                </div>
+                        }
+                    </div>
+                    <br/>
+                    <div class="card card-secondary" id="PORT">
+                        <div class="card-header">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <header id="labSourceCountries">@PortsTitle</header>
+                                <button type="button" class="btn btn-flat float-end"
+                                        style="border: none; background: none; box-shadow: none;"
+                                        @onclick="SetPortVisible">
+                                    <i class="@ClosePortOpenIco"></i>
+                                </button>
+                            </div>
+                        </div>
+                        @if (_isPortVisible)
+                        {
+                            <div class="card-body">
+                                <PortsComponent OnMessage="HandleScSelectedMessage"  Data="Model" ReportModel="ReportModel" />
+                            </div>
+                        }
+                    </div>
+                    <br/>
+                    
+                    <div class="card card-secondary" id="PLS">
+                        <div class="card-header">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <header id="labSourceCountries">@PlsTitle</header>
+                                <button type="button" class="btn btn-flat float-end"
+                                        style="border: none; background: none; box-shadow: none;"
+                                        @onclick="SetPlsVisible">
+                                    <i class="@ClosePlsOpenIco"></i>
+                                </button>
+                            </div>
+                        </div>
+                        @if (_isPlsVisible)
+                        {
+                            <div class="card-body">
+                                <PLSComponent OnMessage="HandleScSelectedMessage"  Data="Model" ReportModel="ReportModel" />
+                            </div>
+                        }
+                    </div>
+                    <br/>
+
+                    <div class="card card-secondary" id="SPS">
+                        <div class="card-header">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <header id="labSourceCountries">@SpTitle</header>
+                                <button type="button" class="btn btn-flat float-end"
+                                        style="border: none; background: none; box-shadow: none;"
+                                        @onclick="SetSpVisible">
+                                    <i class="@CloseSpOpenIco"></i>
+                                </button>
+                            </div>
+                        </div>
+                        @if (_isSpVisible)
+                        {
+                            <div class="card-body">
+                                <SpComponent OnMessage="HandleScSelectedMessage"  Data="Model" 
+                                             ReportModel="ReportModel" 
+                                             ProductBroad="ProductBroad"
+                                             ProductMedium="ProductMediumData"
+                                             TariffIndexModels="TariffIndexModel"
+                                             Tariff2DigitIndexModels="Tariff2DigitIndexModel"/>
+                            </div>
+                        }
+                    </div>
+                    <br/>
+                    @* Time Period Selection *@
+                    <div class="card card-secondary" id="STS">
+                        <div class="card-header">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <header id="labSourceCountries">@TpTitle</header>
+                                <button type="button" class="btn btn-flat float-end"
+                                        style="border: none; background: none; box-shadow: none;"
+                                        @onclick="SetTpVisible">
+                                    <i class="@CloseTpOpenIco"></i>
+                                </button>
+                            </div>
+                        </div>
+                        @if (_isTpVisible)
+                        {
+                            <div class="card-body">
+                                <TimePeriodComponent OnMessage="HandleScSelectedMessage"  Data="Model" ReportModel="ReportModel" />
+                            </div>
+                        }
+                    </div>
+                    <br/>
+                    @* Time Period Selection *@
+                    <div class="card card-secondary" id="TONNES">
+                        <div class="card-header">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <header id="labSourceCountries">@TonnesValueTitle</header>
+                                <button type="button" class="btn btn-flat float-end"
+                                        style="border: none; background: none; box-shadow: none;"
+                                        @onclick="SetTonnesValueVisible">
+                                    <i class="@CloseTonnesValueOpenIco"></i>
+                                </button>
+                            </div>
+                        </div>
+                        @if (_isTonnesValueVisible)
+                        {
+                            <div class="card-body">
+                                <TonnesValuesComponent OnMessage="HandleScSelectedMessage"  Data="Model" ReportModel="ReportModel" />
+                            </div>
+                        }
+                    </div>
+                    <br/>
+                    @* Save and Update *@
+                    <div class="card card-secondary" id="SAVE">
+                        <div class="card-header">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <header id="labSourceCountries">@SaveTitle</header>
+                                <button type="button" class="btn btn-flat float-end"
+                                        style="border: none; background: none; box-shadow: none;"
+                                        @onclick="SetSaveUpdateVisible">
+                                    <i class="@CloseSaveUpdateOpenIco"></i>
+                                </button>
+                            </div>
+                        </div>
+                        @if (_isSaveUpdateVisible)
+                        {
+                            <div class="card-body">
+                                <SaveUpdateComponent OnMessage="HandleScSelectedMessage"  Data="Model" ReportModel="ReportModel" />
+                            </div>
+                        }
+                    </div>
+                    <br/>
+                </div>
+            }
+        }
+    </Authorized>
+    <NotAuthorized>
+        <p>Not Authorized</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    [Parameter] public string Id { get; set; }
+
+    [Parameter] public int Itype { get; set; }
+
+    [Parameter] public int ItemType { get; set; }
+
+    [Parameter] public int Item { get; set; }
+
+    [Parameter] public int RecordId { get; set; }
+
+    private List<object> _toolBar = new() { "Search" };
+
+    private string SourceCountryTitle { get; set; }
+    SfGrid<MarketCountryModel> McGrid { get; set; }
+    private IQueryable<MarketCountryModel> _mcData;
+    private Guid _mcGridKey = Guid.NewGuid();
+    private MarketCountryModel SelectedMcRow { get; set; }
+    private string MarketCountryTitle { get; set; }
+    SfGrid<PortsModel> PortsGrid { get; set; }
+    private PortsModel SelectedPortRow { get; set; }
+    private string PortsTitle { get; set; }
+    private string PlsTitle { get; set; } = "Product Level Selection";
+    private string SpTitle { get; set; } = "Specific Product Selection";
+    private string TpTitle { get; set; } = "Time Period Selection";
+    private string TonnesValueTitle { get; set; } = "Tonnes and Values";
+    private string SaveTitle { get; set; } = "Save Query";
+    QueryModel Model { get; set; }
+    private List<SourceCountryFilterModel> SourceCountryRegion { get; set; }
+    private SourceCountryFilterModel SelectedCountryRegion { get; set; }
+    SavedQueryModel ReportModel { get; set; }
+    private bool IsLoading { get; set; } = true;
+    private bool IsLoaded { get; set; } = false;
+    private AuthenticationState _authState;
+    private bool IsAdministrator { get; set; }
+    private IQueryable _tariffIndex;
+    private IQueryable _tariff2DigitIndex;
+    private string IsAdvancedUser { get; set; }
+    private List<ProductMedumFilterModel> ProductMediumData { get; set; }
+    private List<TariffIndexModel> TariffIndexModel { get; set; }
+    private List<Tariff2DigitIndexModel> Tariff2DigitIndexModel { get; set; }
+    private List<ProductBroadFilterModel> ProductBroad { get; set; }
+    private IQueryable _dataAll;
+    private int _type;
+    private bool _isEdit = false;
+    private int[] _indexScArray;
+    private int[] _indexMcArray;
+    private int[] _indexPortsArray;
+    private bool _isScVisible = false;
+    private bool _isTfVisible = false;
+    private bool _isMcVisible = false;
+    private bool _isPortVisible = false;
+    private bool _isPlsVisible = false;
+    private bool _isSpVisible = false;
+    private bool _isTpVisible = false;
+    private bool _isTonnesValueVisible = false;
+    private bool _isSaveUpdateVisible = false;
+
+    private string CloseScOpenIco { get; set; } = "fa-duotone fa-solid fa-chevrons-down";
+    private string CloseTfOpenIco { get; set; } = "fa-duotone fa-solid fa-chevrons-down";
+    private string CloseMcOpenIco { get; set; } = "fa-duotone fa-solid fa-chevrons-down";
+    private string ClosePortOpenIco { get; set; } = "fa-duotone fa-solid fa-chevrons-down";
+    private string ClosePlsOpenIco { get; set; } = "fa-duotone fa-solid fa-chevrons-down";
+    private string CloseSpOpenIco { get; set; } = "fa-duotone fa-solid fa-chevrons-down";
+    private string CloseTpOpenIco { get; set; } = "fa-duotone fa-solid fa-chevrons-down";
+    private string CloseTonnesValueOpenIco { get; set; } = "fa-duotone fa-solid fa-chevrons-down";
+    private string CloseSaveUpdateOpenIco { get; set; } = "fa-duotone fa-solid fa-chevrons-down";
+    
+    private void SetScVisible()
+    {
+        _isScVisible = !_isScVisible;
+        CloseScOpenIco = _isScVisible ? "fa-duotone fa-solid fa-chevrons-up" : "fa-duotone fa-solid fa-chevrons-down";
+    }
+
+    private void SetTfVisible()
+    {
+        _isTfVisible = !_isTfVisible;
+        CloseTfOpenIco = _isTfVisible ? "fa-duotone fa-solid fa-chevrons-up" : "fa-duotone fa-solid fa-chevrons-down";
+    }
+
+    private void SetMcVisible()
+    {
+        _isMcVisible = !_isMcVisible;
+        CloseMcOpenIco = _isMcVisible ? "fa-duotone fa-solid fa-chevrons-up" : "fa-duotone fa-solid fa-chevrons-down";
+
+    }
+
+    private void SetPortVisible()
+    {
+        _isPortVisible = !_isPortVisible;
+        ClosePortOpenIco = _isPortVisible ? "fa-duotone fa-solid fa-chevrons-up" : "fa-duotone fa-solid fa-chevrons-down";
+    }
+
+    private void SetPlsVisible()
+    {
+        _isPlsVisible = !_isPlsVisible;
+        ClosePlsOpenIco = _isPlsVisible ? "fa-duotone fa-solid fa-chevrons-up" : "fa-duotone fa-solid fa-chevrons-down";
+    }
+
+    private void SetSpVisible()
+    {
+        _isSpVisible = !_isSpVisible;
+        CloseSpOpenIco = _isSpVisible ? "fa-duotone fa-solid fa-chevrons-up" : "fa-duotone fa-solid fa-chevrons-down";
+    }
+
+    private void SetTpVisible()
+    {
+        _isTpVisible = !_isTpVisible;
+        CloseTpOpenIco = _isTpVisible ? "fa-duotone fa-solid fa-chevrons-up" : "fa-duotone fa-solid fa-chevrons-down";
+    }
+    
+    private void SetTonnesValueVisible()
+    {
+        _isTonnesValueVisible = !_isTonnesValueVisible;
+        CloseTonnesValueOpenIco = _isTonnesValueVisible ? "fa-duotone fa-solid fa-chevrons-up" : "fa-duotone fa-solid fa-chevrons-down";
+    }
+    
+    private void SetSaveUpdateVisible()
+    {
+        _isSaveUpdateVisible = !_isSaveUpdateVisible;
+        CloseSaveUpdateOpenIco = _isSaveUpdateVisible ? "fa-duotone fa-solid fa-chevrons-up" : "fa-duotone fa-solid fa-chevrons-down";
+    }
+    
+    private async Task HandleScSelectedMessage(object msg)
+    {
+        var tp = msg.GetType();
+
+        if (tp == typeof(SelectionQueryModel))
+        {
+            var model = (SelectionQueryModel)msg;
+
+            if (model.Id.Equals("SC"))
+            {
+                ReportModel.SourceCountryGroup = model.Selection;
+                ReportModel.SourceCountryGEOs = model.SelectedSourceCountries;
+                SourceCountryTitle = "Source Countries [" + ReportModel.SourceCountryGEOs.Count + "]";
+            }
+
+            if (model.Id.Equals("MC"))
+            {
+                ReportModel.MarketCountryGroup = model.Selection;
+                ReportModel.MarketCountryGEOs = model.SelectedMarketCountries;
+                MarketCountryTitle = "Market Countries [" + ReportModel.MarketCountryGEOs.Count + "]";
+            }
+
+            if (model.Id.Equals("TF"))
+            {
+                ReportModel.TradeFlowType = model.Selection;
+            }
+
+            if (model.Id.Equals("PORT"))
+            {
+                ReportModel.PortGroup = model.Selection;
+                ReportModel.Ports = model.SelectedPorts;
+                ReportModel.IncludePorts = model.IsSelected;
+                PortsTitle = "Ports [" + ReportModel.Ports.Count + "]";
+            }
+
+            if (model.Id.Equals("PLS"))
+            {
+                ReportModel.ProductGroupType = model.Selection;
+                if (_isSpVisible == true)
+                {
+                    //_isSpVisible = false;
+                    SetSpVisible();
+                    await InvokeAsync(StateHasChanged);
+                    await Task.Delay(500);
+                    _isSpVisible = false;
+                    SetSpVisible();
+                    await InvokeAsync(StateHasChanged);
+                }
+            }
+            
+            if (model.Id.Equals("SP"))
+            {
+                ReportModel.ProductGroup = model.Selection;
+                ReportModel.Products = model.SelectedProducts;
+            }
+
+            if (model.Id.Equals("YEAR"))
+            {
+                ReportModel.GroupByMonth = model.GroupByMonth;
+                ReportModel.GroupByQuarter = model.GroupByQuarter;
+                ReportModel.GroupByYear = model.GroupByYear;
+                ReportModel.Years = model.SelectedYears;
+                ReportModel.TimeIDs.Clear();
+                
+                try
+                {
+                    var timeIdList = new List<SaveQueryDateModel>();
+                    foreach (var item in ReportModel.Years)
+                    {
+                        var timeId = string.Empty;
+                        SaveQueryDateModel tIdModel;
+                        if (item.January)
+                        {
+                            timeId = item.Year.ToString();
+                            timeId += "10100";
+                            tIdModel = new SaveQueryDateModel
+                            {
+                                TimeID = int.Parse(timeId)
+                            };
+                            timeIdList.Add(tIdModel);
+                        }
+
+                        if (item.February)
+                        {
+                            timeId = item.Year.ToString();
+                            timeId += "10200";
+                            tIdModel = new SaveQueryDateModel
+                            {
+                                TimeID = int.Parse(timeId)
+                            };
+                            timeIdList.Add(tIdModel);
+                        }
+
+                        if (item.March)
+                        {
+                            timeId = item.Year.ToString();
+                            timeId += "10300";
+                            tIdModel = new SaveQueryDateModel
+                            {
+                                TimeID = int.Parse(timeId)
+                            };
+                            timeIdList.Add(tIdModel);
+                        }
+                        
+                        if (item.April)
+                        {
+                            timeId = item.Year.ToString();
+                            timeId += "20400";
+                            tIdModel = new SaveQueryDateModel
+                            {
+                                TimeID = int.Parse(timeId)
+                            };
+                            timeIdList.Add(tIdModel);
+                        }
+                        
+                        if (item.May)
+                        {
+                            timeId = item.Year.ToString();
+                            timeId += "20500";
+                            tIdModel = new SaveQueryDateModel
+                            {
+                                TimeID = int.Parse(timeId)
+                            };
+                            timeIdList.Add(tIdModel);
+                        }
+                        
+                        if (item.June)
+                        {
+                            timeId = item.Year.ToString();
+                            timeId += "20600";
+                            tIdModel = new SaveQueryDateModel
+                            {
+                                TimeID = int.Parse(timeId)
+                            };
+                            timeIdList.Add(tIdModel);
+                        }
+                        
+                        if (item.July)
+                        {
+                            timeId = item.Year.ToString();
+                            timeId += "30700";
+                            tIdModel = new SaveQueryDateModel
+                            {
+                                TimeID = int.Parse(timeId)
+                            };
+                            timeIdList.Add(tIdModel);
+                        }
+                        
+                        if (item.August)
+                        {
+                            timeId = item.Year.ToString();
+                            timeId += "30800";
+                            tIdModel = new SaveQueryDateModel
+                            {
+                                TimeID = int.Parse(timeId)
+                            };
+                            timeIdList.Add(tIdModel);
+                        }
+                        
+                        if (item.September)
+                        {
+                            timeId = item.Year.ToString();
+                            timeId += "30900";
+                            tIdModel = new SaveQueryDateModel
+                            {
+                                TimeID = int.Parse(timeId)
+                            };
+                            timeIdList.Add(tIdModel);
+                        }
+                        
+                        if (item.October)
+                        {
+                            timeId = item.Year.ToString();
+                            timeId += "41000";
+                            tIdModel = new SaveQueryDateModel
+                            {
+                                TimeID = int.Parse(timeId)
+                            };
+                            timeIdList.Add(tIdModel);
+                        }
+                        
+                        if (item.November)
+                        {
+                            timeId = item.Year.ToString();
+                            timeId += "41100";
+                            tIdModel = new SaveQueryDateModel
+                            {
+                                TimeID = int.Parse(timeId)
+                            };
+                            timeIdList.Add(tIdModel);
+                        }
+                        
+                        if (item.December)
+                        {
+                            timeId = item.Year.ToString();
+                            timeId += "41200";
+                            tIdModel = new SaveQueryDateModel
+                            {
+                                TimeID = int.Parse(timeId)
+                            };
+                            timeIdList.Add(tIdModel);
+                        }
+                    }
+
+                    ReportModel.TimeIDs = timeIdList;
+                    
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error processing time IDs: {ex.Message}");
+                }
+            }
+            
+            if (model.Id.Equals("TONNESVALUE"))
+            {
+                ReportModel.TonnesValuesGroup = model.TonnValueGroup;
+                ReportModel.SelectedCurrency = model.Currency;
+            }
+            
+            if (model.Id.Equals("SAVE"))
+            {
+                ReportModel.Name = model.Name;
+                ReportModel.Description = model.Description;
+                ReportModel.Comments = model.Comments;
+                ReportModel.RunDay = model.RunDay;
+                ReportModel.IsShedule = model.IsScheduled;
+            }
+            
+            if (model.Id.Equals("DELETE"))
+            {
+                ReportModel.Name = model.Name;
+                ReportModel.Description = model.Description;
+                ReportModel.Comments = model.Comments;
+                ReportModel.RunDay = model.RunDay;
+                ReportModel.IsShedule = model.IsScheduled;
+            }
+            
+            if (model.Id.Equals("RUN"))
+            {
+                ReportModel.Name = model.Name;
+                ReportModel.Description = model.Description;
+                ReportModel.Comments = model.Comments;
+                ReportModel.RunDay = model.RunDay;
+                ReportModel.IsShedule = model.IsScheduled;
+            }
+        }
+    }
+    
+    protected override async void OnInitialized()
+    {
+        base.OnInitialized();
+
+        IsLoading = true;
+        var iRecordId = Id;
+        var type = Itype;
+        var dashItemType = ItemType;
+        var dashItem = Item;
+
+        Model = new QueryModel();
+        Model.User = string.Empty;
+        
+        var userSrv = new UserServices();
+        _authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userId = _authState.User?.FindFirst(ClaimTypes.Sid)?.Value;
+        var userModel = await userSrv.GetUsersById(userId);
+        Model.SourceCountries = userModel.AllowedSourceCountries;
+
+        Model.CustomTariff = userModel.AllowedCustomFilters;
+
+        // Get The latest Update Date from Master
+
+        var scSrv = new SourceCountryService();
+
+        foreach (var scItem in Model.SourceCountries)
+        {
+            var scModel = await scSrv.GetSourceCountryByGeoCode(scItem.GEO_CODE);
+            scItem.LATEST_DATE = scModel.LATEST_DATE;
+        }
+
+        var mcSrv = new MarketCountryService();
+        Model.MarketCountries = await mcSrv.GetActiveMarketCountries();
+
+        var srSrv = new SourceCountryFilterService();
+        Model.SourceRegions = await srSrv.GetFilters();
+
+        var mcfSrv = new MarketCountryFilterService();
+        Model.MarketRegions = await mcfSrv.GetFilters();
+
+        var portSrv = new PortsService();
+        Model.Ports = await portSrv.GetAllPorts();
+
+        var srv = new ProductService();
+
+        if (userModel.IsAdministrator)
+        {
+            IsAdministrator = true;
+        }
+
+        if (userModel.IsAdvancedUser)
+        {
+            //Check for SuperUser
+
+            var tariffsrv = new TariffService();
+            TariffIndexModel = await tariffsrv.GetTariffIndex();
+            Tariff2DigitIndexModel = await tariffsrv.GetTariff2DigitIndex();
+
+            IsAdvancedUser = "True";
+        }
+        else
+        {
+            Model.LongTariffCodes = new List<TariffShortModel>();
+            userModel.IsAdvancedUser = false;
+            IsAdvancedUser = "False";
+        }
+
+        var treeMedumModel = await srv.GetAllMedumProductsForTree();
+
+        foreach (var item in treeMedumModel)
+        {
+            var itemItem = new List<ProductMedumFilterItemModel>();
+            foreach (var itemChild in item.Items)
+            {
+                var foundItem = userModel.AllowedTariffCodes.FirstOrDefault(x => x.TariffCode == itemChild.TariffCode);
+                if (foundItem != null)
+                {
+                    var pModel = new ProductMedumFilterItemModel
+                    {
+                        Name = itemChild.Name,
+                        TariffCode = itemChild.TariffCode,
+                        Description = itemChild.Description,
+                        Sort = itemChild.Sort
+                    };
+                    itemItem.Add(pModel);
+                }
+
+                item.Items = itemItem;
+            }
+        }
+
+        ProductMediumData = treeMedumModel;
+
+        var broadItemItems = await srv.GetBroadProducts();
+        var broadItemItemAllowed = new List<ProductBroadFilterItemModel>();
+
+        foreach (var item in broadItemItems)
+        {
+            var foundItem = userModel.AllowedTariffCodes.FirstOrDefault(x => x.TariffCode == item.TariffCode);
+            if (foundItem != null)
+            {
+                var pModel = new ProductBroadFilterItemModel
+                {
+                    Name = foundItem.Name,
+                    TariffCode = foundItem.TariffCode,
+                    Description = foundItem.Name,
+                    Sort = foundItem.SortOrder
+                };
+                broadItemItemAllowed.Add(pModel);
+            }
+        }
+
+        Model.HighTree = broadItemItemAllowed;
+
+        var treeBroadModel = await srv.GetAllBroadProducts();
+        ProductBroad = treeBroadModel;
+
+        //All Tariff H Codes
+        var treeAllModel = await srv.GetAllProductsForTree();
+        var treeAllModelAllowed = new List<ProductAllFilterModel>();
+        foreach (var treeAll in treeAllModel)
+        {
+            var foundItem = userModel.AllowedTariffCodes.FirstOrDefault(x => x.TariffCode == treeAll.TariffCode);
+            if (foundItem != null)
+            {
+                foundItem.Name = treeAll.Name;
+                treeAllModelAllowed.Add(foundItem);
+            }
+        }
+
+        _dataAll = treeAllModelAllowed.AsQueryable();
+
+        //Get Long
+        //Get Custom
+        var yearSrv = new LookupsService();
+        var modelYear = await yearSrv.GetYearsDropdown();
+        //IQueryable dataYears = modelYear.AsQueryable();
+        //ViewBag.YearTreeData = dataYears;
+
+        var tableYears = new List<QueryDateMonthModel>();
+        var cnt = 0;
+        foreach (var year in modelYear)
+        {
+            var mYear = new QueryDateMonthModel
+            {
+                Id = cnt++,
+                Year = int.Parse(year.Text),
+                January = false,
+                February = false,
+                March = false,
+                April = false,
+                May = false,
+                June = false,
+                July = false,
+                August = false,
+                September = false,
+                October = false,
+                November = false,
+                December = false
+            };
+            tableYears.Add(mYear);
+        }
+
+        var allowedYears = userModel.AllowedYears;
+        var years = allowedYears.Split(',');
+
+        var tableAllowedYears = new List<QueryDateMonthModel>();
+
+        foreach (var y in years)
+        {
+            var yModel = tableYears.FirstOrDefault(s => s.Year.Equals(int.Parse(y)));
+            tableAllowedYears.Add(yModel);
+        }
+
+        tableYears = tableAllowedYears;
+        
+        Model.YearTable = tableYears;
+        
+        if (type == 0)
+        {
+            var reportService = new QueryService();
+            Model.CurrencyUsed = await reportService.CurencyUsed();
+        }
+
+        if (type == 1)
+        {
+            type = type;
+            var uEmail = _authState.User?.FindFirst(ClaimTypes.Email)?.Value;
+
+            var reportService = new QueryService();
+            ReportModel = await reportService.GetReportByID(uEmail, iRecordId);
+            Model.CurrencyUsed = await reportService.CurencyUsed();
+            
+            var selectedMonths = ReportModel.TimeIDs;
+            
+            foreach (var sMonth in selectedMonths)
+            {
+                //tableYears 202010200
+
+                var year = int.Parse(sMonth.TimeID.ToString().Substring(0, 4));
+                var Mth = int.Parse(sMonth.TimeID.ToString().Substring(5, 2));
+                var tblItem = tableYears.Find(x => x.Year == year);
+
+                if (Mth == 1)
+                {
+                    tblItem.January = true;
+                }
+
+                if (Mth == 2)
+                {
+                    tblItem.February = true;
+                }
+
+                if (Mth == 3)
+                {
+                    tblItem.March = true;
+                }
+
+                if (Mth == 4)
+                {
+                    tblItem.April = true;
+                }
+
+                if (Mth == 5)
+                {
+                    tblItem.May = true;
+                }
+
+                if (Mth == 6)
+                {
+                    tblItem.June = true;
+                }
+
+                if (Mth == 7)
+                {
+                    tblItem.July = true;
+                }
+
+                if (Mth == 8)
+                {
+                    tblItem.August = true;
+                }
+
+                if (Mth == 9)
+                {
+                    tblItem.September = true;
+                }
+
+                if (Mth == 10)
+                {
+                    tblItem.October = true;
+                }
+
+                if (Mth == 11)
+                {
+                    tblItem.November = true;
+                }
+
+                if (Mth == 12)
+                {
+                    tblItem.December = true;
+                }
+            }
+        }
+        
+        Model.SheduleDays = new List<SheduleDayModel>();
+
+        for (var i = 1; i <= 28; i++)
+        {
+            var dayModel = new SheduleDayModel
+            {
+                Code = i,
+                Day = i
+            };
+            Model.SheduleDays.Add(dayModel);
+        }
+
+
+        //Update the selected Source Countries
+        List<int> sCindexes = new();
+        foreach (var countriesModel in ReportModel.SourceCountryGEOs)
+        {
+            var index = Model.SourceCountries.FindIndex(sc => sc.GEO_CODE.Equals(countriesModel.GeoCode));
+            if (index != -1)
+            {
+                sCindexes.Add(index);
+            }
+        }
+
+        SourceCountryTitle = "Source Countries [" + sCindexes.Count + "]";
+        sCindexes = sCindexes.OrderBy(x => x).ToList();
+        _indexScArray = sCindexes.ToArray();
+
+        //Update the selected Market Countries
+        ReSelectMc();
+
+        //Update the selected Ports 
+        List<int> Portindexes = new();
+        foreach (var portsModel in ReportModel.Ports)
+        {
+            var index = Model.Ports.FindIndex(sc => sc.PortID.Equals(portsModel.PortID));
+            if (index != -1)
+            {
+                Portindexes.Add(index);
+            }
+        }
+
+        PortsTitle = "Ports [" + Portindexes.Count + "]";
+        _indexPortsArray = Portindexes.ToArray();
+
+        SourceCountryRegion = new List<SourceCountryFilterModel>();
+        foreach (var region in Model.SourceRegions)
+        {
+            SourceCountryRegion.Add(region);
+        }
+
+        IsLoading = false;
+        IsLoaded = true;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!IsLoading)
+        {
+            if (IsLoaded)
+            {
+                IsLoaded = false;
+                IsLoading = false;
+                
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+
+        if (firstRender)
+        {
+            //await InvokeAsync(StateHasChanged);       
+
+            //IsLoading = false;
+        }
+    }
+
+    private void ReSelectMc()
+    {
+        _mcData = Model.MarketCountries.AsQueryable();
+
+        List<int> mCindexes = new();
+        foreach (var countriesModel in ReportModel.MarketCountryGEOs)
+        {
+            var index = Model.MarketCountries.FindIndex(mc => mc.GEO_CODE.Equals(countriesModel.GeoCode));
+            if (index != -1)
+            {
+                mCindexes.Add(index);
+            }
+        }
+
+        mCindexes = mCindexes.OrderBy(x => x).ToList();
+        MarketCountryTitle = "Market Countries [" + mCindexes.Count + "]";
+        _indexMcArray = mCindexes.ToArray();
+    }
+}

@@ -1,0 +1,49 @@
+﻿@model Data.Models.LoginModel
+@{
+
+
+    ViewData["Title"] = "Verification";
+
+}
+ 
+
+<div class="container-fluid">
+    <div class="login-box">
+        <div class="login-logo">
+            <a href="../Home/Index"><b>ISSB</b></a>
+        </div>
+        <!-- /.login-logo -->
+        <div class="card">
+            <div class="card-body login-card-body">
+               
+                    @using (Html.BeginForm("Verify", "Auth"))
+                    {
+                        @Html.AntiForgeryToken()
+                        <p class="login-box-msg">User Verification Code</p>
+                        <div class="form-horizontal">
+                             @Html.HiddenFor(x => x.Email, new { SMSCode = "Email" })
+                             @Html.HiddenFor(x => x.Password, new { SMSCode = "Password" })
+                             @Html.HiddenFor(x => x.SMSCode, new { SMSCode = "SMSCode" })
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            <div class="needs-validation">
+                                <fieldset>
+                                   
+                                 
+                                    @Html.ValidationMessageFor(u => u.ValidationCode, "", new { @class = "text-danger" })
+                                    @Html.TextBoxFor(u => u.ValidationCode, new { @class = "form-control input-group mb-3", @placeholder = "Verification Code" })
+
+                                    <div style="color: red; font-weight: bold"> @ViewData["Message"]</div>
+
+                                   
+                                    <div class="form-group">
+                                        <input type="submit" class="btn btn-primary btn-md" value="Verify" />
+                                    </div>
+                                </fieldset>
+                                <br />
+                            </div>
+                        </div>
+                    }
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,106 @@
+﻿@using Infragistics.Web.Mvc
+@model Data.Models.EmailMessagesModel
+@{
+
+    ViewData["Title"] = "Email Message Record View";
+
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+
+
+        h3 {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="card">
+        <div class="card-header">
+            <div class="content-header">
+                <h2>@ViewData["Title"]</h2>
+                <h3>@ViewData["Message"]</h3>
+                <hr />
+
+                @using (Html.BeginForm("Index", "SystemEventLogs"))
+                {
+                    @Html.HiddenFor(x => x._id, new { id = "_id" })
+                    <div class="form-horizontal">
+
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div style="width: 50%; margin-top:5%; margin-left:25%; margin-right:25%" class="needs-validation">
+                            <fieldset>
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(u => u.MessageID, htmlAttributes: new { @class = "control-label" })
+                                    </div>
+
+                                    <div class="editor-field">
+                                        @Html.EditorFor(u => u.MessageID, new { htmlAttributes = new { @class = "form-control", @type = "number", @min = "0", @step = "1", @value = "0" } })
+                                        @Html.ValidationMessageFor(u => u.MessageID, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(u => u.Title, htmlAttributes: new { @class = "control-label" })
+                                    </div>
+
+                                    <div class="editor-field">
+
+                                        @Html.TextBoxFor(u => u.Title, htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(u => u.Title, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(u => u.HTML, htmlAttributes: new { @class = "control-label" })
+                                    </div>
+                                    <div class="editor-field">
+                                        @(Html.Infragistics().
+
+                                                                HtmlEditorFor(m => m.HTML).
+                                                                Width("100%").
+                                                                ID("htmlEditorHeader").
+                                                                //Height("700px").
+                                                                ShowCopyPasteToolbar(true).
+                                                                ShowFormattingToolbar(true).
+                                                                //CustomToolbars(customToolbars =>
+                                                                //{
+                                                                //    customToolbars.Model.
+                                                                //}).
+                                                                Render()
+                                        )
+                                        @Html.ValidationMessageFor(u => u.HTML, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <hr />
+                                <div class="form-group">
+                                    <button onclick="goBack()" class="btn btn-primary px-4"><span>Close &nbsp;<i class="far fa-times-circle"></i></span></button>
+                                </div>
+                            </fieldset>
+                            <br />
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <script>
+function changingValue() {
+
+            var portID = $("#PortID").igNumericEditor("value");
+            $("#Id").val(portID);
+
+        }</script>
+</body>
+</html>
+

@@ -1,0 +1,457 @@
+﻿@page "/ukimport"
+@using Services
+@using Data.Models
+@using Data.Ports.Models
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Spinner
+@using Syncfusion.Blazor.ProgressBar
+@using Syncfusion.Blazor.Notifications
+
+<PageTitle>UK Data Import</PageTitle>
+<h3>UK Imports</h3>
+@if (!IsProcessing)
+{
+    @if (IsLoading)
+    {
+        <SfSkeleton Height="50px"></SfSkeleton>
+        <p>@CountryName</p>
+        <SfProgressBar @ref="cProgress" ProgressColor="#E31658" Visible="IsLoading" Height="10px" Width="100%" Value="@progressCountry" Minimum="0" Maximum="100" TrackThickness="6" ProgressThickness="6">
+        </SfProgressBar>
+        <SfProgressBar @ref="tProgress" Visible="IsLoading" Height="10px" Width="100%" Value="@progressTariff" Minimum="0" Maximum="100" TrackThickness="6" ProgressThickness="6">
+        </SfProgressBar>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-xs-4 col-sm-4 col-lg-4 col-md-4">
+                <SfDatePicker CssClass="e-outline" TValue="DateTime" @bind-Value="DateValue" Placeholder="Choose a Month" Format="MMMM yyyy" Start="CalendarView.Year" Depth="CalendarView.Year" ShowClearButton="true" FullScreen="true"></SfDatePicker>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6 col-sm-6 col-lg-6 col-md-6">
+                <SfButton @ref="BtnSearch" @onclick="SearchData" CssClass="e-flat" Disabled="IsLoading" IsPrimary="true" Content="Scan UK Data"></SfButton>
+                <p style="color:blue">@message Items Added [@ItemsAdded]</p>
+
+            </div>
+
+
+            @if (!IsLoading)
+            {
+                @if (uKStageingDataModels.Count > 0)
+                {
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-6 col-lg-6 col-md-6">
+                            <SfButton @ref="BtnUpsert" @onclick="UpsertData" CssClass="e-flat" Disabled="IsLoading" IsPrimary="true" Content="Upsert to TES"></SfButton>
+                        </div>
+                    </div>
+                }
+                <SfGrid @ref="Grid"
+                        DataSource="@uKStageingDataModels"
+                        TValue="UKStageingDataModel"
+                        Toolbar="@toolBar"
+                        ShowColumnChooser="true"
+                        AllowPaging="true"
+                        AllowSorting="true"
+                        AllowFiltering="true"
+                        AllowExcelExport="true"
+                        AllowPdfExport="false"
+                        AllowSelection="true"
+                        AllowGrouping="true"
+                        Height="450"
+                        Width="Auto">
+                    <GridPageSettings PageCount="10" PageSize="15"></GridPageSettings>
+                    <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Excel"></GridFilterSettings>
+                    <GridPageSettings PageCount="10"></GridPageSettings>
+                    <GridEvents OnToolbarClick="ToolbarClickHandler" TValue="UKStageingDataModel"></GridEvents>
+
+                    <GridColumns>
+                        <GridColumn Field=@nameof(UKStageingDataModel._id) HeaderText="Id" IsPrimaryKey="true" Visible="true" TextAlign="TextAlign.Left" AutoFit="true" Width="120"></GridColumn>
+                        <GridColumn Field=@nameof(UKStageingDataModel.Year) HeaderText="Year" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        <GridColumn Field=@nameof(UKStageingDataModel.Month) HeaderText="Month" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        <GridColumn Field=@nameof(UKStageingDataModel.SC_GEO) HeaderText="SC Geo" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        <GridColumn Field=@nameof(UKStageingDataModel.CountryName) HeaderText="Country" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        <GridColumn Field=@nameof(UKStageingDataModel.Flow) HeaderText="Flow" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        <GridColumn Field=@nameof(UKStageingDataModel.HSCode) HeaderText="HS Code" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        <GridColumn Field=@nameof(UKStageingDataModel.MC_GEO) HeaderText="MC Geo" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        <GridColumn Field=@nameof(UKStageingDataModel.Partner) HeaderText="Partner" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        <GridColumn Field=@nameof(UKStageingDataModel.Quantity) HeaderText="Qty" TextAlign="TextAlign.Right" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        <GridColumn Field=@nameof(UKStageingDataModel.Unit) HeaderText="Unit" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        <GridColumn Field=@nameof(UKStageingDataModel.Value) HeaderText="Value" TextAlign="TextAlign.Right" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        <GridColumn Field=@nameof(UKStageingDataModel.PortId) HeaderText="PortId" TextAlign="TextAlign.Center" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                        <GridColumn Field=@nameof(UKStageingDataModel.Port) HeaderText="Port" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                    </GridColumns>
+                    <SfSpinner @bind-Visible="IsLoading"></SfSpinner>
+                </SfGrid>
+            }
+        </div>
+    }
+}
+else
+{
+        <h4>Data is processing. Please try again later.</h4>
+}
+
+@code {
+    SfGrid<UKStageingDataModel> Grid;
+    SfProgressBar tProgress;
+    SfProgressBar cProgress;
+    SfButton BtnSearch;
+    SfButton BtnUpsert;
+    DateTime DateValue { get; set; } = DateTime.Now;
+    UKDataCommodityModel commodity { get; set; }
+    List<TariffSearchModel> tariffModels { get; set; }
+    List<MarketCountryModel> marketCountryModels { get; set; }
+    List<InvalidUKTariffModel> invalidTariff { get; set; } = new();
+    List<UKStageingDataModel> uKStageingDataModels { get; set; } = new();
+    UKPortsModel uKPorts { get; set; } = new();
+
+    bool IsProcessing = false;
+
+    DateTime startTime;
+    DateTime endTime;
+
+    int ItemsAdded = 0;
+    bool IsLoading = false;
+    string message { get; set; } = string.Empty;
+    private List<object> toolBar = new List<object> { "Search", "ExcelExport", "ColumnChooser" };
+
+    int progressTariff = 0;
+    int progressCountry = 0;
+    string CountryName { get; set; }
+
+    public async Task ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
+    {
+        if (args.Item.Text == "Excel Export")
+        {
+            await Grid.ExportToExcelAsync();
+        }
+    }
+
+    private async Task UpsertData()
+    {
+        var stSrv = SystemLockService.Instance;
+        var sModel = await stSrv.GetLockStatus();
+      //  IsProcessing = sModel.IsProcessing;
+
+        //if (IsProcessing)
+        //    return;
+
+        sModel.Period = null;
+        sModel.IsProcessing = true;
+        sModel.SelectedRows = new();
+        await stSrv.Update(sModel);
+
+        CountryName = string.Empty;
+        if (uKStageingDataModels.Count == 0)
+            return;
+
+        List<FinalUKImportModel> finalUKImportModels = new();
+
+        IsLoading = true;
+        progressTariff = 0;
+        progressCountry = 15;
+
+        await InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+
+        var srv = new UkDataService();
+        await srv.DeleteFinalUkImport();
+
+        List<FinalUKImportModel> finalUKImports = new();
+
+        int cnt = 1;
+        foreach (var Item in uKStageingDataModels)
+        {
+            var date = new DateTime(Item.Year, Item.Month, 1);
+            // var date = new DateTime(2024, 12, 1);
+            var quarter = (date.Month + 2) / 3;
+            //string timeID = Item.Year.ToString() + quarter.ToString() + Item.Month.ToString() + "00";
+            string timeID = date.Year.ToString() + quarter.ToString() + date.Month.ToString().PadLeft(2, '0') + "00";
+            string sideOfTrade = string.Empty;
+
+            if (Item.Flow.Contains("Export"))
+            {
+                sideOfTrade = "E";
+            }
+
+            if (Item.Flow.Contains("Import"))
+            {
+                sideOfTrade = "I";
+            }
+
+            var model = new FinalUKImportModel
+            {
+                BATCH_NO = 0,
+                TIME_ID = int.Parse(timeID),
+                Id1 = cnt,
+                IMPORT_TARIFF = Item.HSCode.PadRight(11, '0'),
+                SC_GEO = Item.SC_GEO,
+                MC_GEO = Item.MC_GEO,
+                Posted = false,
+                SIDE_OF_TRADE = sideOfTrade,
+                Qty = Item.Quantity.ToString(),
+                Value = Item.Value.ToString(),
+                PortID = Item.PortId,
+                PortName = Item.Port,
+                DataFlow = "B",
+                Freq = "M",
+                Partner = "UNITED KINGDOM"
+            };
+
+            finalUKImports.Add(model);
+            progressCountry = 30;
+
+            await InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+
+            cnt++;
+        }
+
+        //Insert to DB
+        progressCountry = 50;
+
+        await InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+
+        await srv.InsertFinalUKImport(finalUKImports);
+        progressCountry = 75;
+
+        await InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+
+        // Get the next batch number
+        var sysSrv = new SystemControlService();
+        var systemControl = await sysSrv.GetSystemControl();
+        int BatchNumber = (int)systemControl.ImportBatch + 1;
+        systemControl.ImportBatch = BatchNumber;
+
+        CountryName = "Preparing and validating data for insertion with Batch Number: [" + BatchNumber + "] This is a long running process.";
+        await InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+
+        var tdSrv = TradeDataService.Instance;
+        var eModel = await tdSrv.UpsertToUKProduction(BatchNumber);
+        message = eModel.ErrorCode;
+        progressCountry = 100;
+
+        IsProcessing = false;
+        sModel.IsProcessing = false;
+        await stSrv.Update(sModel);
+
+        await InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+
+        await Task.Delay(1000);
+
+        IsLoading = false;
+    }
+
+    private async Task SearchData()
+    {
+        IsLoading = true;
+        startTime = DateTime.Now;
+        string dateSearch = DateValue.Year.ToString() + DateValue.Month.ToString().PadLeft(2, '0');
+        var stageSrv = new UkDataService();
+        await stageSrv.Delete();
+        uKStageingDataModels.Clear();
+
+        try
+        {
+            var apiService = ApiService.Instance;
+            int cnt = 1;
+            ItemsAdded = 0;
+            progressTariff = 0;
+            progressCountry = 0;
+            ItemsAdded = 0;
+            int progressTariffCnt = 1;
+            int progressCountryCnt = 1;
+            foreach (var country in marketCountryModels)
+            {
+                if (country.GEO_CODE.Length == 3)
+                {
+                    CountryName = "Scanning: " + country.GEO_CODE + " - " + country.NAME;
+                    var data = await apiService.GetUKData(country.GEO_CODE, dateSearch);
+
+                    if (data is not null)
+                    {
+                        if (data.odatacontext.Contains("skip"))
+                        {
+
+                        }
+                        if (data.value is not null)
+                        {
+                            if (data.value.Count > 0)
+                            {
+                                foreach (var tCode in tariffModels)
+                                {
+                                    var tariffCode = int.Parse(tCode.LongTariffCode.Substring(0, 8));
+                                    var dList = data.value.Where(x => x.CommodityId.Equals(tariffCode)).ToList();
+                                    if (dList.Count > 0)
+                                    {
+                                        progressTariffCnt = 0;
+                                        foreach (var item in dList)
+                                        {
+                                            var portData = uKPorts.value.FirstOrDefault(x => x.PortId.Equals(item.PortId));
+
+                                            var flow = item.FlowTypeId.ToString();
+
+                                            if (item.FlowTypeId == 1)
+                                                flow = "EU Imports";
+
+                                            if (item.FlowTypeId == 2)
+                                                flow = "EU Exports";
+
+                                            if (item.FlowTypeId == 3)
+                                                flow = "Non-EU Imports";
+
+                                            if (item.FlowTypeId == 4)
+                                                flow = "Non-EU Exports";
+
+                                            var dataModel = new UKStageingDataModel
+                                            {
+                                                _id = cnt.ToString(),
+                                                CountryName = "UNITED KINGDOM",
+                                                SC_GEO = "006",
+                                                Quantity = double.Parse(item.NetMass),
+                                                PortId = item.PortId,
+                                                HSCode = item.CommodityId.ToString(),
+                                                MC_GEO = country.GEO_CODE,
+                                                Month = DateValue.Month,
+                                                Year = DateValue.Year,
+                                                Partner = country.NAME,
+                                                Unit = "KG",
+                                                Value = item.NetValue,
+                                                Flow = flow,
+                                                Port = portData.PortName.ToUpper()
+                                            };
+
+                                            if (dataModel.Value != 0 && dataModel.Quantity != 0)
+                                            {
+                                                //await stageSrv.InsertStageing(dataModel);
+                                                uKStageingDataModels.Add(dataModel);
+                                                ItemsAdded++;
+                                                cnt++;
+                                            }
+                                            progressTariff = (int)((double)progressTariffCnt / dList.Count * 100);
+                                            progressTariffCnt++;
+                                            await InvokeAsync(() =>
+                                            {
+                                                StateHasChanged();
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    progressCountry = (int)((double)progressCountryCnt / marketCountryModels.Count * 100);
+                    progressCountryCnt++;
+                    await InvokeAsync(() =>
+                    {
+                        StateHasChanged();
+                    });
+                }
+
+            }
+        }
+        catch (Exception ex)
+        {
+            message = ex.Message;
+            IsLoading = false;
+            return;
+        }
+
+
+        if (uKStageingDataModels.Count > 0)
+        {
+            await stageSrv.InsertStageingBulk(uKStageingDataModels);
+        }
+
+        uKStageingDataModels.Clear();
+        uKStageingDataModels = await stageSrv.GetData();
+        IsLoading = false;
+        await Grid.Refresh();
+        endTime = DateTime.Now;
+        TimeSpan ts = endTime - startTime;
+
+        if (uKStageingDataModels.Count == 0)
+        {
+            message = "No Data found for this month... " + ts.ToString(@"hh\:mm\:ss");
+        }
+        else
+        {
+            message = "Completed in " + ts.ToString(@"hh\:mm\:ss");
+        }
+    }
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var stSrv = SystemLockService.Instance;
+            var sModel = await stSrv.GetLockStatus();
+
+            IsProcessing = sModel.IsProcessing;
+
+            if (IsProcessing)
+                return;
+
+            sModel.Period = null;
+            sModel.IsProcessing = false;
+            sModel.SelectedRows = new();
+
+            await stSrv.Update(sModel);
+
+            await InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+            IsLoading = true;
+            message = "Loading Data...";
+            await InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+            var tariffSrv = new TariffService();
+            tariffModels = await tariffSrv.GetLookupTariffsByRegion("CN");
+            tariffModels = tariffModels.OrderBy(x => x.LongTariffCode).ToList();
+
+            var countrySrv = new MarketCountryService();
+            marketCountryModels = await countrySrv.GetActiveMarketCountries();
+            marketCountryModels = marketCountryModels.OrderBy(x => x.NAME).ToList();
+
+            var apiService = ApiService.Instance;
+            uKPorts = await apiService.GetUKPorts();
+
+            var tSrv = new UkDataService();
+            uKStageingDataModels = await tSrv.GetData();
+            IsLoading = false;
+            message = string.Empty;
+
+            await InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+
+        }
+        base.OnAfterRender(firstRender);
+    }
+
+}
+

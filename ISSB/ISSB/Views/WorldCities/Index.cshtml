@@ -1,0 +1,195 @@
+﻿
+<!DOCTYPE html>
+@using Infragistics.Web.Mvc
+@model IQueryable<Data.Models.WorldCityModel>
+<html>
+<head>
+
+<style type="text/css">
+
+    .center {
+        margin: auto;
+        width: 60%;
+        border: 3px solid #323030;
+        padding: 10px;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+    }
+
+    #map {
+        height: 300px;
+        width: 25%;
+    }
+
+  </style>
+    <script id="dialogTemplate" type="text/html">
+
+     <div style="float: left;">
+         <table style="width: 100%;">
+             <colgroup>
+                 <col style="width: 30%;" />
+                 <col style="width: 70%;" />
+             </colgroup>
+             <tbody data-render-tmpl="true">
+             </tbody>
+         </table>
+     </div>
+ </script>
+
+</head>
+
+ <body>
+        @{
+            ViewData["Title"] = "World Cities";
+        }
+
+        <div class="content-header">
+            <h2>@ViewData["Title"]</h2>
+
+        </div>
+
+        <div id="map" class="center"></div>
+        <hr />
+        @(Html.Infragistics().Grid(Model)
+                                                .ID("grid")
+                                                .Width("100%")
+                                                .Height("500px")
+                                                .DataBind()
+                                                .PrimaryKey("Idx")
+                                                .AutoGenerateColumns(false)
+                                                .AutoGenerateLayouts(false)
+                                                .Columns(column =>
+                                                {
+                                                    column.For(x => x.Idx).HeaderText("Id").Width("10%");
+                                                    column.For(x => x.GEO).HeaderText("GEO Code").Width("10%");
+                                                    column.For(x => x.Country).HeaderText("Country").Width("30%");
+                                                    column.For(x => x.City).HeaderText("City").Width("30%");
+                                                    column.For(x => x.LAT).HeaderText("Lat").Width("10%").DataType("number");
+                                                    column.For(x => x.LNG).HeaderText("Lng").Width("10%").DataType("number"); ;
+                                                    column.For(x => x.Population).HeaderText("Population").Width("30%");
+
+                                                })
+                                                .Features(features =>
+                                                {
+                                                    features.Sorting().Type(OpType.Local).Mode(SortingMode.Multiple);
+                                                    features.Sorting().Type(OpType.Local);
+                                                    features.Paging().Type(OpType.Local);
+                                                    features.Filtering().Type(OpType.Local);
+
+                                                    features.Selection().MultipleSelection(true);
+                                                    features.Selection().Mode(SelectionMode.Row);
+                                                    features.GroupBy().Type(OpType.Local);
+
+                                                    features.Updating().EnableAddRow(false).EnableDeleteRow(false).StartEditTriggers(GridStartEditTriggers.DblClick)
+                                                     .EditMode(GridEditMode.Dialog)
+                                                     .RowEditDialogOptions(opt =>
+                                                     {
+                                                                opt.Containment("owner");
+
+                                                    /**/
+                                                    @*opt.DialogTemplateSelector("#dialogTemplate");*@
+                                                    @*opt.EditorsTemplateSelector("#editorsTemplate");*@ opt.ShowReadonlyEditors(false);
+                                                    /**/
+                                                                opt.Width("400px");
+                                                                opt.Height("400px");
+                                                            })
+                                                 .ColumnSettings(settings =>
+                                                 {
+                                                            settings.ColumnSetting().ColumnKey("Idx").ReadOnly(true);
+                                                            settings.ColumnSetting().ColumnKey("LNG").EditorType(ColumnEditorType.Numeric).EditorOptions("minDecimals: 4,maxDecimals: 5");
+                                                            settings.ColumnSetting().ColumnKey("LAT").EditorType(ColumnEditorType.Numeric).EditorOptions("minDecimals: 4,maxDecimals: 5");
+
+                                                        });
+                                                })
+
+                                          .DataSourceUrl(Url.Action("GetCities", "WorldCities"))
+                                          .UpdateUrl(Url.Action("SaveCities", "WorldCities"))
+                                  /**/
+                                @*.AutoCommit(true)*@
+.Render())
+
+        <button id="saveBtn">Save Changes</button>
+        <button id="undoBtn">Undo Changes</button>
+        <button id="excelBtn" class="btn btn-outline-primary btn-sm">Export to Excel</button>
+
+        <script>$(function () {
+
+                var grid = $("#grid"), comboDataSource = {};
+                $("#saveBtn").igButton();
+                $("#undoBtn").igButton();
+                $("#excelBtn").igButton();
+
+
+                $("#saveBtn").igButton({ labelText: $("#saveBtn").val(), disabled: true });
+                $("#undoBtn").igButton({ labelText: $("#undoBtn").val(), disabled: true });
+
+                $("#excelBtn").on("click", function () {
+                    $.ig.GridExcelExporter.exportGrid($("#grid"), {
+                        fileName: "WorldCityGEOLocations"
+                    });
+                });
+
+                $("#saveBtn").on("click", function () {
+                    $("#grid").igGrid("saveChanges");
+                    $("#grid").igGrid("commit");
+                    $("#saveBtn").igButton({ labelText: $("#saveBtn").val(), disabled: true });
+                    $("#undoBtn").igButton({ labelText: $("#undoBtn").val(), disabled: true });
+                });
+
+                $("#undoBtn").on('igbuttonclick',
+                    function (e, args) {
+                        updates = $.extend({}, grid.data('igGrid').pendingTransactions());
+                        $.each(updates, function (index, transaction) {
+                            grid.igGrid("rollback", transaction.rowId, true);
+                        });
+
+
+                        $("#saveBtn").igButton({ labelText: $("#saveBtn").val(), disabled: true });
+                        $("#undoBtn").igButton({ labelText: $("#undoBtn").val(), disabled: true });
+
+                        return false;
+                    }
+                );
+
+                grid.on("iggridupdatingeditrowended", function (e, args) {
+                    if (args.update) {
+                        $("#undoBtn").igButton("option", "disabled", false);
+                        $("#saveBtn").igButton("option", "disabled", false);
+                    }
+                });
+
+            });</script>
+
+
+        <script>function initMap() {
+
+                $(grid).click(function (evt) {
+
+                    var row = $('#grid').igGridSelection("activeRow");
+
+                    var lat = $("#grid").igGrid("getCellValue", row.id, "LAT");
+                    var lng = $("#grid").igGrid("getCellValue", row.id, "LNG");
+
+                    var location = { lat: lat, lng: lng };
+                    var map = new google.maps.Map(document.getElementById("map"), {
+                        zoom: 10,
+                        center: location
+                    });
+                    var marker = new google.maps.Marker({
+                        position: location,
+                        map: map
+                    });
+
+                });
+
+
+            }</script>
+
+
+
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBlmDtKvpqasEO2-cEKA1_p4HXW6OwzGII&callback=initMap"></script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+﻿@using Infragistics.Web.Mvc
+@model Data.Models.SystemControlModel
+@{
+
+    ViewData["Title"] = "System Control Record";
+
+}
+
+<!DOCTYPE html>
+<html>
+<body>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-header">
+                <h3>@ViewData["Title"]</h3>
+            </div>
+            @using (Html.BeginForm("Save", "SystemControl"))
+            {
+                @Html.HiddenFor(x => x._id, new { _id = "_id" })
+                <div class="form-horizontal">
+
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                    <div style="width: 50%; margin-top:5%; margin-left:25%; margin-right:25%" class="needs-validation">
+                        <fieldset>
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(u => u.LastFileNumber, htmlAttributes: new { @class = "control-label" })
+                                </div>
+
+                                <div class="editor-field">
+                                    @Html.EditorFor(u => u.LastFileNumber, new { htmlAttributes = new { @class = "form-control", @type = "number", @min = "0", @step = "1", @value = "0" } })
+                                    @Html.ValidationMessageFor(u => u.LastFileNumber, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(u => u.ImportBatch, htmlAttributes: new { @class = "control-label" })
+                                </div>
+
+                                <div class="editor-field">
+
+                                    @Html.EditorFor(u => u.ImportBatch, new { htmlAttributes = new { @class = "form-control", @type = "number", @min = "0", @step = "1", @value = "0" } })
+                                    @Html.ValidationMessageFor(u => u.ImportBatch, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(u => u.HowlerWeight, htmlAttributes: new { @class = "control-label" })
+                                </div>
+
+                                <div class="editor-field">
+                                    @Html.TextBoxFor(u => u.HowlerWeight, htmlAttributes: new { @class = "form-control", @type = "number" })
+
+                                    @Html.ValidationMessageFor(u => u.HowlerWeight, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(u => u.HowlerValue, htmlAttributes: new { @class = "control-label" })
+                                </div>
+
+                                <div class="editor-field">
+
+                                    @Html.TextBoxFor(u => u.HowlerValue, htmlAttributes: new { @class = "form-control", @type = "number" })
+                                    @Html.ValidationMessageFor(u => u.HowlerValue, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(u => u.SMSNumber, htmlAttributes: new { @class = "control-label" })
+                                </div>
+
+                                <div class="editor-field">
+
+                                    @Html.TextBoxFor(u => u.SMSNumber, htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(u => u.SMSNumber, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(u => u.SMSMessage, htmlAttributes: new { @class = "control-label" })
+                                </div>
+
+                                <div class="editor-field">
+
+                                    @Html.TextBoxFor(u => u.SMSMessage, htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(u => u.SMSMessage, "", new { @class = "text-danger" })
+                                </div>
+
+                            </div>
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @Html.LabelFor(u => u.ScheduleHour, htmlAttributes: new { @class = "control-label" })
+                                </div>
+
+                                <div class="editor-field">
+
+                                    @Html.TextBoxFor(u => u.ScheduleHour, htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(u => u.ScheduleHour, "", new { @class = "text-danger" })
+                                </div>
+
+                            </div>
+                            <hr />
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary px-4"><span>Save &nbsp;<i class="fas fa-file-import"></i></span></button>
+                            </div>
+                        </fieldset>
+                        <br />
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</body>
+</html>
+

@@ -1,0 +1,622 @@
+﻿@using Infragistics.Web.Mvc
+@model Data.Models.ReportDesignerModel
+@{
+
+    ViewData["Title"] = "Add Report";
+
+}
+
+<style>
+
+    div.scrollmenu {
+        background-color: #333;
+        overflow: auto;
+        white-space: nowrap;
+        height: 52px;
+    }
+
+        div.scrollmenu a {
+            display: inline-block;
+            color: white;
+            text-align: center;
+            padding: 14px;
+            text-decoration: none;
+        }
+
+            div.scrollmenu a:hover {
+                background-color: #777;
+            }
+</style>
+
+<!DOCTYPE html>
+<html>
+<body>
+    <div class="card">
+        <div class="card-header">
+            <h2>@ViewData["Title"]</h2>
+            <h3 style="color: red">@ViewData["Message"]</h3>
+        </div>
+
+        @using (Html.BeginForm("AddNew", "Report"))
+        {
+            @Html.HiddenFor(x => x._id, new { id = "_id" })
+            @Html.HiddenFor(x => x.ReportID, new { id = "ReportID" })
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <fieldset>
+                    <div class="needs-validation">
+                        <div class="card-body">
+                            <!--TABS-->
+                            <ul class="nav nav-tabs" id="crm-tab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="details-tab" data-toggle="pill" href="#addReport">Add Report</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="default-tab" data-toggle="pill" href="#reportSource">Report Source</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="default-tab" data-toggle="pill" href="#reportCSS">CSS</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="default-tab" data-toggle="pill" href="#reportJQUERY">Jquery</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="default-tab" data-toggle="pill" href="#reportHTML">HTML Source</a>
+                                </li>
+                            </ul>
+
+                            <!--tab CONTENT-->
+
+                            <div class="tab-content" id="crm-tabContent">
+
+                                <!--Add tab-->
+                                <div class="tab-pane fade active show" id="addReport">
+                                    <div class="container py-5">
+                                        <div class="row">
+                                            <div class="col-md-10 mx-auto">
+                                                <div class="form-group">
+                                                    <div class="editor-label">
+                                                        @Html.LabelFor(u => u.Name, htmlAttributes: new { @class = "control-label" })
+                                                    </div>
+                                                    <div class="editor-field">
+                                                        @Html.TextBoxFor(u => u.Name, htmlAttributes: new { @class = "form-control" })
+                                                        @Html.ValidationMessageFor(u => u.Name, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <div class="col-md-6">
+                                                        <div class="editor-label">
+                                                            @Html.LabelFor(u => u.FileName, htmlAttributes: new { @class = "control-label" })
+                                                        </div>
+                                                        <div class="editor-field">
+                                                            @Html.TextBoxFor(u => u.FileName, htmlAttributes: new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(u => u.FileName, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="editor-label">
+                                                            @Html.LabelFor(u => u.PageRanges, htmlAttributes: new { @class = "control-label" })
+                                                        </div>
+                                                        <div class="editor-field">
+                                                            @Html.TextBoxFor(u => u.PageRanges, htmlAttributes: new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(u => u.PageRanges, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group row">
+                                                    <div class="col-md-6">
+                                                        <div class="editor-label">
+                                                            @Html.LabelFor(u => u.TableStyle, htmlAttributes: new { @class = "control-label" })
+                                                        </div>
+                                                        <div class="editor-field">
+                                                            @Html.TextBoxFor(u => u.TableStyle, htmlAttributes: new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(u => u.TableStyle, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="editor-label">
+                                                        @Html.LabelFor(u => u.Header, htmlAttributes: new { @class = "control-label" })
+                                                    </div>
+                                                    <div class="editor-field">
+                                                        @(Html.Infragistics().
+
+                                                                                                                                           HtmlEditorFor(m => m.Header).
+                                                                                                                                           Width("100%").
+                                                                                                                                           ID("htmlEditorHeader").
+                                                                                                                                           //Height("700px").
+                                                                                                                                           ShowCopyPasteToolbar(true).
+                                                                                                                                           ShowFormattingToolbar(true).
+                                                                                                                                           //CustomToolbars(customToolbars =>
+                                                                                                                                           //{
+                                                                                                                                           //    customToolbars.Model.
+                                                                                                                                           //}).
+                                                                                                                                           Render()
+                                                        )
+                                                        @Html.ValidationMessageFor(u => u.Header, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="editor-label">
+                                                        @Html.LabelFor(u => u.TableHeader, htmlAttributes: new { @class = "control-label" })
+                                                    </div>
+                                                    <div class="editor-field">
+                                                        @(Html.Infragistics().
+
+                                                                                                                                                 HtmlEditorFor(m => m.TableHeader).
+                                                                                                                                                 Width("100%").
+                                                                                                                                                 ID("htmlEditorTableHeader").
+                                                                                                                                                 //Height("700px").
+                                                                                                                                                 ShowCopyPasteToolbar(true).
+                                                                                                                                                 ShowFormattingToolbar(true).
+                                                                                                                                                 //CustomToolbars(customToolbars =>
+                                                                                                                                                 //{
+                                                                                                                                                 //    customToolbars.Model.
+                                                                                                                                                 //}).
+                                                                                                                                                 Render()
+                                                        )
+                                                        @Html.ValidationMessageFor(u => u.TableHeader, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="editor-label">
+                                                        @Html.LabelFor(u => u.Content, htmlAttributes: new { @class = "control-label" })
+                                                    </div>
+                                                    <div class="editor-field">
+                                                        @(Html.Infragistics().
+
+                                                                                                HtmlEditorFor(m => m.Content).
+                                                                                                Width("100%").
+                                                                                                ID("htmlEditorContent").
+                                                                                                //Height("700px").
+                                                                                                ShowCopyPasteToolbar(true).
+                                                                                                ShowFormattingToolbar(true).
+                                                                                                    //CustomToolbars(customToolbars =>
+                                                                                                    //{
+                                                                                                    //    customToolbars.Model.
+                                                                                                    //}).
+                                                                                                    Render()
+                                                        )
+                                                        @Html.ValidationMessageFor(u => u.Content, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="editor-label">
+                                                        @Html.LabelFor(u => u.FieldSort, htmlAttributes: new { @class = "control-label" })
+                                                    </div>
+                                                    <div id="sortBar" class="scrollmenu">
+                                                    </div>
+                                                    <div class="editor-field">
+                                                        @Html.TextBoxFor(u => u.FieldSort, new { @class = "form-control", id = "sort" })
+                                                        @Html.ValidationMessageFor(u => u.FieldSort, "", new { @class = "text-danger" })
+                                                    </div>
+                                                    <button id="clearSelected" type="button" class="btn btn-danger">Clear Selected</button>
+                                                    @(Html.Infragistics().Grid(Model.Keys.AsQueryable())
+                                                                                                        .ID("reportKeys")
+                                                                                                        .Width("100%")
+                                                                                                        .Height("300px")
+                                                                                                        .DataBind()
+                                                                                                        .PrimaryKey("Key")
+                                                                                                                .AutoGenerateColumns(false)
+                                                                                                                .AutoGenerateLayouts(false)
+                                                                                                                .Columns(column =>
+                                                                                                            {
+                                                                                                                column.For(x => x.Key).HeaderText("Key").Width("20%");
+                                                                                                                column.For(x => x.Title).HeaderText("Title").Width("20%");
+                                                                                                                column.For(x => x.Description).HeaderText("Description").Width("60%");
+                                                                                                            })
+                                                                                                        .Features(features =>
+                                                                                                        {
+                                                                                                            features.Sorting().Type(OpType.Local);
+                                                                                                            features.Filtering().Type(OpType.Local);
+                                                                                                            features.RowSelectors().EnableCheckBoxes(false);
+                                                                                                            features.Selection().MultipleSelection(true);
+
+
+
+                                                                                                        })
+                                                                                                            .Render())
+                                                </div>
+
+                                                <div class="form-group row">
+                                                    <div class="col-md-6">
+                                                        <div class="editor-label">
+                                                            @Html.LabelFor(u => u.MarginTop, htmlAttributes: new { @class = "control-label" })
+                                                        </div>
+                                                        <div class="editor-field">
+                                                            @Html.TextBoxFor(u => u.MarginTop, new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(u => u.MarginTop, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="editor-label">
+                                                            @Html.LabelFor(u => u.MarginBottom, htmlAttributes: new { @class = "control-label" })
+                                                        </div>
+                                                        <div class="editor-field">
+                                                            @Html.TextBoxFor(u => u.MarginBottom, new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(u => u.MarginBottom, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group row">
+                                                    <div class="col-md-6">
+                                                        <div class="editor-label">
+                                                            @Html.LabelFor(u => u.MarginRight, htmlAttributes: new { @class = "control-label" })
+                                                        </div>
+                                                        <div class="editor-field">
+                                                            @Html.TextBoxFor(u => u.MarginRight, new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(u => u.MarginRight, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="editor-label">
+                                                            @Html.LabelFor(u => u.MarginLeft, htmlAttributes: new { @class = "control-label" })
+                                                        </div>
+
+                                                        <div class="editor-field">
+                                                            @Html.TextBoxFor(u => u.MarginLeft, new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(u => u.MarginLeft, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group row">
+                                                    <div class="col-sm-3">
+                                                        <label>
+                                                            @Html.LabelFor(u => u.Landscape, htmlAttributes: new { @class = "control-label" }) &nbsp;
+                                                            @Html.CheckBoxFor(u => u.Landscape, "false") &nbsp;
+                                                            @Html.ValidationMessageFor(u => u.Landscape, "", new { @class = "text-danger" })
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-sm-3">
+                                                        <label>
+                                                            @Html.LabelFor(u => u.IncludeHeader, htmlAttributes: new { @class = "control-label" }) &nbsp;
+                                                            @Html.CheckBoxFor(u => u.IncludeHeader, "false") &nbsp;
+                                                            @Html.ValidationMessageFor(u => u.IncludeHeader, "", new { @class = "text-danger" })
+                                                        </label>
+                                                    </div>
+                                                    <div class="col-sm-2">
+                                                        <label>@Html.LabelFor(u => u.FileType, htmlAttributes: new { @class = "control-label" })</label>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <div id="FileType" ; class="editor-field">
+                                                            @Html.DropDownListFor(u => u.FileType, new List<SelectListItem> {
+                                                               new SelectListItem{Text="Excel", Value="Excel"},
+                                                               new SelectListItem{Text="HTML", Value="Html"},
+                                                               new SelectListItem{Text="Pdf", Value="Pdf"}}, "Please select", new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(u => u.FileType, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group row">
+                                                    <div class="col-sm-6">
+                                                        <label>
+                                                            @Html.LabelFor(u => u.PageBreak, htmlAttributes: new { @class = "control-label" }) &nbsp;
+                                                            @Html.CheckBoxFor(u => u.PageBreak, "false") &nbsp;
+                                                            @Html.ValidationMessageFor(u => u.PageBreak, "", new { @class = "text-danger" })
+                                                        </label>
+                                                    </div>
+
+                                                    <div class="col-sm-2">
+                                                        <label>@Html.LabelFor(u => u.PageBreakType, htmlAttributes: new { @class = "control-label" })</label>
+                                                    </div>
+                                                    <div class="col-sm-4">
+                                                        <div id="FileType" ; class="editor-field">
+                                                            @Html.DropDownListFor(u => u.PageBreakType, new List<SelectListItem> {
+
+                                                               new SelectListItem{Text="After", Value="After"},
+                                                               new SelectListItem{Text="Inner", Value="Inner"}}, new { @class = "form-control" })
+
+                                                            @Html.ValidationMessageFor(u => u.PageBreakType, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group row">
+                                                    <div class="col-md-6">
+                                                        <div class="editor-label">
+                                                            @Html.LabelFor(u => u.PageSize, htmlAttributes: new { @class = "control-label" })
+                                                        </div>
+                                                        <div class="editor-field">
+                                                            @Html.TextBoxFor(u => u.PageSize, new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(u => u.PageSize, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="editor-label">
+                                                            @Html.LabelFor(u => u.Scale, htmlAttributes: new { @class = "control-label" })
+                                                        </div>
+                                                        <div class="editor-field">
+                                                            @Html.TextBoxFor(u => u.Scale, new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(u => u.Scale, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group row">
+                                                    <div class="col-md-6">
+                                                        <div class="editor-label">
+                                                            @Html.LabelFor(u => u.ValueFormat, htmlAttributes: new { @class = "control-label" })
+                                                        </div>
+                                                        <div class="editor-field">
+                                                            @Html.TextBoxFor(u => u.ValueFormat, new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(u => u.ValueFormat, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="editor-label">
+                                                            @Html.LabelFor(u => u.WeightFormat, htmlAttributes: new { @class = "control-label" })
+                                                        </div>
+                                                        <div class="editor-field">
+                                                            @Html.TextBoxFor(u => u.WeightFormat, new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(u => u.WeightFormat, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group row">
+                                                    <div class="col-md-6">
+                                                        <div class="editor-label">
+                                                            @Html.LabelFor(u => u.PivotTable, htmlAttributes: new { @class = "control-label" })
+                                                        </div>
+                                                        <div class="editor-field">
+                                                            @Html.CheckBoxFor(u => u.PivotTable, new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(u => u.PivotTable, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="editor-label">
+                                                            @Html.LabelFor(u => u.ShowTotals, htmlAttributes: new { @class = "control-label" })
+                                                        </div>
+                                                        <div class="editor-field">
+                                                            @Html.CheckBoxFor(u => u.ShowTotals, new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(u => u.ShowTotals, "", new { @class = "text-danger" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="editor-label">
+                                                            @Html.LabelFor(u => u.FontSize, htmlAttributes: new { @class = "control-label" })
+                                                        </div>
+                                                        <div class="editor-field">
+                                                            @Html.TextBoxFor(u => u.FontSize, new { @class = "form-control" })
+                                                            @Html.ValidationMessageFor(u => u.FontSize, "", new { @class = "text-danger" })
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!--reportSource tab-->
+                                <div class="tab-pane fade" id="reportSource">
+                                    <div class="container py-5">
+                                        <div class="row">
+                                            <div class="col-md-10 mx-auto">
+                                                <div class="form-group">
+                                                    @(Html.Infragistics().Grid(Model.Data.AsQueryable())
+                                                                                                                  .ID("grid")
+                                                                                                                  .Width("100%")
+                                                                                                                  .Height("600px")
+                                                                                                                  .DataBind()
+                                                                                                                  .PrimaryKey("Id")
+                                                                                                                  .AutoGenerateColumns(false)
+                                                                                                                  .AutoGenerateLayouts(false)
+                                                                                                                  .Columns(column =>
+                                                                                                                  {
+                                                                                                                      column.For(x => x.Id).HeaderText("_id").Width("25%").Hidden(true);
+
+                                                                                                                      column.For(x => x.Date).HeaderText("Last Updated").Width("20%").DataType("date").Format("dd-MM-yyyy");
+                                                                                                                      column.For(x => x.Name).HeaderText("Report Name").Width("70%");
+                                                                                                                      column.For(x => x.Id).HeaderText("").Width("10%").Template("<input type='button' onclick='selectRow(\"${Id}\")'  value='Select' class='btn bg-gradient-green btn-sm run-button'/>");
+
+                                                                                                                  })
+                                                                                                                  .Features(features =>
+                                                                                                                  {
+                                                                                                                      features.Sorting().Type(OpType.Local).Mode(SortingMode.Multiple);
+                                                                                                                      features.Sorting().Type(OpType.Local);
+                                                                                                                      features.Paging().Type(OpType.Local);
+                                                                                                                      features.Filtering().Type(OpType.Local);
+                                                                                                                      features.Hiding().ColumnSettings(settings => settings.ColumnSetting().ColumnKey("Id").Hidden(true).AllowHiding(false));
+
+
+                                                                                                                      features.Selection().MultipleSelection(false);
+                                                                                                                      features.Selection().Mode(SelectionMode.Row);
+                                                                                                                                                      //features.GroupBy().Type(OpType.Local);
+                                                                                                                                                      features.RowSelectors().EnableRowNumbering(true);
+
+
+                                                                                                                  })
+
+                                                                                                                 .Render())
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!--reportCSS tab-->
+                                <div class="tab-pane fade" id="reportCSS">
+                                    <div class="container py-5">
+                                        <div class="row">
+                                            <div class="col-md-10 mx-auto">
+                                                <div class="form-group">
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-10">
+                                                            <div class="form-group">
+                                                                <div class="editor-label">
+                                                                    @Html.LabelFor(u => u.CSS, htmlAttributes: new { @class = "control-label" })
+                                                                </div>
+                                                                <div class="editor-field">
+                                                                    @Html.TextAreaFor(u => u.CSS, new { @class = "form-control", @rows = 20 })
+                                                                    @Html.ValidationMessageFor(u => u.CSS, "", new { @class = "text-danger" })
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--reportJQUERY tab-->
+                                <div class="tab-pane fade" id="reportJQUERY">
+                                    <div class="container py-5">
+                                        <div class="row">
+                                            <div class="col-md-10 mx-auto">
+                                                <div class="form-group">
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-10">
+                                                            <div class="form-group">
+                                                                <div class="editor-label">
+                                                                    @Html.LabelFor(u => u.JQUERY, htmlAttributes: new { @class = "control-label" })
+                                                                </div>
+                                                                <div class="editor-field">
+                                                                    @Html.TextAreaFor(u => u.JQUERY, new { @class = "form-control", @rows = 20 })
+                                                                    @Html.ValidationMessageFor(u => u.JQUERY, "", new { @class = "text-danger" })
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--reportHTML tab-->
+                                <div class="tab-pane fade" id="reportHTML">
+                                    <div class="container py-5">
+                                        <div class="row">
+                                            <div class="col-md-10 mx-auto">
+                                                <div class="form-group">
+                                                    <div class="form-group row">
+                                                        <div class="col-md-6">
+                                                            <div class="editor-label">
+                                                                @Html.LabelFor(u => u.RunFromHTML, htmlAttributes: new { @class = "control-label" })
+                                                            </div>
+                                                            <div class="editor-field">
+                                                                @Html.CheckBoxFor(u => u.RunFromHTML, new { @class = "form-control" })
+                                                                @Html.ValidationMessageFor(u => u.RunFromHTML, "", new { @class = "text-danger" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row">
+                                                        <div class="col-md-10">
+                                                            <div class="form-group">
+                                                                <div class="editor-label">
+                                                                    @Html.LabelFor(u => u.HTML, htmlAttributes: new { @class = "control-label" })
+                                                                </div>
+                                                                <div class="editor-field">
+                                                                    @(Html.Infragistics().
+
+                                                                                                                   HtmlEditorFor(m => m.HTML).
+                                                                                                                   Width("100%").
+                                                                                                                   ID("htmlEditor").
+                                                                                                                   Height("700px").
+                                                                                                                   ShowCopyPasteToolbar(true).
+                                                                                                                   ShowFormattingToolbar(true).
+                                                                                                                   //CustomToolbars(customToolbars =>
+                                                                                                                   //{
+                                                                                                                   //    customToolbars.Model.
+                                                                                                                   //}).
+                                                                                                                   Render()
+                                                                    )
+                                                                    @Html.ValidationMessageFor(u => u.HTML, "", new { @class = "text-danger" })
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr />
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary px-4"><span>Save &nbsp;<i class="fas fa-plus-circle"></i></span></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        }
+    </div>
+
+    <script>$("#reportKeys").dblclick(function (evt) {
+            var row = $(this);
+
+            var SelectedA = new Array();
+            var rows = $("#reportKeys").igGridSelection("selectedRows");
+            if (rows.length > 0) {
+                $.each(rows, function (ix, el) {
+                    rowId = el.element.attr("data-id");
+                    var selectedKey = $("#reportKeys").igGrid("getCellValue", rowId, "Key");
+
+                    var selectedSort = $("#sort").val();
+                    var res = selectedSort.split(",");
+                    for (var i = 0; i < res.length; i++) {
+
+                        SelectedA.push(res[i]);
+
+                    }
+
+                    SelectedA.push(selectedKey);
+
+                    $("#sort").val(SelectedA);
+
+                    document.getElementById("sortBar").innerHTML +=
+                        "<a href='#" + selectedKey + "'>" + selectedKey + "</a>"; 
+
+                });
+    }
+
+    $('#clearSelected').on('click', function (event) {
+
+        document.getElementById("sortBar").innerHTML = "";
+        $('#sort').val("");
+    });
+
+        });</script>
+    <script>$(function () {
+
+            $("#sort").hide();
+            var RecordID = $("#ReportID").val();
+            var Selected = new Array();
+            Selected.push(RecordID);
+            var rows = $("#grid").igGrid("rows");
+
+            for (var i = 0; i < Selected.length; i++) {
+                $(rows).each(function (index, el) {
+                    if ($(el).attr("data-id") === Selected[i]) {
+                        $("#grid").igGridSelection("selectRow", index);
+                    }
+                });
+            }
+
+        });</script>
+
+    <script>function selectRow(rowId) {
+
+
+            $("#ReportID").val(rowId);
+
+        }</script>
+</body>
+</html>
+

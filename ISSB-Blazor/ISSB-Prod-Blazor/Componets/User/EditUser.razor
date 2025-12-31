@@ -1,0 +1,380 @@
+﻿@using ISSB_Prod_Blazor.Pages.User
+@inject NavigationModelService ModelService
+
+@if (_isLoaded)
+{
+    <EditForm EditContext="@_editContext" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div id="userProfile" style="overflow-y: auto; max-height: 80vh;" class="tab-pane fade active show" >
+            <div class="container py-5">
+                <div class="row">
+                    <div class="col-md-10 mx-auto">
+                        <h5>Account Details</h5>
+                      
+                        <SfButton id="updateBtn" Type="Submit" @onclick="Update" IconPosition="IconPosition.Left"
+                                  IconCss="e-icons e-save" CssClass="e-custom-update">Save
+                        </SfButton>
+                        <SfButton id="updateBtn" @onclick="Delete" IconPosition="IconPosition.Left"
+                                  IconCss="e-icons e-trash" CssClass="e-custom-remove">Delete
+                        </SfButton>
+                        <hr/>
+                        <div class="form-group row">
+                            <div class="col-sm-2">
+                                <SfCheckBox Label="Administrator" @bind-Checked="UserModel.IsAdministrator"></SfCheckBox>
+                            </div>
+                            <div class="col-sm-2">
+                                <SfCheckBox Label="System User" @bind-Checked="UserModel.IsSystemUser"></SfCheckBox>
+                            </div>
+                            <div class="col-sm-2">
+                                <SfCheckBox Label="Advanced User" @bind-Checked="UserModel.IsAdvancedUser"></SfCheckBox>
+                            </div>
+                            <div class="col-sm-2">
+                                <SfCheckBox Label="Trade Inquiry" @bind-Checked="UserModel.IsTradeInquiry"></SfCheckBox>
+                            </div>
+                            <div class="col-sm-2">
+                                <SfCheckBox Label="Use Two Factor Authentication"
+                                            @bind-Checked="UserModel.TwoFactorAuth"></SfCheckBox>
+                            
+                            </div>
+                            <div class="col-sm-2">
+                                <SfCheckBox Label="Email Notifications"
+                                            @bind-Checked="UserModel.EmailNotification"></SfCheckBox>
+                            </div>
+                            <div class="col-sm-2">
+                                <SfCheckBox Label="API Enabled" @bind-Checked="UserModel.IsAPI"></SfCheckBox>
+                            </div>
+                        </div>
+                        <br/>
+
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                <label>
+                                    <strong>Status</strong>
+                                </label>
+                                <SfDropDownList @bind-Value="UserModel.AccountStatus" TValue="string" Width="300px"
+                                                TItem="string" Placeholder="Account Status" DataSource="@StatusList">
+                                    <DropDownListFieldSettings Value="Text" Text="Text"></DropDownListFieldSettings>
+                                </SfDropDownList>
+
+                            </div>
+                            <div class="col-sm-4">
+                                <label>
+                                    <strong>Start Date</strong>
+                                </label>
+                                <SfDatePicker @bind-Value="UserModel.StartDate" TValue="DateTime" Placeholder="Start Date"
+                                              Format="dd-MM-yyyy" FullScreen="true" ShowClearButton="true"></SfDatePicker>
+                            </div>
+                            <div class="col-sm-4">
+                                <label>
+                                    <strong>Expiry Date</strong>
+                                </label>
+                                <SfDatePicker @bind-Value="UserModel.ExpiryDate" TValue="DateTime" Placeholder="Start Date"
+                                              Format="dd-MM-yyyy" FullScreen="true" ShowClearButton="true"></SfDatePicker>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                <label>
+                                    <strong>User Name</strong>
+                                </label>
+                                <SfTextBox Placeholder="User Name" @bind-Value="@(UserModel.UserName)"
+                                           FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                                <ValidationMessage For="@(() => UserModel.UserName)" class="text-danger" />
+                            </div>
+                            <div class="col-sm-4">
+                                <label>
+                                    <strong>Email Address</strong>
+                                </label>
+                                <SfTextBox Placeholder="Email" @bind-Value="@(UserModel.Email)" Enabled="false"
+                                           FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                                <ValidationMessage For="@(() => UserModel.Email)" class="text-danger" />
+                            </div>
+                            <div class="col-sm-4">
+                                <label>
+                                    <strong>Password</strong>
+                                </label>
+                                <SfTextBox Placeholder="Password" Type="InputType.Password"
+                                           @bind-Value="@(UserModel.Password)"
+                                           FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                                <ValidationMessage For="@(() => UserModel.Password)" class="text-danger" />
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-6">
+                                <br/>
+                                <label>
+                                    <strong>Allowed Years</strong>
+                                </label>
+                                <SfTextBox Placeholder="Allowed Years" @bind-Value="@(UserModel.AllowedYears)"
+                                           FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                            </div>
+                        </div>
+                                <hr/>
+                                <h5>Personal Identifcation Details</h5>
+                                <hr/>
+                                <div class="form-group row">
+                                    <div class="col-sm-6">
+                                        <label>
+                                            <strong>First Name</strong>
+                                        </label>
+                                        <SfTextBox Placeholder="First Name" @bind-Value="@(UserModel.FirstName)"
+                                                   FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label>
+                                            <strong>Last Name</strong>
+                                        </label>
+                                        <SfTextBox Placeholder="Last Name" @bind-Value="@(UserModel.LastName)"
+                                                   FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+
+                                    <div class="col-sm-6">
+                                        <br/>
+                                        <label>
+                                            <strong>Company Name</strong>
+                                        </label>
+                                        <SfTextBox Placeholder="Company Name" @bind-Value="@(UserModel.CompanyName)"
+                                                   FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <br/>
+                                        <label>
+                                            <strong>Address 1</strong>
+                                        </label>
+                                        <SfTextBox Placeholder="Address 1" @bind-Value="@(UserModel.Address1)"
+                                                   FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-6">
+                                        <br/>
+                                        <label>
+                                            <strong>Post Code</strong>
+                                        </label>
+                                        <SfTextBox Placeholder="Post Code" @bind-Value="@(UserModel.PostalCode)"
+                                                   FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <br/>
+                                        <label>
+                                            <strong>Address 2</strong>
+                                        </label>
+                                        <SfTextBox Placeholder="Address 2" @bind-Value="@(UserModel.Address2)"
+                                                   FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-3">
+                                        <br/>
+                                        <label>
+                                            <strong>Telephone</strong>
+                                        </label>
+                                        <SfTextBox Placeholder="Telephone" @bind-Value="@(UserModel.Telephone)"
+                                                   FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <br/>
+                                        <label>
+                                            <strong>Mobile</strong>
+                                        </label>
+                                        <SfTextBox Placeholder="Mobile" @bind-Value="@(UserModel.Mobile)"
+                                                   FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                                        <ValidationMessage For="@(() => UserModel.Mobile)" class="text-danger"/>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <br/>
+                                        <label>
+                                            <strong>Address 3</strong>
+                                        </label>
+                                        <SfTextBox Placeholder="Address 3" @bind-Value="@(UserModel.Address3)"
+                                                   FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-6">
+                                        <br/>
+                                        <label>
+                                            <strong>Costs</strong>
+                                        </label>
+                                        <SfNumericTextBox Placeholder="Costs" @bind-Value="@(UserModel.Costs)"
+                                                          FloatLabelType="FloatLabelType.Never"></SfNumericTextBox>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <br/>
+                                        <label>
+                                            <strong>Address 4</strong>
+                                        </label>
+                                        <SfTextBox Placeholder="Address 4" @bind-Value="@(UserModel.Address4)"
+                                                   FloatLabelType="FloatLabelType.Never"></SfTextBox>
+                                    </div>
+                                </div>
+                            </div>
+                   
+                </div>
+         
+            </div>
+        </div>
+      
+    </EditForm>
+    @if (_isDeleting)
+    {
+        <AnswerBox AnswerResult="DeleteCallback" MessageModel="@MessageModel"/>
+    }
+    
+    @if (_isUpdating)
+    {
+        <AnswerBox AnswerResult="UpdateCallback" MessageModel="@MessageModel"/>
+    }
+    
+    @if (_isUpdated)
+    {
+        <MessageBox MessageModel="@MessageModel"/>
+    }
+}
+
+@code {
+    public UserModel UserModel { get; set; } = new();
+    private EditContext _editContext;
+    List<string> StatusList { get; set; } = new();
+    bool _isLoaded = false;
+    bool _isDeleting = false;
+    bool _isUpdating = false;
+    bool _isUpdated = false;
+    MessageModel MessageModel { get; set; }
+    
+    private void HandleValidSubmit()
+    {
+        if (_editContext.Validate())  // ✅ Checks if the model is valid
+        {
+            Console.WriteLine("Form is Valid! Submitting...");
+        }
+        else
+        {
+            Console.WriteLine("Form is Invalid! Please correct errors.");
+        }
+    }
+    
+    void Update()
+    {
+        if (_editContext.Validate())  // ✅ Checks if the model is valid
+        {
+            Console.WriteLine("Form is Valid! Submitting...");
+        }
+        else
+        {
+            Console.WriteLine("Form is Invalid! Please correct errors.");
+            return;
+        }
+        _isUpdating = false;
+        MessageModel = new MessageModel
+        {
+            Content = "Are you sure you want to update " + UserModel.UserName + "?",
+            Title = "Upate Record",
+            PosX = MessaageBoxEnum.OkButton,
+            PosY = MessaageBoxEnum.CancelButton,
+            Type = "",
+            Style = MessaageBoxEnum.None
+        };
+
+        _isUpdating = true;
+    }
+    
+    void Delete()
+    {
+        _isDeleting = false;
+        MessageModel = new MessageModel
+        {
+            Content = "Are you sure you want to delete " + UserModel.UserName + "?",
+            Title = "Delete Record",
+            PosX = MessaageBoxEnum.OkAreYouSureButton,
+            PosY = MessaageBoxEnum.CancelButton,
+            Type = "Error",
+            Style = MessaageBoxEnum.Error
+        };
+
+        _isDeleting = true;
+    }
+    
+    private async Task DeleteCallback(string obj)
+    {
+        _isDeleting = false;
+        if (obj.Equals("OK"))
+        {
+            var toDelete = UserModel;
+            var userSrv = new UserServices();
+            await userSrv.Delete(toDelete);
+        }
+    }
+    
+    private async Task UpdateCallback(string obj)
+    {
+        _isUpdating = false;
+
+        if (obj.Equals("OK"))
+        {
+            var userSrv = new UserServices();
+            UserModel.Password = EncryptionHelper.Encrypt(UserModel.Password);
+            await userSrv.UpdateUser(UserModel);
+            MessageModel = new MessageModel
+            {
+                Content = "Record has been saved for: " + UserModel.UserName + "?",
+                Title = "Update Record",
+                PosX = "Right",
+                PosY = "Bottom",
+                Type = "",
+                Style = MessaageBoxEnum.Message
+            };
+            
+            _isUpdated = true;
+          
+        }
+    }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var userSrv = new UserServices();
+            UserModel = await userSrv.GetUsersById(ModelService.CurrentUserModel._id);
+            _editContext = new EditContext(UserModel); 
+            //UserModel.Password = EncryptionHelper.Decrypt(UserModel.Password);
+            StatusList.Add("Open");
+            StatusList.Add("Closed");
+            _isLoaded = true; 
+            await InvokeAsync(() => { StateHasChanged(); });
+        }
+    }
+}
+
+<style>
+    .text-danger {
+        color: red;
+        font-size: 14px;
+        margin-top: 5px;
+    }
+    .e-custom-remove {
+        border-radius: 0;
+        height: 50px;
+        width: 150px;
+    }
+
+    .e-custom-remove, .e-custom:hover, .e-custom:focus, .e-custom:active {
+        background-color: red;
+        color: #fff;
+    }
+
+    .e-custom-update {
+        border-radius: 0;
+        height: 50px;
+        width: 150px;
+    }
+
+    .e-custom-update, .e-custom:hover, .e-custom:focus, .e-custom:active {
+        background-color: blue;
+        color: #fff;
+    }
+</style>

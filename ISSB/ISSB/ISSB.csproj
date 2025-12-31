@@ -1,0 +1,233 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="jsreport.Client" Version="3.8.0" />
+    <PackageReference Include="jsreport.Local" Version="3.8.1" />
+    <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.8">
+      <PrivateAssets Condition="'%(PackageReference.Version)' == ''">all</PrivateAssets>
+      <Publish Condition="'%(PackageReference.Version)' == ''">true</Publish>
+    </PackageReference>
+    <PackageReference Include="jsreport.AspNetCore" Version="3.8.0" />
+    <PackageReference Include="Infragistics.Web.AspNetCore" Version="6.22.1.8" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Physical" Version="6.0.0" />
+    <PackageReference Include="ExcelDataReader" Version="3.6.0" />
+    <PackageReference Include="ExcelDataReader.DataSet" Version="3.6.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.4.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.10" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.24.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.24.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\Migration\" />
+    <Folder Include="Views\Auth\" />
+    <Folder Include="Views\SourceCountry\" />
+    <Folder Include="Views\MarketCountry\" />
+    <Folder Include="Views\SalesProfile\" />
+    <Folder Include="Helpers\" />
+    <Folder Include="Views\EmailSettings\" />
+    <Folder Include="Views\Asset\" />
+    <Folder Include="Views\DataImport\" />
+    <Folder Include="wwwroot\js\bootstrap\" />
+    <Folder Include="wwwroot\img\" />
+    <Folder Include="wwwroot\img\bootstrap\" />
+    <Folder Include="wwwroot\img\bootstrap\credit\" />
+    <Folder Include="wwwroot\css\bootstrap\" />
+    <Folder Include="wwwroot\js\igniteUI\" />
+    <Folder Include="wwwroot\css\bootstrap\fontawesome-free\" />
+    <Folder Include="Views\WorldCities\" />
+    <Folder Include="Views\SourceCountryFilter\" />
+    <Folder Include="Views\MarketCountryFilter\" />
+    <Folder Include="Views\ReportEngine\" />
+    <Folder Include="Views\IGGrid\" />
+    <Folder Include="Views\DashboardCreator\" />
+    <Folder Include="Views\PipeLineBuilder\" />
+    <Folder Include="Views\AdHocReports\" />
+    <Folder Include="Views\ClientDataImport\" />
+    <Folder Include="Views\Tariff\" />
+    <Folder Include="Views\ImportMonitor\" />
+    <Folder Include="Hubs\" />
+    <Folder Include="Views\SourceCountryMapping\" />
+    <Folder Include="Views\TariffExceptions\" />
+    <Folder Include="Views\Upsert\" />
+    <Folder Include="Views\SystemControl\" />
+    <Folder Include="Views\Error\" />
+    <Folder Include="Views\SourceCountryException\" />
+    <Folder Include="Views\ImportFiles\" />
+    <Folder Include="Views\SiteIssues\" />
+    <Folder Include="Views\User\" />
+    <Folder Include="Views\Register\" />
+    <Folder Include="Views\TariffIndex\" />
+    <Folder Include="Views\DataExplorer\" />
+    <Folder Include="Views\Report\" />
+    <Folder Include="wwwroot\css\jreports\" />
+    <Folder Include="Views\ReportKeys\" />
+    <Folder Include="Views\ImportFileType\" />
+    <Folder Include="Views\EmailMessages\" />
+    <Folder Include="wwwroot\reportimg\" />
+    <Folder Include="Views\MirrorData\" />
+    <Folder Include="Views\ReportsDownloads\" />
+    <Folder Include="wwwroot\downloads\" />
+    <Folder Include="Views\TopHeader\" />
+    <Folder Include="Views\ResetDataImport\" />
+    <Folder Include="Views\Appointments\" />
+    <Folder Include="Views\ProductCustomFilter\" />
+    <Folder Include="wwwroot\resources\" />
+    <Folder Include="wwwroot\resources\Pdf\" />
+    <Folder Include="Views\IndustryUser\" />
+    <Folder Include="Views\IndustryFiles\" />
+    <Folder Include="Views\AddYears\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Data\Data.csproj" />
+    <ProjectReference Include="..\Services\Services.csproj" />
+    <ProjectReference Include="..\API\API.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="wwwroot\IgniteUI_v19\demos\js\typings\jquery.d.ts" />
+    <Content Remove="wwwroot\IgniteUI_v19\demos\js\typings\igniteui.d.ts" />
+    <Content Remove="wwwroot\IgniteUI_v19\demos\js\typings\jqueryui.d.ts" />
+    <Content Remove="wwwroot\IgniteUI\css\structure\images\trial.png" />
+    <Content Remove="wwwroot\bootstrap\pages\calendar.html" />
+    <Content Remove="wwwroot\bootstrap\pages\widgets.html" />
+    <Content Remove="wwwroot\bootstrap\pages\UI\buttons.html" />
+    <Content Remove="wwwroot\bootstrap\pages\UI\sliders.html" />
+    <Content Remove="wwwroot\bootstrap\pages\UI\modals.html" />
+    <Content Remove="wwwroot\bootstrap\pages\UI\icons.html" />
+    <Content Remove="wwwroot\bootstrap\pages\UI\general.html" />
+    <Content Remove="wwwroot\bootstrap\pages\tables\data.html" />
+    <Content Remove="wwwroot\bootstrap\pages\tables\simple.html" />
+    <Content Remove="wwwroot\bootstrap\pages\forms\editors.html" />
+    <Content Remove="wwwroot\bootstrap\pages\forms\advanced.html" />
+    <Content Remove="wwwroot\bootstrap\pages\forms\general.html" />
+    <Content Remove="wwwroot\bootstrap\pages\mailbox\compose.html" />
+    <Content Remove="wwwroot\bootstrap\pages\mailbox\read-mail.html" />
+    <Content Remove="wwwroot\bootstrap\pages\mailbox\mailbox.html" />
+    <Content Remove="wwwroot\bootstrap\pages\layout\fixed-topnav.html" />
+    <Content Remove="wwwroot\bootstrap\pages\layout\fixed.html" />
+    <Content Remove="wwwroot\bootstrap\pages\layout\fixed-footer.html" />
+    <Content Remove="wwwroot\bootstrap\pages\layout\boxed.html" />
+    <Content Remove="wwwroot\bootstrap\pages\layout\top-nav.html" />
+    <Content Remove="wwwroot\bootstrap\pages\layout\collapsed-sidebar.html" />
+    <Content Remove="wwwroot\bootstrap\pages\charts\chartjs.html" />
+    <Content Remove="wwwroot\bootstrap\pages\charts\flot.html" />
+    <Content Remove="wwwroot\bootstrap\pages\charts\inline.html" />
+    <Content Remove="wwwroot\bootstrap\pages\examples\profile.html" />
+    <Content Remove="wwwroot\bootstrap\pages\examples\legacy-user-menu.html" />
+    <Content Remove="wwwroot\bootstrap\pages\examples\lockscreen.html" />
+    <Content Remove="wwwroot\bootstrap\pages\examples\invoice.html" />
+    <Content Remove="wwwroot\bootstrap\pages\examples\register.html" />
+    <Content Remove="wwwroot\bootstrap\pages\examples\500.html" />
+    <Content Remove="wwwroot\bootstrap\pages\examples\404.html" />
+    <Content Remove="wwwroot\bootstrap\pages\examples\login.html" />
+    <Content Remove="wwwroot\bootstrap\pages\examples\blank.html" />
+    <Content Remove="wwwroot\bootstrap\pages\examples\invoice-print.html" />
+    <Content Remove="wwwroot\bootstrap\.babelrc" />
+    <Content Remove="wwwroot\bootstrap\build\config\postcss.config.js" />
+    <Content Remove="wwwroot\js\daterangepicker.css" />
+    <Content Remove="wwwroot\js\summernote-bs4.css" />
+    <Content Remove="wwwroot\bootstrap\dist\js\adminlte.js" />
+    <Content Remove="wwwroot\js\bootstrap\dashboard.js" />
+    <Content Remove="wwwroot\js\bootstrap\demo.js" />
+    <Content Remove="wwwroot\js\bootstrap\fastclick.js" />
+    <Content Remove="wwwroot\js\bootstrap\jquery.min.js" />
+    <Content Remove="wwwroot\img\avatar.png" />
+    <Content Remove="wwwroot\img\avatar04.png" />
+    <Content Remove="wwwroot\img\avatar2.png" />
+    <Content Remove="wwwroot\img\avatar3.png" />
+    <Content Remove="wwwroot\img\bootstrap\avatar.png" />
+    <Content Remove="wwwroot\img\bootstrap\avatar04.png" />
+    <Content Remove="wwwroot\img\bootstrap\avatar2.png" />
+    <Content Remove="wwwroot\img\bootstrap\avatar3.png" />
+    <Content Remove="wwwroot\img\bootstrap\avatar5.png" />
+    <Content Remove="wwwroot\js\bootstrap\fastclick.js" />
+    <Content Remove="wwwroot\img\bootstrap\credit\cirrus.png" />
+    <Content Remove="wwwroot\img\bootstrap\credit\mastercard.png" />
+    <Content Remove="wwwroot\img\bootstrap\credit\mestro.png" />
+    <Content Remove="wwwroot\img\bootstrap\credit\paypal.png" />
+    <Content Remove="wwwroot\img\bootstrap\credit\paypal2.png" />
+    <Content Remove="wwwroot\img\bootstrap\credit\visa.png" />
+    <Content Remove="wwwroot\bootstrap\.DS_Store" />
+    <Content Remove="wwwroot\css\bootstrap\webfonts\fa-solid-900.svg" />
+    <Content Remove="wwwroot\css\bootstrap\webfonts\fa-solid-900.ttf" />
+    <Content Remove="wwwroot\css\bootstrap\webfonts\fa-solid-900.woff" />
+    <Content Remove="wwwroot\css\bootstrap\webfonts\fa-solid-900.woff2" />
+    <Content Remove="wwwroot\css\bootstrap\webfonts\fa-brands-400.eot" />
+    <Content Remove="wwwroot\css\bootstrap\fontawesome-free\css\all.min.css" />
+    <Content Remove="wwwroot\css\bootstrap\fontawesome-free\css\brands.css" />
+    <Content Remove="wwwroot\css\bootstrap\fontawesome-free\css\brands.min.css" />
+    <Content Remove="wwwroot\css\bootstrap\fontawesome-free\css\fontawesome.css" />
+    <Content Remove="wwwroot\css\bootstrap\fontawesome-free\css\fontawesome.min.css" />
+    <Content Remove="wwwroot\css\bootstrap\fontawesome-free\css\regular.css" />
+    <Content Remove="wwwroot\css\bootstrap\fontawesome-free\css\regular.min.css" />
+    <Content Remove="wwwroot\css\bootstrap\fontawesome-free\css\solid.css" />
+    <Content Remove="wwwroot\css\bootstrap\fontawesome-free\css\solid.min.css" />
+    <Content Remove="wwwroot\css\bootstrap\fontawesome-free\css\svg-with-js.css" />
+    <Content Remove="wwwroot\js\igniteUI\infragistics.dv.js" />
+    <Content Remove="wwwroot\js\igniteUI\infragistics.lob.js" />
+    <Content Remove="wwwroot\bootstrap\.editorconfig" />
+    <Content Remove="wwwroot\IgniteUI\js\infragistics.lob.js" />
+    <Content Remove="wwwroot\IgniteUI\js\infragistics.core.js" />
+    <Content Remove="wwwroot\IgniteUI\demos\js\jquery-ui.min.js" />
+    <Content Remove="wwwroot\IgniteUI\demos\js\jquery-1.9.1.min.js" />
+    <Content Remove="wwwroot\js\igniteUI\jquery-ui.svg" />
+    <Content Remove="wwwroot\js\igniteUI\jquery-ui.ttf" />
+    <Content Remove="wwwroot\js\igniteUI\jquery-ui.woff" />
+    <Content Remove="wwwroot\js\igniteUI\jquery-ui.eot" />
+    <Content Remove="wwwroot\css\igniteUI\fonts\jquery-ui.svg" />
+    <Content Remove="wwwroot\css\igniteUI\fonts\jquery-ui.ttf" />
+    <Content Remove="wwwroot\css\igniteUI\fonts\jquery-ui.woff" />
+    <Content Remove="wwwroot\css\igniteUI\fonts\jquery-ui.eot" />
+    <Content Remove="wwwroot\css\igniteUI\infragistics.theme.css" />
+    <Content Remove="wwwroot\css\igniteUI\infragistics.css" />
+    <Content Remove="wwwroot\css\bootstrap\igniteUI %28copy%29\modiff.css" />
+    <Content Remove="wwwroot\bootstrap\.eslintignore" />
+    <Content Remove="wwwroot\css\bootstrap\igniteUI %28copy%29\modiff.css" />
+    <Content Remove="wwwroot\img\column-2.png" />
+    <Content Remove="wwwroot\img\column-1.png" />
+    <Content Remove="Views\SalesProfile\Edit2.cshtml" />
+    <Content Remove="wwwroot\img\loadingImage.gif" />
+    <Content Remove="wwwroot\lib\signalr\signalr.min.js.map" />
+    <Content Remove="wwwroot\lib\signalr\signalr.min.js" />
+    <Content Remove="Views\Tariff %28copy%29\Edit.cshtml" />
+    <Content Remove="Views\Tariff %28copy%29\Index.cshtml" />
+    <Content Remove="Views\SourceCountry %28copy%29\Edit.cshtml" />
+    <Content Remove="Views\SourceCountry %28copy%29\Index.cshtml" />
+    <Content Remove="Views\SourceCountry %28copy%29\PrintPage.cshtml" />
+    <Content Remove="wwwroot\reports\SourceCountries.pdf" />
+    <Content Remove="Views\Home\PrivacyPolicy.cshtml" />
+    <Content Remove="Views\Register\Add %28copy%29.cshtml" />
+    <Content Remove="Views\Home\Add.cshtml" />
+    <Content Remove="wwwroot\img\ISSBlogo.png" />
+    <Content Remove="wwwroot\userimages\charles.jardine%40nathan-software.com.png" />
+    <Content Remove="wwwroot\userimages\bakchas.png" />
+    <Content Remove="wwwroot\userimages\5df20e639854d221a443cf98.png" />
+    <Content Remove="wwwroot\IndustryFiles\Tata UK Collection Monthly.xlsx" />
+    <Content Remove="wwwroot\reports\RUSSIA202202.csv" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Remove="wwwroot\IgniteUI\demos\js\typings\jquery.d.ts" />
+    <TypeScriptCompile Remove="wwwroot\IgniteUI\demos\js\typings\igniteui.d.ts" />
+    <TypeScriptCompile Remove="wwwroot\IgniteUI\demos\js\typings\jqueryui.d.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Controllers\_IGGridController.cs" />
+    <Compile Remove="Controllers\TariffExceptionController.cs" />
+    <Compile Remove="Controllers\RegisterController %28copy%29.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Swashbuckle.AspNetCore.Annotations" />
+    <None Remove="Swashbuckle.AspNetCore" />
+    <None Remove="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <None Remove="Microsoft.IdentityModel.Tokens" />
+    <None Remove="System.IdentityModel.Tokens.Jwt" />
+  </ItemGroup>
+</Project>

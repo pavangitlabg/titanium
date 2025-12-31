@@ -1,0 +1,230 @@
+﻿@inject NavigationModelService ModelService
+<div class="container py-5">
+    <div class="row">
+        <div class="form-group row">
+            <div class="col-sm-5">
+                <SfCard Title="Countries" CssClass="e-card-left">
+                    <CardHeader>Source Tariff Codes</CardHeader>
+                    <CardContent>
+                        <div id="error_message" style="color: red; font-weight: bold"></div>
+
+                        <SfGrid @ref="GridSource"
+                                TValue="ProductAllFilterModel"
+                                DataSource="@AllSourceTariffModels"
+                                AllowSelection="true"
+                                Height="500"
+                                Width="Auto">
+                            <GridSelectionSettings CheckboxOnly="true" PersistSelection="true"></GridSelectionSettings>
+                            <GridColumns>
+                                <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
+                                <GridColumn Field="@nameof(ProductAllFilterModel.TariffCode)" HeaderText="Code"
+                                            IsPrimaryKey="true" TextAlign="TextAlign.Left" AutoFit="true" Width="120"
+                                            Type="ColumnType.String"></GridColumn>
+                                <GridColumn Field="@nameof(ProductAllFilterModel.Name)" HeaderText="Name"
+                                            TextAlign="TextAlign.Left" AutoFit="true" Width="200" AllowEditing="false"
+                                            Type="ColumnType.String"></GridColumn>
+                                @* <GridColumn Field="@nameof(SourceCountryModel.LATEST_DATE)" HeaderText="Last Update" TextAlign="TextAlign.Left" AutoFit="true" Width="180" Format="dd-MM-yyy" AllowEditing="false" Type="ColumnType.Date"></GridColumn> *@
+                            </GridColumns>
+                        </SfGrid>
+                    </CardContent>
+                </SfCard>
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group row">
+                    <div class="btn-group-vertical col-md-10" style="margin-top: 50%;margin-left:2%">
+                        <SfButton id="addSCBtn" @onclick="AddSource" CssClass="e-custom-add"
+                                  IconPosition="IconPosition.Right" IconCss="e-icons e-chevron-right-double">Add
+                        </SfButton>
+                        <br/>
+                        <SfButton id="removeSCBtn" @onclick="RemoveSource" IconPosition="IconPosition.Left"
+                                  IconCss="e-icons e-chevron-left-double" CssClass="e-custom-remove">Remove
+                        </SfButton>
+                        <br/>
+                        <SfButton id="updateBtn" @onclick="UpdateSource" IconPosition="IconPosition.Left"
+                                  IconCss="e-icons e-save" CssClass="e-custom-update">Update
+                        </SfButton>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <SfCard Title="Countries" CssClass="e-card-right">
+                    <CardHeader>User Tariff Codes</CardHeader>
+                    <CardContent>
+                        <div id="error_message1" style="color: red; font-weight: bold"></div>
+
+                        <SfGrid ID="Grid"
+                                @ref="GridUser"
+                                TValue="ProductAllFilterModel"
+                                DataSource="@UserSourceTariffCodes"
+                                AllowSelection="true"
+                                Height="500"
+                                Width="Auto">
+                            <GridSelectionSettings CheckboxOnly="true" PersistSelection="true"></GridSelectionSettings>
+                            <GridColumns>
+                                <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
+                                <GridColumn Field="@nameof(ProductAllFilterModel.TariffCode)" HeaderText="Code"
+                                            IsPrimaryKey="true" TextAlign="TextAlign.Left" AutoFit="true" Width="120"
+                                            Type="ColumnType.String"></GridColumn>
+                                <GridColumn Field="@nameof(ProductAllFilterModel.Name)" HeaderText="Name"
+                                            TextAlign="TextAlign.Left" AutoFit="true" Width="200" AllowEditing="false"
+                                            Type="ColumnType.String"></GridColumn>
+                                @* <GridColumn Field="@nameof(ProductAllFilterModel.)" HeaderText="Last Update" TextAlign="TextAlign.Left" AutoFit="true" Width="180" AllowEditing="false" Format="dd-MM-yyy" Type="ColumnType.Date"></GridColumn> *@
+                            </GridColumns>
+                        </SfGrid>
+
+                    </CardContent>
+                </SfCard>
+            </div>
+        </div>
+
+    </div>
+</div>
+@if (IsSaving)
+{
+    IsSaving = false;
+    <DynamicComponent Type="@SelectedComponent" Parameters="@ComponentParameters"/>
+}
+
+@code {
+
+    SfGrid<ProductAllFilterModel> GridSource { get; set; }
+    SfGrid<ProductAllFilterModel> GridUser { get; set; }
+    List<ProductAllFilterModel> UserSourceTariffCodes { get; set; } = new();
+    List<ProductAllFilterModel> AllSourceTariffModels { get; set; } = new();
+    UserModel UserModel { get; set; }
+    MessageModel MessageModel { get; set; }
+    bool IsSaving { get; set; }
+    private Type SelectedComponent { get; set; }
+    private Dictionary<string, object> ComponentParameters { get; set; }
+
+    async Task AddSource()
+    {
+        var userSelected = GridSource.SelectedRecords;
+
+        foreach (var item in userSelected)
+        {
+            var code = UserSourceTariffCodes.FirstOrDefault(o => o._id == item._id);
+            if (code is null)
+            {
+                UserSourceTariffCodes.Add(item);
+            }
+        }
+
+        UserSourceTariffCodes = UserSourceTariffCodes.OrderBy(x => x.TariffCode).ToList();
+        await GridSource.ClearRowSelectionAsync();
+        // await GridSource.Refresh();
+        await GridUser.Refresh();
+        await InvokeAsync(() => { StateHasChanged(); });
+    }
+
+    async Task RemoveSource()
+    {
+        var userSelected = GridUser.SelectedRecords;
+        UserSourceTariffCodes.RemoveAll(item => userSelected.Contains(item));
+
+        await GridUser.ClearRowSelectionAsync();
+        await GridUser.Refresh();
+    }
+
+    async Task UpdateSource()
+    {
+        SelectedComponent = typeof(MessageBox);
+        MessageModel = new MessageModel
+        {
+            Content = "Updating ....",
+            Title = "Tariff Data",
+            PosX = "Right",
+            PosY = "Bottom",
+            Type = "Message",
+            Style = MessaageBoxEnum.Message
+        };
+
+        ComponentParameters = new Dictionary<string, object>
+        {
+            { "MessageModel", MessageModel }
+        };
+        
+        var userSrv = new UserServices();
+        var data = await userSrv.GetUsersById(UserModel._id);
+        data.Password = EncryptionHelper.Encrypt(data.Password);
+        data.AllowedTariffCodes = UserSourceTariffCodes;
+        await userSrv.UpdateUser(data);
+        IsSaving = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            UserModel = ModelService.CurrentUserModel;
+            var usrService = new UserServices();
+            UserModel = await usrService.GetUsersById(UserModel._id);
+            UserSourceTariffCodes = UserModel.AllowedTariffCodes;
+
+            var tariffSrv = new ProductService();
+            AllSourceTariffModels = await tariffSrv.GetAllProducts();
+
+            //IsLoaded = true;
+            await InvokeAsync(() => { StateHasChanged(); });
+        }
+    }
+
+}
+
+<style>
+    .e-card-left {
+        background-color: green;
+        /*padding: 20px;*/
+        /*margin-bottom: 20px;*/
+        color: white;
+    }
+
+    .e-card-left:hover {
+        background-color: green;
+    }
+
+
+    .e-card-right {
+        background-color: red;
+        /*padding-left: 20px;*/
+        /*margin-bottom: 20px;*/
+        color: white;
+    }
+
+    .e-card-right:hover {
+        background-color: red;
+    }
+
+    .e-custom-add {
+        border-radius: 0;
+        height: 50px;
+        width: 150px;
+    }
+
+    .e-custom-add, .e-custom:hover, .e-custom:focus, .e-custom:active {
+        background-color: green;
+        color: #fff;
+    }
+
+    .e-custom-remove {
+        border-radius: 0;
+        height: 50px;
+        width: 150px;
+    }
+
+    .e-custom-remove, .e-custom:hover, .e-custom:focus, .e-custom:active {
+        background-color: red;
+        color: #fff;
+    }
+
+    .e-custom-update {
+        border-radius: 0;
+        height: 50px;
+        width: 150px;
+    }
+
+    .e-custom-update, .e-custom:hover, .e-custom:focus, .e-custom:active {
+        background-color: blue;
+        color: #fff;
+    }
+</style>

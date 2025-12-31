@@ -1,0 +1,46 @@
+
+.btn-79,
+.btn-79 *,
+.btn-79 :after,
+.btn-79 :before,
+.btn-79:after,
+.btn-79:before {
+    border: 0 solid;
+    box-sizing: border-box;
+}
+
+@font-face {
+    font-family: 'Assistant';
+    src: url("fonts/assistant/Assistant-ExtraLight.ttf") format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+.page-title{
+    font-family: 'Assistant-SemiBold', sans-serif;
+    /*color: #a89f9f!important;*/
+    color: #34568b !important;
+    font-size: 15px;
+    font-weight: bolder;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top:20px;
+    margin-left:10px;
+}
+
+.selected-name{
+    font-family: 'Assistant-SemiBold', sans-serif;
+    color: #34568b!important;
+    font-size: 15px;
+    font-weight: bolder;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    /*font-style:italic;*/
+    /*margin-top:20px;*/
+    margin-left:10px;
+    text-decoration: underline;
+    text-decoration-style: solid;
+    text-decoration-thickness: 3px;
+    text-underline-offset: 8px
+}
+

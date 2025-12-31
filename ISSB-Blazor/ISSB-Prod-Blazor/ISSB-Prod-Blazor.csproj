@@ -1,0 +1,64 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <!--<Nullable>enable</Nullable>-->
+        <ImplicitUsings>enable</ImplicitUsings>
+        <RootNamespace>ISSB_Prod_Blazor</RootNamespace>
+        <LangVersion>default</LangVersion>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(RunConfiguration)' == 'https' "/>
+    <PropertyGroup Condition=" '$(RunConfiguration)' == 'http' "/>
+    <ItemGroup>
+        <PackageReference Include="bunit" Version="1.40.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Components" Version="9.0.9" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.9" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.3.0"/>
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.9" />
+        <PackageReference Include="Syncfusion.Licensing" Version="28.2.4"/>
+        <PackageReference Include="Syncfusion.Blazor.Core" Version="28.2.4"/>
+        <PackageReference Include="Syncfusion.Blazor.Buttons" Version="28.2.4"/>
+        <PackageReference Include="Syncfusion.Blazor.Grid" Version="28.2.4"/>
+        <PackageReference Include="Syncfusion.Blazor.Cards" Version="28.2.4"/>
+        <PackageReference Include="Syncfusion.Blazor.Themes" Version="28.2.4"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
+        <PackageReference Include="Syncfusion.Blazor.Popups" Version="28.2.4"/>
+        <PackageReference Include="Microsoft.AspNetCore" Version="2.3.0"/>
+        <PackageReference Include="Syncfusion.Blazor.Spinner" Version="28.2.4"/>
+        <PackageReference Include="Syncfusion.Blazor.Layouts" Version="28.2.4"/>
+        <PackageReference Include="Syncfusion.Blazor.Charts" Version="28.2.4"/>
+        <PackageReference Include="Syncfusion.Blazor.Notifications" Version="28.2.4"/>
+        <PackageReference Include="Syncfusion.Blazor.RichTextEditor" Version="28.2.4"/>
+        <PackageReference Include="Syncfusion.Blazor.ProgressBar" Version="28.2.4"/>
+        <PackageReference Include="Syncfusion.Blazor.Navigations" Version="28.2.4"/>
+        <PackageReference Include="Syncfusion.Blazor.DropDowns" Version="28.2.4"/>
+        <PackageReference Include="Syncfusion.Blazor.Calendars" Version="28.2.4"/>
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\Data\Data.csproj">
+            
+        </ProjectReference>
+        <ProjectReference Include="..\Services\Services.csproj">
+        
+        </ProjectReference>
+        <ProjectReference Include="..\Api\Api.csproj">
+           
+        </ProjectReference>
+        <ProjectReference Include="..\UnitTests\UnitTests.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Remove="Helpers\"/>
+        <None Remove="Pages\User\"/>
+        <None Remove="Componets\"/>
+        <None Remove="Componets\User\"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Folder Include="wwwroot\importdata\" />
+        <Folder Include="wwwroot\reports\" />
+        <Folder Include="wwwroot\userimages\"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Content Remove="wwwroot\userimages\"/>
+    </ItemGroup>
+</Project>

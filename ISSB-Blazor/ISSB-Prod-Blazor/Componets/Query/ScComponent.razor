@@ -1,0 +1,336 @@
+@using AngleSharp.Common
+@using FilterType = Syncfusion.Blazor.Grids.FilterType
+@using SkeletonType = Syncfusion.Blazor.Notifications.SkeletonType
+
+<SfDialog @ref="Dialog" Width="400px" Visible="false" ShowCloseIcon="true" IsModal="true">
+    <DialogEvents Closed="CloseDialog"></DialogEvents>
+    <DialogTemplates>
+        @*Here you can customize the Header and Content of delete confirmation dialog*@
+        <Header>Select Regions</Header>
+        <Content>
+            <SfGrid ID="scGrid"
+                    @ref="ScGrid"
+                    TValue="SourceCountryFilterModel"
+                    Toolbar="@_toolBar"
+                    DataSource="@SourceCountryRegion"
+                    AllowPaging="false"
+                    AllowSorting="true"
+                    AllowSelection="true"
+                    AllowFiltering="true"
+                    AllowExcelExport="true"
+                    AllowPdfExport="false"
+                    Height="300"
+                    Width="Auto">
+                <GridFilterSettings
+                    Type="FilterType.Excel"></GridFilterSettings>
+                <GridEditSettings Mode="EditMode.Normal" AllowEditing="true"></GridEditSettings>
+                @* <GridEvents RowSelected="OnSCRowSelected" RowDeselected="OnSCRowDeselected" *@
+                @*             TValue="SourceCountryModel"></GridEvents> *@
+                <GridColumns>
+                    <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
+                    <GridColumn Field=@nameof(SourceCountryModel._id) HeaderText="Id"
+                                IsPrimaryKey="true"
+                                Visible="false"
+                                TextAlign="TextAlign.Left"
+                                Width="10%"
+                                Type="ColumnType.String"></GridColumn>
+                    <GridColumn Field=@nameof(SourceCountryFilterModel.Name) HeaderText="Code"
+                                IsPrimaryKey="true"
+                                TextAlign="TextAlign.Left"
+                                Width="100%"
+                                Type="ColumnType.String"></GridColumn>
+                    
+
+
+                </GridColumns>
+                <SfSpinner @bind-Visible="IsLoading">
+                </SfSpinner>
+            </SfGrid>
+        </Content>
+    </DialogTemplates>
+    <DialogButtons>
+        <DialogButton OnClick="@RegionSelect" Content="Select"></DialogButton>
+        <DialogButton OnClick="@CloseDialog" Content="Close"></DialogButton>
+    </DialogButtons>
+</SfDialog>
+
+@if (IsLoading)
+{
+    <SfSkeleton CssClass="skeleton-default" Shape=SkeletonType.Rectangle
+                Width="100%"
+                Height="80vh"></SfSkeleton>
+}
+else
+{
+    <div class="card-body">
+        <div class="form-group">
+            <div id="SourceForm">
+                <div class="form-row">
+                    <div class="bar-horizontal" style="width:100%!important">
+
+                        <div class="form-group col-md-3">
+                            <SfRadioButton Label="Group Countries
+                            Together" Name="scgroup" Value="GroupCountriesTogether" TChecked="string" @onchange="SelectGroup" @bind-Checked="SelectGroupType"></SfRadioButton>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <SfRadioButton Label="View Countries
+                            Separately" Name="scgroup" Value="ViewCountriesSeparately" TChecked="string" @onchange="SelectGroup" @bind-Checked="SelectGroupType"></SfRadioButton>
+                        </div>
+                        
+                    
+                        
+                        <div class="form-group col-md-6" style="float:right">
+                            <SfButton @onclick="@OpenDialog">Regions</SfButton>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <SfGrid ID="SCGrid"
+                    @ref="Grid"
+                    TValue="SourceCountryModel"
+                    Toolbar="@_toolBar"
+                    DataSource="@_scData"
+                    AllowPaging="false"
+                    AllowSorting="true"
+                    AllowSelection="true"
+                    AllowFiltering="true"
+                    AllowExcelExport="true"
+                    AllowPdfExport="false"
+                    Height="300"
+                    Width="Auto">
+                <GridFilterSettings
+                    Type="FilterType.Excel"></GridFilterSettings>
+                <GridEditSettings Mode="EditMode.Normal" AllowEditing="true"></GridEditSettings>
+                <GridEvents RowSelected="OnSCRowSelected" RowDeselected="OnSCRowDeselected"
+                            TValue="SourceCountryModel"></GridEvents>
+                <GridColumns>
+                    <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
+                    <GridColumn Field=@nameof(SourceCountryModel.GEO_CODE) HeaderText="Code"
+                                IsPrimaryKey="true"
+                                TextAlign="TextAlign.Left"
+                                Width="10%"
+                                Type="ColumnType.String"></GridColumn>
+
+                    <GridColumn Field=@nameof(SourceCountryModel.NAME) HeaderText="Name"
+                                TextAlign="TextAlign.Left"
+                                Width="50%" AllowEditing="false"
+                                Type="ColumnType.Date"></GridColumn>
+                    <GridColumn Field=@nameof(SourceCountryModel.LATEST_DATE)
+                                HeaderText="Last Update" TextAlign="TextAlign.Left"
+                                Width="65%" AllowEditing="false"
+                                Format="dd/MM/yyyy"
+                                Type="ColumnType.Date"></GridColumn>
+
+
+                </GridColumns>
+                <SfSpinner @bind-Visible="IsLoading">
+                </SfSpinner>
+            </SfGrid>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public EventCallback<object> OnMessage { get; set; }
+    [Parameter] public QueryModel Data { get; set; }
+    [Parameter] public SavedQueryModel ReportModel { get; set; }
+
+    SfDialog Dialog;
+    private List<object> _toolBar = new() { "Search" };
+    SfGrid<SourceCountryModel> Grid { get; set; }
+    SfGrid<SourceCountryFilterModel> ScGrid { get; set; }
+    private SourceCountryModel SelectedScRow { get; set; }
+    private IEnumerable<SourceCountryModel> _scData;
+    private List<SourceCountryFilterModel> SourceCountryRegion { get; set; }
+    private int[] _indexScArray;
+    private bool IsLoading { get; set; } = false;
+    private bool IsBusy { get; set; } = false;
+    private bool ShowAll { get; set; } = false;
+
+    private async Task SelectGroup(Microsoft.AspNetCore.Components.ChangeEventArgs args)
+    {
+        await NotifyParent();
+    }
+    
+     private string SelectGroupType { get; set; }
+
+     private async Task OpenDialog()
+     {
+         await Dialog.ShowAsync();
+     }
+
+     private async Task CloseDialog()
+     {
+         await Dialog.HideAsync();
+     }
+     
+    private async Task NotifyParent()
+    {
+        GetSelectedRows();
+        var delegateModel = new SelectionQueryModel
+        {
+            Id = "SC",
+            SelectedSourceCountries = ReportModel.SourceCountryGEOs,
+            SelectedMarketCountries = new(),
+            Selection = SelectGroupType
+        };
+        
+        if (OnMessage.HasDelegate)
+        {
+            await OnMessage.InvokeAsync(delegateModel);
+        }
+    }
+
+    private void OnSCRowSelected(RowSelectEventArgs<SourceCountryModel> args)
+    {
+        if (IsBusy)
+            return;
+        
+        Task.Run(async () =>
+        {
+            SelectedScRow = args.Data;
+            await NotifyParent();
+        });
+    }
+
+    private void OnSCRowDeselected(RowDeselectEventArgs<SourceCountryModel> args)
+    {
+        Task.Run(async () =>
+        {
+            await NotifyParent();
+        });
+    }
+
+    private async Task RegionSelect()
+    {
+        //IsLoading = true;
+
+        var selected = await ScGrid.GetSelectedRecordsAsync();
+        
+        Grid.SelectedRowIndexes.Clear();
+        List<int> sCindexes = new();
+
+        foreach (var region in selected)
+        {
+            foreach (var item in region.Items)
+            {
+                var index = Data.SourceCountries.FindIndex(sc => sc.GEO_CODE.Equals(item.GeoCode));
+                if (index != -1)
+                {
+                    sCindexes.Add(index);
+                }
+                // if (index != -1)
+                // {
+                //     var bExixst = sCindexes.FirstOrDefault(x => x.Equals(index));
+                //     if(bExixst == 0)
+                //       sCindexes.Add(index);
+                // }
+            }
+        }
+        
+        var indexScArray = sCindexes.ToArray();
+
+        if (indexScArray.Length > 0)
+            await Grid.SelectRowsAsync(indexScArray);
+
+        await Dialog.HideAsync();
+      //  await InvokeAsync(StateHasChanged);
+      
+      // var selectedOut = await Grid.GetSelectedRecordsAsync();
+      //  IsLoading = false;
+        
+    }
+
+    private async Task OnRegionChange(SourceCountryFilterModel[] args)
+    {
+        IsLoading = true;
+        Grid.SelectedRowIndexes.Clear();
+        List<int> sCindexes = new();
+
+        foreach (var region in args)
+        {
+            foreach (var item in region.Items)
+            {
+                var index = Data.SourceCountries.FindIndex(sc => sc.GEO_CODE.Equals(item.GeoCode));
+                if (index != -1)
+                {
+                    sCindexes.Add(index);
+                }
+            }
+        }
+
+        var indexScArray = sCindexes.ToArray();
+
+        if (indexScArray.Length > 0)
+            await Grid.SelectRowsAsync(indexScArray);
+
+        IsLoading = false;
+    }
+
+    protected override void OnInitialized()
+    {
+        IsLoading = true;
+        SourceCountryRegion = new List<SourceCountryFilterModel>();
+        foreach (var region in Data.SourceRegions)
+        {
+            SourceCountryRegion.Add(region);
+        }
+
+        SelectGroupType = ReportModel.SourceCountryGroup;
+        _scData = Data.SourceCountries;
+
+        InitSelectedRows();
+        IsLoading = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            IsBusy = true;
+            if (_indexScArray is not null)
+                await Grid.SelectRowsAsync(_indexScArray);
+
+            IsBusy = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void InitSelectedRows()
+    {
+        List<int> sCindexes = new();
+        foreach (var countriesModel in ReportModel.SourceCountryGEOs)
+        {
+            var index = Data.SourceCountries.FindIndex(sc => sc.GEO_CODE.Equals(countriesModel.GeoCode));
+            if (index != -1)
+            {
+                sCindexes.Add(index);
+            }
+        }
+        
+        sCindexes = sCindexes.OrderBy(x => x).ToList();
+        _indexScArray = sCindexes.ToArray();
+    }
+    
+    private void GetSelectedRows()
+    {
+        ReportModel.SourceCountryGEOs = new();
+        
+        foreach (var item in Grid.SelectedRecords)
+        {
+            var model = Data.SourceCountries.FirstOrDefault(sc => sc.GEO_CODE.Equals(item.GEO_CODE));
+            if (model is not null)
+            {
+                var sqModel = new SaveQuerySourceCountriesModel
+                {
+                    GeoCode = model.GEO_CODE
+                };
+                ReportModel.SourceCountryGEOs.Add(sqModel);
+            }
+        }
+    }
+
+}

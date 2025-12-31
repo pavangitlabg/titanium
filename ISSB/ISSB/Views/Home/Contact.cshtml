@@ -1,0 +1,161 @@
+﻿@using Infragistics.Web.Mvc
+@model IQueryable<Data.Models.RegisterModel>
+
+@{
+    ViewData["Title"] = "Contact";
+}
+
+
+<html>
+<body>
+    <div id="printArea" class="card">
+        @*<div class="card-header">
+            <h3>@ViewData["Title"]</h3>
+        </div>*@
+<!--Contact-->
+
+        <iframe src="https://www.issb.co.uk/contact" style="border:none;height:80vh" title="ISSB Contact"></iframe>
+
+
+        @*<div class="form-group row">
+            <div class="col-md-6">
+                <div class="card-body">
+                    <div class="col-md text-justify">
+                        <h4 class="font-weight-bold text-justify">Contact Us Online</h4>
+                        <p class="text-justify w-responsive">
+                            If you have any questions or request, you may contact us by clicking below: <br />
+                            <div class="col-md-3 row">
+                                <button onclick="window.location.href = '../Home/ContactUsAdd';" type="button" class="btn btn-block bg-gradient-primary"><span><i class="fas fa-edit fa-1x"></i></span> Contact</button>
+                            </div>
+                        </p>
+                        <br />
+                        <h4 class="font-weight-bold text-justify">Social Media</h4>
+                        <ul class="list-unstyled mb-0">
+                            <li>
+                                <a href="https://www.linkedin.com/company/issb-ltd" target="_blank">
+                                    <i class="fab fa-linkedin fa-2x"></i>&nbsp;
+                                </a> Follow us on Linkedin
+                            </li>
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card-body">
+                    <div class="col-md text-justify">
+                        <h4 class="font-weight-bold text-justify">Phone & Address</h4>
+
+                        <ul class="list-unstyled mb-0">
+                            <li>
+                                <a href="https://goo.gl/maps/jH8NCEFLzv3kh9AHA" target="_blank">
+                                    <i class="fas fa-map-marker-alt fa-2x"></i> &nbsp;
+                                </a> Corinthian House, 17 Lansdowne Road, Croydon, Surrey CR0 2BX, United Kingdom
+                            </li>
+                            <li>
+                                <br />
+                                Sophie Fatoba
+                            </li>
+                            <li>
+                                <h5>Chief Operations Officer, ISSB Ltd</h5>
+                            </li>
+                            <li>
+                                T: +44(0)7793838908
+                            </li>
+                            <li>
+                                <a href="mailto:sophie.fatoba@issb.co.uk">
+                                    E: sophie.fatoba@issb.co.uk
+                                </a>
+                            </li>
+
+                            <li>
+                                <br />
+                                Abbie Walsh
+                            </li>
+
+                            <li>
+                                <h5>Senior Data Analyst, ISSB Ltd</h5>
+                            </li>
+
+                            <li>
+                                T: +44(0)7984539672
+                            </li>
+                            <li>
+                                <a href="mailto:abbie.walsh@issb.co.uk">
+                                    E: abbie.walsh@issb.co.uk
+                                </a>
+                            </li>
+
+                            <li>
+                                <br />
+                                Ethan Charles-Menelaou
+                            </li>
+
+                            <li>
+                                <h5>Account Manager, ISSB Ltd</h5>
+                            </li>
+
+                            <li>
+                                T: +44(0)7725641791
+                            </li>
+                            <li>
+                                <a href="mailto:ethan.charles-menelaou@issb.co.uk">
+                                    E: ethan.charles-menelaou@issb.co.uk
+                                </a>
+                            </li>
+
+                            <li>
+                                <br />
+                                Graham Prior
+                            </li>
+                            <li>
+                                <h5>Business Development Manager, ISSB Ltd</h5>
+                            </li>
+                            <li>
+                                T: +44(0)7884263654
+                            </li>
+                            <li>
+                                <a href="mailto:graham.prior@issb.co.uk">
+                                    E: graham.prior@issb.co.uk
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>*@
+    </div>
+
+    <script>window.addEventListener('keydown', function (event) {
+            if (event.keyCode === 80 && (event.ctrlKey || event.metaKey) && !event.altKey && (!event.shiftKey || window.chrome || window.opera)) {
+                printtag('printArea');
+                event.preventDefault();
+                if (event.stopImmediatePropagation) {
+                    event.stopImmediatePropagation();
+                } else {
+                    event.stopPropagation();
+                }
+                return;
+            }
+        }, true);
+
+        function printtag(tagid) {
+            var hashid = "#" + tagid;
+            var tagname = $(hashid).prop("tagName").toLowerCase();
+            var attributes = "";
+            var attrs = document.getElementById(tagid).attributes;
+            $.each(attrs, function (i, elem) {
+                attributes += " " + elem.name + " ='" + elem.value + "' ";
+            })
+            var divToPrint = $(hashid).html();
+            var head = "<html><head>" + $("head").html() + "</head>";
+            var allcontent = head + "<body  onload='window.print()' >" + "<" + tagname + attributes + ">" + divToPrint + "</" + tagname + ">" + "</body></html>";
+            var newWin = window.open('', 'Print-Window');
+            newWin.document.open();
+            newWin.document.write(allcontent);
+            newWin.document.close();
+            setTimeout(function () { newWin.close(); }, 10);
+        }</script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+﻿@using Infragistics.Web.Mvc
+@model IQueryable<Data.Models.DirModel>
+@{
+    ViewData["Title"] = "File System";
+}
+
+
+<head>
+    <style>
+         #overlay {
+             position: fixed;
+             display: none;
+             width: 100%;
+             height: 100%;
+             top: 0;
+             left: 0;
+             right: 0;
+             bottom: 0;
+             background-color: rgba(0,0,0,0.5);
+             z-index: 2;
+             cursor: pointer;
+         }
+
+         #text {
+             position: absolute;
+             top: 50%;
+             left: 50%;
+             font-size: 50px;
+             color: yellow;
+             transform: translate(-50%,-50%);
+             -ms-transform: translate(-50%,-50%);
+         }
+     </style>
+
+    <style>
+        #overlay {
+            position: fixed;
+            display: none;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 2;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+     <div id="overlay">
+               <div id="text">Removing Files and folders ....</div>
+            </div>
+      <div class="content-header">
+        <h2>@ViewData["Title"]</h2> 
+    </div>
+     <div>
+        <button id="deleteBtn" class="btn btn-danger btn-sm">Remove Selected Files</button>
+        <button id="refreshBtn" class="btn btn-default btn-sm">Reload Page</button>
+    </div>
+    <div class="card-body">
+   @(Html.Infragistics().Tree()
+                                .ID("tree")
+                                .DataSource(@Model)
+                                .CheckboxMode(CheckboxMode.BiState)
+                                 .SingleBranchExpand(true)
+                                .DragAndDrop(false)
+
+                                .PathSeparator('.')
+
+                                 .Bindings(b =>
+                                    b.PrimaryKey("Idx")
+                                    .TextKey("Description")
+                                    .ValueKey("DirectoryPath")
+                                    .ChildDataProperty("Items")
+                                    .Bindings(b2 =>
+                                        b2.TextKey("FileName").PrimaryKey("Sort")
+                                        .ValueKey("DirectoryPath")
+                                    )
+                                )
+
+                                .DataBind()
+                                .Render()
+                    )
+
+        
+    </div>
+
+    <script>
+
+        $("#deleteBtn").igButton();
+        $("#refreshBtn").igButton();
+        $("#refreshBtn").on("click", function () {
+             window.location.href = '/importFiles/Index';
+        });
+         $("#deleteBtn").on("click", function () {
+              document.getElementById("overlay").style.display = "block";
+              var checkedFileString = "";
+              var checkedNodesMedum = $("#tree").igTree("checkedNodes");
+           
+             if (checkedNodesMedum == null || checkedNodesMedum ==''){
+                 document.getElementById("overlay").style.display = "none";
+             }
+
+             for (var i = 0; i < checkedNodesMedum.length; i++) {
+                 var file = checkedNodesMedum[i].data.DirectoryPath;
+                
+                 if (file != undefined) {
+                     //If its not the last node
+
+                    // product = product.split(" -", 1);
+
+                     if (i !== checkedNodesMedum.length - 1) {
+                    
+                         checkedFileString = checkedFileString + file + "|";
+                     } else {
+                      
+                         checkedFileString = checkedFileString + file;
+                     }
+                 }
+             }
+            
+
+              $.ajax({
+                    type: "POST",
+                    url: "/ImportFiles/RemoveFiles",
+                    async: true,
+                    data: {
+                        
+                        DataArray: checkedFileString,
+                       
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        
+                        if (data.success) {
+                            window.location.href = '/importFiles/Index';
+                            document.getElementById("overlay").style.display = "none";
+                        }
+                    }
+
+                });
+        
+    });
+
+       
+
+    </script>
+</body>
+

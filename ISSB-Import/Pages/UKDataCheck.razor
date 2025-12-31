@@ -1,0 +1,261 @@
+﻿@page "/ukdatacheck"
+@using Services
+@using Data.Models
+@using Data.Ports.Models
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Spinner
+@using Syncfusion.Blazor.ProgressBar
+@using Syncfusion.Blazor.Notifications
+
+<PageTitle>UK Data Check</PageTitle>
+<h3>UK Data Check</h3>
+<div class="e-card" style="width:30%">
+    <div class="row">
+
+        <div class="col-xs-6 col-sm-6 col-lg-6 col-md-6">
+            @if (IsLoading)
+            {
+                <SfSkeleton Height="250px"></SfSkeleton>
+            }
+            else
+            {
+                <SfTextBox CssClass="e-outline" @bind-Value="GeoCode" Placeholder="SC Geo Code" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
+                <p style="color:blue">@CountryName</p>
+                <SfTextBox CssClass="e-outline" @bind-Value="TariffCode" Placeholder="Tariff Code" FloatLabelType="@FloatLabelType.Auto"></SfTextBox>
+                <p style="color:blue">@TariffDescription</p>
+                <SfDatePicker CssClass="e-outline" TValue="DateTime" @bind-Value="DateValue" Placeholder="Choose a Month" Format="MMMM yyyy" Start="CalendarView.Year" Depth="CalendarView.Year" ShowClearButton="true" FullScreen="true"></SfDatePicker>
+                <SfButton @ref="BtnSearch" @onclick="ScanData" CssClass="e-flat" IsPrimary="true" Disabled="IsLoading" Content="Scan Code.."></SfButton>
+                <p style="color:red">@message</p>
+            }
+        </div>
+    </div>
+</div>
+
+<SfGrid @ref="Grid"
+        DataSource="@uKStageingDataModels"
+        TValue="UKStageingDataModel"
+        Toolbar="@toolBar"
+        ShowColumnChooser="true"
+        AllowPaging="true"
+        AllowSorting="true"
+        AllowFiltering="true"
+        AllowExcelExport="true"
+        AllowPdfExport="false"
+        AllowSelection="true"
+        AllowGrouping="true"
+        Height="450"
+        Width="Auto">
+    <GridPageSettings PageCount="10" PageSize="15"></GridPageSettings>
+    <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Excel"></GridFilterSettings>
+    <GridPageSettings PageCount="10"></GridPageSettings>
+    <GridEvents OnToolbarClick="ToolbarClickHandler" TValue="UKStageingDataModel"></GridEvents>
+
+    <GridColumns>
+        <GridColumn Field=@nameof(UKStageingDataModel._id) HeaderText="Id" IsPrimaryKey="true" Visible="true" TextAlign="TextAlign.Left" AutoFit="true" Width="120"></GridColumn>
+        <GridColumn Field=@nameof(UKStageingDataModel.Year) HeaderText="Year" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+        <GridColumn Field=@nameof(UKStageingDataModel.Month) HeaderText="Month" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+        <GridColumn Field=@nameof(UKStageingDataModel.SC_GEO) HeaderText="SC Geo" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+        <GridColumn Field=@nameof(UKStageingDataModel.CountryName) HeaderText="Country" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+        <GridColumn Field=@nameof(UKStageingDataModel.Flow) HeaderText="Flow" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+        <GridColumn Field=@nameof(UKStageingDataModel.HSCode) HeaderText="HS Code" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+        <GridColumn Field=@nameof(UKStageingDataModel.MC_GEO) HeaderText="MC Geo" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+        <GridColumn Field=@nameof(UKStageingDataModel.Partner) HeaderText="Partner" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+        <GridColumn Field=@nameof(UKStageingDataModel.Quantity) HeaderText="Qty" TextAlign="TextAlign.Right" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+        <GridColumn Field=@nameof(UKStageingDataModel.Unit) HeaderText="Unit" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+        <GridColumn Field=@nameof(UKStageingDataModel.Value) HeaderText="Value" TextAlign="TextAlign.Right" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+        <GridColumn Field=@nameof(UKStageingDataModel.PortId) HeaderText="PortId" TextAlign="TextAlign.Center" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+        <GridColumn Field=@nameof(UKStageingDataModel.Port) HeaderText="Port" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+    </GridColumns>
+    <SfSpinner @bind-Visible="IsLoading"></SfSpinner>
+</SfGrid>
+
+@code {
+
+    SfGrid<UKStageingDataModel> Grid;
+    SfButton BtnSearch;
+    DateTime DateValue { get; set; } = DateTime.Now;
+    UKDataCommodityModel commodity { get; set; }
+    List<TariffSearchModel> tariffModels { get; set; }
+    List<SourceCountryModel> sourceCountryModels { get; set; }
+    List<InvalidUKTariffModel> invalidTariff { get; set; } = new();
+    List<UKStageingDataModel> uKStageingDataModels { get; set; } = new();
+    UKPortsModel uKPorts { get; set; } = new();
+    private List<object> toolBar = new List<object> { "Search", "ExcelExport", "ColumnChooser" };
+
+    bool IsLoading = false;
+    string message { get; set; } = string.Empty;
+    string GeoCode { get; set; } = string.Empty;
+    string TariffCode { get; set; } = string.Empty;
+    string CountryName { get; set; } = string.Empty;
+    string TariffDescription { get; set; } = string.Empty;
+    int cnt = 1;
+
+    double flow1Qty = 0;
+    double flow2Qty = 0;
+    double flow3Qty = 0;
+    double flow4Qty = 0;
+    double flow1Value = 0;
+    double flow2Value = 0;
+    double flow3Value = 0;
+    double flow4Value = 0;
+
+    public async Task ToolbarClickHandler(Syncfusion.Blazor.Navigations.ClickEventArgs args)
+    {
+        if (args.Item.Text == "Excel Export")
+        {
+            await Grid.ExportToExcelAsync();
+        }
+    }
+
+    private async Task ScanData()
+    {
+        TariffDescription = string.Empty;
+        CountryName = string.Empty;
+        IsLoading = true;
+        message = string.Empty;
+        uKStageingDataModels.Clear();
+        await Grid.Refresh();
+
+        if (string.IsNullOrWhiteSpace(GeoCode))
+        {
+            message = "Please enter a valid GEO code.";
+            IsLoading = false;
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(TariffCode))
+        {
+            message = "Please enter a valid Tariff Code.";
+            IsLoading = false;
+            return;
+        }
+
+        if (TariffCode.Length != 8)
+        {
+            message = "The Tariff Code is an Invalid Length.";
+            IsLoading = false;
+            return;
+        }
+
+        var country = sourceCountryModels.FirstOrDefault(x => x.GEO_CODE.Equals(GeoCode));
+        if (country is null)
+        {
+            message = "Source Country not found.";
+            IsLoading = false;
+            return;
+        }
+
+        CountryName = country.NAME;
+
+        var tariff = tariffModels.FirstOrDefault(x => x.LongTariffCode.Substring(0, 8).Equals(TariffCode));
+        if (tariff is null)
+        {
+            message = "Tariff Code not found.";
+            IsLoading = false;
+            return;
+        }
+
+        TariffDescription = tariff.LongTariffCode;
+
+        var apiService = ApiService.Instance;
+        string dateSearch = DateValue.Year.ToString() + DateValue.Month.ToString().PadLeft(2, '0');
+        var data = await apiService.GetUKData(GeoCode, dateSearch);
+
+        if (data is not null)
+        {
+            if (data.value is not null)
+            {
+                if (data.value.Count > 0)
+                {
+                    var dList = data.value.Where(x => x.CommodityId.Equals(int.Parse(TariffCode))).ToList();
+                    cnt = 1;
+                    foreach (var item in dList)
+                    {
+                        var portData = uKPorts.value.FirstOrDefault(x => x.PortId.Equals(item.PortId));
+
+                        var flow = item.FlowTypeId.ToString();
+
+                        if (item.FlowTypeId == 1)
+                            flow = "EU Imports";
+
+                        if (item.FlowTypeId == 2)
+                            flow = "EU Exports";
+
+                        if (item.FlowTypeId == 3)
+                            flow = "Non-EU Imports";
+
+                        if (item.FlowTypeId == 4)
+                            flow = "Non-EU Exports";
+
+                        var dataModel = new UKStageingDataModel
+                        {
+                            _id = cnt.ToString(),
+                            CountryName = "UNITED KINGDOM",
+                            SC_GEO = "006",
+                            Quantity = double.Parse(item.NetMass),
+                            PortId = item.PortId,
+                            HSCode = item.CommodityId.ToString(),
+                            MC_GEO = GeoCode,
+                            Month = DateValue.Month,
+                            Year = DateValue.Year,
+                            Partner = CountryName,
+                            Unit = "KG",
+                            Value = item.NetValue,
+                            Flow = flow,
+                            Port = portData.PortName
+                        };
+                        uKStageingDataModels.Add(dataModel);
+                        cnt++;
+                    }
+                    uKStageingDataModels = uKStageingDataModels.OrderBy(x => x.Flow).ToList();
+                    await Grid.Refresh();
+                }
+            }
+        }
+        else
+        {
+            message = "No data found...";
+        }
+
+        IsLoading = false;
+
+    }
+
+    protected override async void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+        {
+
+            IsLoading = true;
+            message = "Loading Data...";
+            await InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+            var tariffSrv = new TariffService();
+            tariffModels = await tariffSrv.GetLookupTariffsByRegion("CN");
+            tariffModels = tariffModels.OrderBy(x => x.LongTariffCode).ToList();
+
+            var countrySrv = new SourceCountryService();
+            sourceCountryModels = await countrySrv.GetActiveSourceCountries();
+            sourceCountryModels = sourceCountryModels.OrderBy(x => x.NAME).ToList();
+
+            var apiService = ApiService.Instance;
+            uKPorts = await apiService.GetUKPorts();
+
+            IsLoading = false;
+            message = string.Empty;
+            await InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+
+        }
+        base.OnAfterRender(firstRender);
+    }
+
+}
+

@@ -1,0 +1,64 @@
+﻿@using Infragistics.Web.Mvc
+@model Data.Models.PendingImportHeaderModel
+@{
+
+    ViewData["Title"] = "Upsert Record";
+
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+
+<body>
+    <div class="card">
+        <div class="card-header">
+            <div class="content-header">
+                <h2>@ViewData["Title"]</h2>
+                <hr />
+
+                @using (Html.BeginForm("Save", "Upsert"))
+                {
+                    @Html.HiddenFor(x => x._id, new { _id = "_id" })
+                     @Html.HiddenFor(x => x.DATE, new { DATE = "DATE" })
+                     @Html.HiddenFor(x => x.BATCH_NO, new { BATCH_NO = "BATCH_NO" })
+                     @Html.HiddenFor(x => x.IMPORT_TYPE, new { IMPORT_TYPE = "IMPORT_TYPE" })
+                     @Html.HiddenFor(x => x.FAIL, new { FAIL = "FAIL" })
+                     @Html.HiddenFor(x => x.END_DATE, new { END_DATE = "END_DATE" })
+                     @Html.HiddenFor(x => x.POSTED, new { POSTED = "POSTED" })
+                    <div class="form-horizontal">
+
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        <div style="width: 50%; margin-top:5%; margin-left:25%; margin-right:25%" class="needs-validation">
+                            <fieldset>
+                               
+
+                                <div class="form-group">
+                                    <div class="editor-label">
+                                        @Html.LabelFor(u => u.STATUS, htmlAttributes: new { @class = "control-label" })
+                                    </div>
+
+                                    <div class="editor-field">
+
+                                        @Html.TextBoxFor(u => u.STATUS, htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(u => u.STATUS, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <hr />
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary px-4"><span>Save &nbsp;<i class="fas fa-file-import"></i></span></button>
+                                </div>
+                            </fieldset>
+                            <br />
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+

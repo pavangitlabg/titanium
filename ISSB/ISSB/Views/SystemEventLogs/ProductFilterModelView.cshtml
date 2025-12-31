@@ -1,0 +1,75 @@
+﻿@using Infragistics.Web.Mvc
+@model Data.Models.ProductAllFilterModel
+@{
+
+    ViewData["Title"] = "Product Filter View";
+
+}
+
+<!DOCTYPE html>
+<html>
+<body>
+    <div class="card">
+        <div class="card-header">
+            <h3>@ViewData["Title"]</h3>
+        </div>
+        @using (Html.BeginForm("Index", "SystemEventLogs"))
+        {
+    <div class="form-horizontal">
+        @Html.HiddenFor(x => x._id, new { _id = "_id" })
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div style="width: 50%; margin-top:5%; margin-left:25%; margin-right:25%" class="needs-validation">
+            <fieldset>
+                <div class="form-group">
+                    <div class="editor-label">
+                        @Html.LabelFor(u => u.Idx, htmlAttributes: new { @class = "control-label " })
+                    </div>
+
+                    <div class="editor-field">
+                        @Html.TextBoxFor(u => u.Idx, "", new { @class = "form-control", id = "Idx", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(u => u.Idx, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="editor-label">
+                        @Html.LabelFor(u => u.TariffCode, htmlAttributes: new { @class = "control-label" })
+                    </div>
+                    <div class="editor-field">
+                        @Html.TextBoxFor(u => u.TariffCode, "", new { @class = "form-control", id = "TariffCode", @readonly = "readonly" })
+                        @Html.ValidationMessageFor(u => u.TariffCode, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="editor-label">
+                        @Html.LabelFor(u => u.Name, htmlAttributes: new { @class = "control-label" })
+                    </div>
+                    <div class="editor-field">
+                        @Html.TextBoxFor(u => u.Name, "", new { @class = "form-control" })
+                        @Html.ValidationMessageFor(u => u.Name, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="editor-label">
+                        @Html.LabelFor(u => u.Cost, htmlAttributes: new { @class = "control-label" })
+                    </div>
+                    <div class="editor-field">
+                        @Html.TextBoxFor(u => u.Cost, "", new { @class = "form-control" })
+                    </div>
+                </div>
+
+                <hr />
+                <div class="form-group">
+                    <button onclick="goBack()" class="btn btn-primary px-4"><span>Close &nbsp;<i class="far fa-times-circle"></i></span></button>
+                </div>
+            </fieldset>
+            <br />
+        </div>
+    </div>
+        }
+    </div>
+</body>
+</html>
+

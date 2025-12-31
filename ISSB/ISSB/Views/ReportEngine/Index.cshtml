@@ -1,0 +1,92 @@
+﻿@model Data.Models.SearchModel
+@{
+
+    ViewData["Title"] = "Test Report";
+
+}
+
+<div class="card">
+    <div class="card-header">
+        <h2>@ViewData["Title"]</h2>
+    </div>
+    <h3>@ViewData["Message"]</h3>
+
+    @if (User.Identity.IsAuthenticated)
+    {
+
+        @using (Html.BeginForm("SearchResults", "ReportEngine"))
+        {
+
+            <div class="form-horizontal">
+
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div style="width: 50%; margin-top:5%; margin-left:25%; margin-right:25%" class="needs-validation">
+                    <fieldset>
+                        <!--
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @* @Html.LabelFor(u => u.DateFrom, htmlAttributes: new { @class = "control-label " }) *@
+                                </div>
+
+                                <div class="editor-field">
+                                    @* @Html.TextBoxFor(u => u.DateFrom, new { @class = "form-control", id = "EmailAddress" }) *@
+
+                                    @* @Html.ValidationMessageFor(u => u.DateFrom, "", new { @class = "text-danger" }) *@
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="editor-label">
+                                    @* @Html.LabelFor(u => u.DateTo, htmlAttributes: new { @class = "control-label " }) *@
+                                </div>
+
+                                <div class="editor-field">
+                                    @* @Html.TextBoxFor(u => u.DateTo, new { @class = "form-control", id = "EmailAddress" }) *@
+
+                                    @* @Html.ValidationMessageFor(u => u.DateTo, "", new { @class = "text-danger" }) *@
+                                </div>
+                            </div>
+                        -->
+
+                        <div class="editor-label">
+                            @Html.LabelFor(u => u.SourceCountryGeoCodes, htmlAttributes: new { @class = "control-label " })
+                        </div>
+
+                        <div class="editor-field">
+                            @Html.TextBoxFor(u => u.SourceCountryGeoCodes, new { @class = "form-control", id = "EmailAddress" })
+
+                            @Html.ValidationMessageFor(u => u.SourceCountryGeoCodes, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="editor-label">
+                            @Html.LabelFor(u => u.MarketCountryGeoCodes, htmlAttributes: new { @class = "control-label " })
+                        </div>
+
+                        <div class="editor-field">
+                            @Html.TextBoxFor(u => u.MarketCountryGeoCodes, new { @class = "form-control", id = "EmailAddress" })
+
+                            @Html.ValidationMessageFor(u => u.MarketCountryGeoCodes, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="editor-label">
+                            @Html.LabelFor(u => u.Products, htmlAttributes: new { @class = "control-label " })
+                        </div>
+
+                        <div class="editor-field">
+                            @Html.TextBoxFor(u => u.Products, new { @class = "form-control", id = "EmailAddress" })
+
+                            @Html.ValidationMessageFor(u => u.Products, "", new { @class = "text-danger" })
+                        </div>
+
+
+                        <div class="form-group">
+                            <input type="submit" class="btn btn-primary btn-md " form-control" value="Search" />
+                        </div>
+                    </fieldset>
+                    <br />
+                </div>
+            </div>
+        }
+
+    }
+</div>

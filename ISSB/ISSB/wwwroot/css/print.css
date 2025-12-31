@@ -1,0 +1,18 @@
+﻿body {
+    background: white;
+}
+
+#menu {
+    display: none;
+}
+
+#wrapper,
+#content {
+    width: auto;
+    margin: 0 5%;
+    padding: 0;
+    border: 0;
+    float: none !important;
+    color: black;
+    background: transparent;
+}

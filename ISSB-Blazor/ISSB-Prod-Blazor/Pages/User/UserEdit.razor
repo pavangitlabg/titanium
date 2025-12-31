@@ -1,0 +1,244 @@
+﻿@page "/useredit"
+@using ISSB_Prod_Blazor.Componets.User
+
+@inject NavigationModelService ModelService
+<style>
+
+   h5{
+       font-family: 'Assistant-SemiBold', sans-serif;
+       color: #34568B !important;
+       font-size: 15px;
+       font-weight: bolder;
+       letter-spacing: 3px;
+       text-transform: uppercase;
+       /*font-style:italic;*/
+       margin-bottom:20px;
+   }
+   
+   label{
+       color: #34568B !important;
+   }
+   
+   /*edit width of dropdowns*/
+   /* Narrow only the dropdowns under this area */
+   #userProfile .e-ddl.e-input-group.e-control-container.e-control-wrapper {
+       width: 90% !important;
+   }
+
+
+
+   .page-title-editusers{
+        font-family: 'Assistant-SemiBold', sans-serif;
+        color: #34568B !important;
+        font-size: 15px;
+        font-weight: bolder;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        /*font-style:italic;*/
+        margin-top:20px;
+        margin-left:10px;
+    }
+
+    /* Save button (has .e-custom-update) */
+    button.e-custom-update {
+        display: inline-flex !important;
+        width: auto !important;
+        margin-right: 5px;
+    }
+
+    /* Delete button (has .e-custom-remove) */
+    button.e-custom-remove {
+        display: inline-flex !important;
+        width: auto !important;
+    }
+
+   
+
+    .e-tab-text{
+        font-family: 'Assistant-SemiBold', sans-serif;
+        color: #34568B !important;
+        font-weight: bold;
+    }
+
+
+   /* Shared base button style */
+   #addSCBtn,
+   #removeSCBtn,
+   #updateBtn {
+       display: inline-flex;
+       align-items: center;
+       justify-content: center;
+       gap: 8px;
+       padding: 10px 20px;
+       height: 44px;
+       min-width: 150px;   /* ensures all buttons have equal width */
+       border-radius: 1px;
+       font-family: 'Assistant-SemiBold', sans-serif;
+       font-size: 14px;
+       font-weight: 600;
+       letter-spacing: .02em;
+       cursor: pointer;
+       transition: all 0.2s ease;
+   }
+
+   /* Add button (blue outline) */
+   #addSCBtn {
+       border: 2px solid #34568B;
+       color: #34568B;
+       background: white;
+   }
+   #addSCBtn:hover {
+       background: #34568B;
+       color: white;
+   }
+
+   /* Remove button (red outline) */
+   #removeSCBtn {
+       border: 2px solid #C62828;
+       color: #C62828;
+       background: white;
+   }
+   #removeSCBtn:hover {
+       background: #C62828;
+       color: white;
+   }
+
+   /* Update button (solid blue) */
+   #updateBtn {
+       background: #34568B;
+       color: white;
+       border: 2px solid #34568B;
+   }
+   #updateBtn:hover {
+       background: #27446C;
+       border-color: #27446C;
+   }
+
+
+   /*Calender title*/
+   .e-calendar .e-header .e-title, .e-bigger.e-small .e-calendar .e-header .e-title {
+       color: #34568b;
+   }
+
+   /*Calender dates selected*/
+   .e-calendar .e-content td.e-selected.e-focused-date span.e-day {
+       background-color: #6c757d;
+       color: black;
+   }
+
+   /*Calendar dates on hovering*/
+   .e-calendar .e-content td:hover span.e-day, .e-calendar .e-content td:focus span.e-day, .e-bigger.e-small .e-calendar .e-content td:hover span.e-day, .e-bigger.e-small .e-calendar .e-content td:focus span.e-day {
+       background-color: #ABC6CD !important;
+       border: none !important;
+       color: white;
+   }
+   /*Footer button "today"*/
+   .e-calendar .e-btn.e-today.e-flat.e-primary, .e-calendar .e-css.e-btn.e-today.e-flat.e-primary {
+       background-color: white;!important;
+       color: black;!important;
+   }
+
+   /*up down arrows color*/
+   .e-calendar .e-header span, .e-bigger.e-small .e-calendar .e-header span {
+       color: #34568b;
+   }
+
+   /*up down arrows hover*/
+   .e-calendar .e-header span:hover, .e-bigger.e-small .e-calendar .e-header span:hover {
+       background-color: #ABC6CD;!important;
+       color: black;!important;
+   }
+
+   .e-calendar .e-btn.e-today.e-flat.e-primary, .e-calendar .e-css.e-btn.e-today.e-flat.e-primary {
+       color: #34568b !important;
+       background-color: #ABC6CD;!important;
+   }
+
+   .e-calendar .e-btn.e-today.e-flat.e-primary:hover, .e-calendar .e-css.e-btn.e-today.e-flat.e-primary:hover {
+       color: #FFFFFF !important;
+       background-color: #34568b;!important;
+   }
+
+   .e-checkbox-wrapper .e-frame.e-check, .e-css.e-checkbox-wrapper .e-frame.e-check{
+       background-color: #34568b;!important;
+       border-color: #34568b;!important;
+   }
+
+
+
+</style>
+<PageTitle>Edit System Users</PageTitle>
+<AuthorizeView>
+    <Authorized>
+        <h3 class="page-title-editusers">Edit System Users</h3>
+        <SfTab SelectedItem="TabIndex" CssClass="default-tab">
+            @*<TabEvents Selected="OnTabSelected" Selecting="OnTabSelecting"></TabEvents>*@
+            <TabItems>
+                <TabItem>
+                    <ChildContent>
+                        <TabHeader Text="User Profile"></TabHeader>
+                    </ChildContent>
+                    <ContentTemplate>
+                        <EditUser/>
+                    </ContentTemplate>
+                </TabItem>
+                <TabItem>
+                    <ChildContent>
+                        <TabHeader Text="Allowed Source Countries"></TabHeader>
+                    </ChildContent>
+                    <ContentTemplate>
+                        <UserSourceCountries/>
+                    </ContentTemplate>
+                </TabItem>
+                <TabItem>
+                    <ChildContent>
+                        <TabHeader Text="Allowed Tariff Codes"></TabHeader>
+                    </ChildContent>
+                    <ContentTemplate>
+                        <UserTariffCodes/>
+                    </ContentTemplate>
+                </TabItem>
+                <TabItem>
+                    <ChildContent>
+                        <TabHeader Text="Custom Tariff Codes"></TabHeader>
+                    </ChildContent>
+                    <ContentTemplate>
+                        <UserCustomTariffCodes/>
+                    </ContentTemplate>
+                </TabItem>
+            </TabItems>
+        </SfTab>
+    </Authorized>
+    <NotAuthorized>
+        <p>Not Authorized</p>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    [Parameter] public UserModel userModel { get; set; }
+
+    //public UserModel userModel { get; set; } = new();
+    private int TabIndex;
+
+    List<string> statusList { get; set; } = new();
+
+    public void OnTabSelected(SelectEventArgs args)
+    {
+    }
+
+    public async void OnTabSelecting(SelectingEventArgs args)
+    {
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // userModel = ModelService.CurrentUserModel;
+
+            await InvokeAsync(() => { StateHasChanged(); });
+        }
+    }
+
+}

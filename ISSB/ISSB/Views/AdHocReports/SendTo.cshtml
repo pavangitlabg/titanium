@@ -1,0 +1,49 @@
+﻿@using Infragistics.Web.Mvc
+@model Data.Models.SendToModel
+@{
+
+    ViewData["Title"] = "Send Report";
+
+}
+
+<!DOCTYPE html>
+<html>
+<body>
+    <div class="card">
+        <div class="card-header">
+            <h3>@ViewData["Title"]</h3>
+            <h5 style="color: red">@ViewData["Message"]</h5>
+        </div>
+        @using (Html.BeginForm("Send", "AdHocReports"))
+        {
+            @Html.HiddenFor(x => x.FromEmail, new { _id = "FromEmail" })
+            @Html.HiddenFor(x => x.RecordQueryId, new { _id = "RecordQueryId" })
+            <div class="form-horizontal">
+
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div style="width: 50%; margin-top:5%; margin-left:25%; margin-right:25%" class="needs-validation">
+                    <fieldset>
+                        <div class="form-group">
+                            <div class="editor-label">
+                                @Html.LabelFor(u => u.ToEmail, htmlAttributes: new { @class = "control-label" })
+                            </div>
+
+                            <div class="editor-field">
+
+                                @Html.TextBoxFor(u => u.ToEmail, htmlAttributes: new { @class = "form-control" })
+                                @Html.ValidationMessageFor(u => u.ToEmail, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary px-4"><span>Send &nbsp;<i class="fas fa-file-import"></i></span></button>
+                        </div>
+                    </fieldset>
+                    <br />
+                </div>
+            </div>
+        }
+    </div>
+</body>
+</html>
+

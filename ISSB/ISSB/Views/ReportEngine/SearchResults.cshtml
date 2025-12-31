@@ -1,0 +1,749 @@
+﻿<!doctype html>
+
+<!--
+  ISSB/Views/ReportEngine/SearchResults.cshtml
+
+  reporting engine view
+-->
+
+@using Infragistics.Web.Mvc
+@using Data.Models
+
+@model ReportEngineModel
+
+@{
+  var search = Model.Search; // search criteria
+
+  /*
+    Set variable separately to indicate which groupable selection is not grouped (itemised separately). Values are as
+    follows:
+
+       0. none
+       1. source countries
+       2. market countries
+       4. ports
+       8. products
+      16. by month
+      32. by quarter
+      64. by year
+      -1. more than one
+  */
+
+  var separately    = Model.Separately                                  ; // selection viewed separately
+  var allSeparately = Model.AllSeparately                               ; // all selections viewed separately
+  var member        = Model.Search.Values ? "MONETARY_VALUE" : "WEIGHT" ; // y-axis member
+  var oneSep        = separately != 0 && separately != -1               ; // one groupable selection not grouped
+  var defaultType   = separately < 16 ? "column" : "line"               ; // default data chart type
+  var tradeFlow     = Model.Search.TradeFlow                            ; // trade flow (import, export or both)
+}
+
+<html>
+<head>
+    <style>
+
+        .horizontal-scroll-wrapper {
+            width: 100%;
+            height: 700px;
+            overflow-y: auto;
+            overflow-x: auto;
+        }
+
+        .headerStyle {
+            text-align: center !important;
+        }
+
+        .numberStyle {
+            text-align: right !important;
+        }
+
+        .optionContainer {
+            display: inline-block;
+        }
+
+        .item {
+            display: inline-block;
+            height: 30px;
+        }
+
+            .item ~ .item {
+                margin-left: 15px;
+            }
+
+        .item-label {
+            display: block;
+            float: right;
+            margin-left: 5px;
+            line-height: 21px;
+        }
+
+        .exporting-overlay {
+            position: absolute;
+            background-color: rgba(181, 181, 181, 0.9);
+            top: 0;
+            left: 0;
+            z-index: 100000;
+            text-align: center;
+            vertical-align: top;
+            padding-top: 100px;
+        }
+
+            .exporting-overlay:after {
+                content: "";
+                display: inline-block;
+                vertical-align: middle;
+                height: 100%;
+            }
+
+        .exporting-text {
+            font-size: 46px;
+            font-weight: bold;
+            vertical-align: top;
+        }
+    </style>
+
+    <style>
+
+        #exportButton {
+            margin-bottom: 8px;
+        }
+
+        .optionContainer {
+            display: inline-block;
+        }
+
+        .item {
+            display: inline-block;
+            height: 30px;
+        }
+
+            .item ~ .item {
+                margin-left: 15px;
+            }
+
+        .item-label {
+            display: block;
+            float: right;
+            margin-left: 5px;
+            line-height: 21px;
+        }
+
+        .exporting-overlay {
+            position: absolute;
+            background-color: rgba(181, 181, 181, 0.9);
+            top: 0;
+            left: 0;
+            z-index: 100000;
+            text-align: center;
+            vertical-align: top;
+            padding-top: 100px;
+        }
+
+            .exporting-overlay:after {
+                content: "";
+                display: inline-block;
+                vertical-align: middle;
+                height: 100%;
+            }
+
+        .exporting-text {
+            font-size: 46px;
+            font-weight: bold;
+            vertical-align: top;
+        }
+    </style>
+
+    <script>
+      var member      = "@member"                     ; // y-axis member
+      var defaultType = "@defaultType"                ; // default chart type
+      var data        = @Html.Raw( Model.Serialised ) ; // data from server
+      var label       = "@Model.LabelMemberPath"      ; // label member path
+
+      // trade flow (imports = 1, exports = 2, both = 3)
+
+      @if( tradeFlow == TradeFlowOption.Imports ) { <text>var tradeFlow = 1 ;</text> }
+      else if ( tradeFlow == TradeFlowOption.Exports ) { <text>var tradeFlow = 2 ;</text> }
+      else { <text>var tradeFlow = 3 ;</text> }
+
+      // series selections for combo
+
+      var selections = [
+                         @if ( ( allSeparately & 1 ) != 0 )
+                         { <text> { "value" : "SC_GEO" , "text" : "Source Countries" } </text> }
+                         @if ( ( allSeparately & 2 ) != 0 )
+                         {
+                           if ( ( allSeparately & 1 ) != 0 ) { <text> , </text> }
+                           <text> { "value" : "MC_GEO" , "text" : "Market Countries" } </text>
+                         }
+                         @if ( ( allSeparately & 4 ) != 0 )
+                         {
+                           if ( ( allSeparately & 3 ) != 0 ) { <text> , </text> }
+                           <text> { "value" : "PORT_ID" , "text" : "Ports" } </text>
+                         }
+                         @if ( ( allSeparately & 8 ) != 0 )
+                         {
+                           if ( ( allSeparately & 7 ) != 0 ) { <text> , </text> }
+                           <text> { "value" : "TARIFF_CODE" , "text" : "Products" } </text>
+                         }
+                         @if ( ( allSeparately & 16 ) != 0 )
+                         {
+                           if ( ( allSeparately & 15 ) != 0 ) { <text> , </text> }
+                           <text> { "value" : "MONTH" , "text" : "Months" } </text>
+                         }
+                         @if ( ( allSeparately & 32 ) != 0 )
+                         {
+                           if ( ( allSeparately & 31 ) != 0 ) { <text> , </text> }
+                           <text> { "value" : "QUARTER" , "text" : "Quarters" } </text>
+                         }
+                         @if ( ( allSeparately & 64 ) != 0 )
+                         {
+                           if ( ( allSeparately & 63 ) != 0 ) { <text> , </text> }
+                           <text> { "value" : "YEAR" , "text" : "Years" } </text>
+                         }
+                       ] ;
+    </script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+    <link href="../IgniteUI/css/themes/infragistics/infragistics.theme.css" rel="stylesheet" />
+    <link href="../IgniteUI/css/structure/modules/infragistics.ui.chart.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="card-header">
+        <h2>@ViewBag.Title</h2>
+    </div>
+    <input type="hidden" value="@ViewBag.ReportId" id="ReportID" />
+    <!-- grid -->
+
+    <div class="horizontal-scroll-wrapper">
+        @(
+        Html.Infragistics().Grid( Model.Data )
+                           .ID( "grid" )
+                           .Width( Model.GridWidth.ToString() )
+                           .Height( "700px" )
+                           .DataBind()
+                           .PrimaryKey( "ID" )
+                           .AutoGenerateColumns( false )
+                           .AutoGenerateLayouts( false )
+                           .Columns( column => Model.Columns( column ) )
+                           .Features(
+                                      features =>
+                                      {
+                                          features.Sorting().Type( OpType.Local ).Mode( SortingMode.Multiple ) ;
+                                          features.Sorting().Type( OpType.Local ) ;
+                                          features.Paging().Type( OpType.Local ) ;
+                                          features.Filtering().Type( OpType.Local ) ;
+                                          features.Selection().MultipleSelection( true ) ;
+                                          features.Selection().Mode( SelectionMode.Row ) ;
+                                          features.GroupBy().Type( OpType.Local ) ;
+                                          features.ColumnMoving().Mode( MovingMode.Deferred ) ;
+                                          features.Hiding().ColumnSettings(
+                                                                            settings =>
+                                                                              settings.ColumnSetting()
+                                                                                      .ColumnKey( "ID" )
+                                                                                      .Hidden( true )
+                                                                                      .AllowHiding( true )
+                                                                          ) ;
+                                          features.Resizing().AllowDoubleClickToResize( true ).DeferredResizing( true ) ;
+                                          //features.Summaries().ShowSummariesButton( true ) ;
+                                          //features.Summaries()
+                                          //      .CalculateRenderMode( SummaryCalculateRenderMode.OnSelect ) ;
+                                      }
+                                    )
+                           .Render()
+      )
+    </div>
+    <hr />
+
+    <div class="form-group row">
+        <div class="col-sm-2">
+            <button id="downloadButton" class="btn btn-outline-primary btn-md">Send to Downloads &nbsp;<span><i class="fas fa-folder-plus"></i></span></button>
+        </div>
+        <div class="col-sm-2">
+            <button id="exportButton" class="btn btn-outline-success btn-md">Export to Excel &nbsp;<span><i class="fas fa-file-export"></i></span></button>
+        </div>
+    </div>
+
+
+    <!-- selection combo -->
+
+    @if (separately == -1)
+    {
+        @* more than one groupable selection is not grouped *@
+
+        <select id="selection"></select>
+        <br />
+    }
+
+    <!-- trade flow combo -->
+
+    @if (tradeFlow == TradeFlowOption.Both)
+    {
+        <select id="tradeFlow">
+            <option value="import" selected> Import </option>
+            <option value="export"> Export </option>
+        </select>
+        <br />
+    }
+
+    <!-- y-axis member combo -->
+
+    @if (member == "MONETARY_VALUE")
+    {
+        <select id="member">
+            <option value="monetary" selected> Values </option>
+            <option value="weight"> Tonnes </option>
+        </select>
+        <br />
+    }
+
+    <br />
+
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- data chart -->
+
+                <div id="dataChartContainer" class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <select id="chartTypePicker"></select>
+                            <div id="dataChart" class="chart" style="width : 100% ; height : 600px"></div>
+                        </div>
+                        <input id="exportDataChartButton" value="Export as image" type="button" />
+                    </div>
+                </div>
+
+                <!-- pie chart -->
+
+                <div id="pieChartContainer" class="col-lg-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <table id="optionsID" class="options">
+                                        <tr>
+                                            <td>Start Angle:</td>
+                                            <td><div id="pieAngle" class="slider"></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Radius:</td>
+                                            <td><div id="pieRadius" class="slider"></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Exploded Radius</td>
+                                            <td><div id="pieExplodedRadius" class="slider"></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Label Extent</td>
+                                            <td><div id="pieLabelExtent" class="slider"></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Label Position:</td>
+                                            <td>
+                                                <div class="comboContainer">
+                                                    <select id="pieLabelPosition">
+                                                        <option value="none">None</option>
+                                                        <option value="center">Center</option>
+                                                        <option value="insideEnd">Inside End</option>
+                                                        <option value="outsideEnd" selected="selected">Outside End</option>
+                                                        <option value="bestFit">Best Fit</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Leader Line:</td>
+                                            <td>
+                                                <div class="comboContainer">
+                                                    <select id="pieLeaderLine">
+                                                        <option value="straight">Straight</option>
+                                                        <option value="arc" selected="selected">Arc</option>
+                                                        <option value="spline">Spline</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <div class="col-md-7">
+                                    <div id="pieChart" class="chart" style="width : 100% ; height : 600px"></div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div id="legend"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <input id="exportPieChartButton" value="Export as image" type="button" />
+                    </div>
+                </div>
+
+                <!-- doughnut chart -->
+
+                <div id="doughnutChartContainer" class="col-lg-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="doughnutChart" class="chart" style="width : 100% ; height : 400px"></div>
+                        </div>
+                        <input id="exportDoughnutButton" value="Export as image" type="button" />
+                    </div>
+                </div>
+
+                <!-- funnel chart -->
+
+                <div id="funnelChartContainer" class="col-lg-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="funnelChart" class="chart" style="width : 100% ; height : 400px"></div>
+                        </div>
+                        <input id="exportfunnelButton" value="Export as image" type="button" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- tooltip template for value series (both import and export) -->
+
+    <script id="tooltipValue" type="text/x-jquery-tmpl">
+        ${item.LEGEND}: ${item.valueFormatted}
+    </script>
+
+    <!-- tooltip template for import series -->
+
+    <script id="tooltipImport" type="text/x-jquery-tmpl">
+        ${item.LEGEND}
+        <br />Import: ${item.importFormatted}
+    </script>
+
+    <!-- tooltip template for export series -->
+
+    <script id="tooltipExport" type="text/x-jquery-tmpl">
+        ${item.LEGEND}
+        <br />Export: ${item.exportFormatted}
+    </script>
+
+    <script>
+      $(
+          function () {
+
+              $("#exportDoughnutButton").on
+                  (
+                      "click", function () {
+                          $("#exportDoughnutButton").hide();
+
+
+                          html2canvas($('#doughnutChartContainer'),
+                              {
+                                  onrendered: function (canvas) {
+                                      var a = document.createElement('a');
+                                      // toDataURL defaults to png, so we need to request a jpeg, then convert for file download.
+                                      a.href = canvas.toDataURL("image/jpeg").replace("image/jpeg", "image/octet-stream");
+                                      a.download = 'DoughnutChart.jpg';
+                                      a.click();
+                                      $("#exportDoughnutButton").show();
+
+                                  }
+
+                              });
+
+                      }
+              );
+
+              $("#exportfunnelButton").on
+                  (
+                      "click", function () {
+                          $("#exportfunnelButton").hide();
+
+
+                          html2canvas($('#funnelChartContainer'),
+                              {
+                                  onrendered: function (canvas) {
+                                      var a = document.createElement('a');
+                                      // toDataURL defaults to png, so we need to request a jpeg, then convert for file download.
+                                      a.href = canvas.toDataURL("image/jpeg").replace("image/jpeg", "image/octet-stream");
+                                      a.download = 'FunnelChart.jpg';
+                                      a.click();
+                                      $("#exportfunnelButton").show();
+
+                                  }
+
+                              });
+
+                      }
+                  );
+
+              $("#exportPieChartButton").on
+                  (
+                      "click", function () {
+                          $("#exportPieChartButton").hide();
+                          $("#optionsID").hide();
+
+                          html2canvas($('#pieChartContainer'),
+                              {
+                                  onrendered: function (canvas) {
+                                      var a = document.createElement('a');
+                                      // toDataURL defaults to png, so we need to request a jpeg, then convert for file download.
+                                      a.href = canvas.toDataURL("image/jpeg").replace("image/jpeg", "image/octet-stream");
+                                      a.download = 'PieChart.jpg';
+                                      a.click();
+                                      $("#exportPieChartButton").show();
+                                      $("#optionsID").show();
+                                  }
+
+                              });
+
+                      }
+                  );
+          $("#exportDataChartButton").on
+                  (
+                      "click", function () {
+                          var img = $('#dataChart').igDataChart("exportImage", $('#dataChart').width(), $('#dataChart').height());
+
+                          // atob to base64_decode the data-URI
+                          var image_data = atob(img.src.split(',')[1]);
+
+                          // Use typed arrays to convert the binary data to a Blob
+
+                          var arraybuffer = new ArrayBuffer(image_data.length);
+                          var view = new Uint8Array(arraybuffer);
+                          for (var i = 0; i < image_data.length; i++) {
+                              view[i] = image_data.charCodeAt(i) & 0xff;
+                          }
+
+                          var blob = new Blob([arraybuffer], { type: 'image/jpeg' });
+                          saveAs(blob, "DataChart.jpg");
+
+           });
+
+          $("#exportButton").on
+          (
+            "click", function()
+            {
+              var exportingOverlay = $('<div>') ;
+
+              $.ig.GridExcelExporter.exportGrid
+              (
+                $("#grid") ,
+                {
+                  columnsToSkip : [ 0 ] ,
+                  fileName : "@ViewBag.Title" ,
+                  worksheetName : "Report" ,
+                  gridFeatureOptions : { sorting : "applied" , filtering : "applied" }
+                } ,
+                {
+                  exportStarting : function( e , args ) { showOverlay( args.grid , exportingOverlay ) ; } ,
+                  success : function() { hideOverlay( exportingOverlay ) ; } ,
+                  cellExported : function ( e , args ) { if ( args.xlRow.index() == 0 ) return ; } ,
+                  exportEnding : function ( e , args )
+                                 {
+                                   // args.worksheet.columns().item(2).cellFormat().formatString("dd-MM-yyyy");
+                                   // args.worksheet.columns().item(3).cellFormat().formatString("dd-MM-yyyy");
+                                 } ,
+                }
+              ) ;
+            }
+          ) ;
+
+          $("#downloadButton").on
+          (
+            "click", function()
+              {
+                  if (confirm('Downloads process in the background and will be available in the downloads when finished')) {
+                      $("#downloadButton").hide();
+                      var ReportID = $("#ReportID").val();
+                      var url = "/ReportsDownloads/Download?Id=" + ReportID;
+                      $(location).attr('href', url);
+                  }
+                  else {
+                      e.preventDefault()
+                      grid.commit();
+                  }
+               
+            }
+          );
+          // grid
+
+          function showOverlay( grid , exportingOverlay )
+          {
+            var $gridContainer = $('#' + grid.attr( 'id' ) + '_container') ;
+
+            exportingOverlay.css
+            (
+              {
+                "width" : $gridContainer.outerWidth() ,
+                "height" : $gridContainer.outerHeight()
+              }
+            ).html( '<span class="exporting-text">Exporting...</span>' ) ;
+
+            exportingOverlay.addClass( "exporting-overlay" ) ;
+
+            $gridContainer.append( exportingOverlay ) ;
+          }
+
+          function hideOverlay( exportingOverlay ) { exportingOverlay.remove() ; }
+
+          @if ( oneSep )
+          {
+            @* exactly one groupable selection is not grouped *@
+
+            <text>
+              refresh(
+                       data ,
+                       tradeFlow ,
+                       member ,
+                       selections[ 0 ].value ,
+                       "#dataChart" ,
+                       "#pieChart" ,
+                       "#doughnutChart" ,
+                       "#funnelChart"
+                     ) ;
+            </text>
+          }
+          else
+          {
+            <text>
+              $("#selection").igCombo(
+                                       {
+                                         dataSource : selections ,
+                                         mode       : "dropdown" ,
+                                         valueKey   : "value"    ,
+                                         textKey    : "text"     ,
+                                         // placeHolder : "Select chart series" ,
+                                         // dropDownOnFocus: true,
+                                         // initialSelectedItems : [ { index : chartTypeIndex } ] ,
+                                         selectionChanged : function( evt , ui )
+                                         {
+                                           refresh(
+                                                    data ,
+                                                    tradeFlow ,
+                                                    member ,
+                                                    $("#selection").igCombo( "value" ) ,
+                                                    "#dataChart" ,
+                                                    "#pieChart" ,
+                                                    "#doughnutChart" ,
+                                                    "#funnelChart"
+                                                  ) ;
+
+                                         }
+                                       }
+                                     ) ;
+
+              refresh(
+                       data ,
+                       tradeFlow ,
+                       member ,
+                       $("#selection").igCombo( "value" ) ,
+                       "#dataChart" ,
+                       "#pieChart" ,
+                       "#doughnutChart" ,
+                       "#funnelChart"
+                     ) ;
+            </text>
+          }
+
+          @if ( tradeFlow == TradeFlowOption.Both )
+          {
+            <text>
+              $("#tradeFlow").igCombo(
+                                       {
+                                         mode : "dropdown" ,
+                                         selectionChanged : function( evt , ui )
+                                         {
+                                           flow( "#pieChart" , "#funnelChart" , $("#tradeFlow").igCombo( "value" ) ) ;
+                                         }
+                                       }
+                                     ) ;
+            </text>
+          }
+
+          @if ( member == "MONETARY_VALUE" )
+          {
+            <text>
+              $("#member").igCombo(
+              {
+                mode : "dropdown" ,
+                selectionChanged : function( evt , ui )
+                {
+                  member = $("#member").igCombo( "value" ) == "monetary" ? "MONETARY_VALUE" : "WEIGHT" ;
+
+                  refresh(
+                           data ,
+                           tradeFlow ,
+                           member ,
+                           @if ( oneSep ) { <text>selections[ 0 ].value ,</text> }
+                           else { <text>$("#selection").igCombo( "value" ) ,</text> }
+                           "#dataChart" ,
+                           "#pieChart" ,
+                           "#doughnutChart" ,
+                           "#funnelChart"
+                         ) ;
+                }
+              }
+              ) ;
+            </text>
+          }
+
+          // data chart
+
+          var chartTypeIndex = -1 ;
+
+          // - default chart type
+
+          for ( var i = 0 ; i < chartTypes.length ; i ++ )
+            if ( chartTypes[ i ].Value == defaultType ) chartTypeIndex = i ;
+
+          // - chart
+
+          if ( tradeFlow == 3 )
+            $("#chartTypePicker").igCombo(
+                                           {
+                                             dataSource           : chartTypes ,
+                                             mode                 : "dropdown" ,
+                                             valueKey             : "Value" ,
+                                             textKey              : "Text" ,
+                                             // placeHolder : "Select chart type" ,
+                                             // dropDownOnFocus: true,
+                                             initialSelectedItems : [ { index : chartTypeIndex } ] ,
+                                             selectionChanged     : function( evt , ui )
+                                             {
+                                               setSeries(
+                                                          "#dataChart" ,
+                                                          $("#chartTypePicker").igCombo( "value" ) ,
+                                                          [ "import" , "export" ]
+                                                        ) ;
+                                             }
+                                           }
+                                         ) ;
+          else
+            $("#chartTypePicker").igCombo(
+                                           {
+                                             dataSource           : chartTypes ,
+                                             mode                 : "dropdown" ,
+                                             valueKey             : "Value" ,
+                                             textKey              : "Text" ,
+                                             initialSelectedItems : [ { index : chartTypeIndex } ] ,
+                                             selectionChanged     : function( evt , ui )
+                                             {
+                                               setSeries(
+                                                          "#dataChart" ,
+                                                          $("#chartTypePicker").igCombo( "value" ) ,
+                                                          [ "value" ]
+                                                        ) ;
+                                             }
+                                           }
+                                         ) ;
+
+          // pie chart
+
+          setPieHandlers(
+                          "#pieChart" ,
+                          "#pieAngle" ,
+                          "#pieRadius" ,
+                          "#pieLabelExtent" ,
+                          "#pieExplodedRadius" ,
+                          "#pieLabelPosition" ,
+                          "#pieLeaderLine"
+                        ) ;
+        }
+      ) ;
+    </script>
+</body>
+</html>

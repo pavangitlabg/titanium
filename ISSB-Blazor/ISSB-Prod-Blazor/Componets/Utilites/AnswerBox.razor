@@ -1,0 +1,54 @@
+
+    @if (MessageModel != null)
+    {
+        <SfDialog Width="400px" IsModal="true" ShowCloseIcon="false" @bind-Visible="Visibility">
+            <DialogTemplates>
+                <Header>@MessageModel.Title</Header>
+                <Content>
+                    <div class="toast-rows">
+                        <div class="@MessageModel.Style">
+                            <h4>@MessageModel.Content</h4>
+                        </div>
+                    </div>
+                </Content>
+            </DialogTemplates>
+            <DialogButtons>
+                <DialogButton Content="@MessageModel.PosX" IsPrimary="true" OnClick="@OnBtnClick"/>
+                <DialogButton Content="@MessageModel.PosY" OnClick="@CancelClick"/>
+            </DialogButtons>
+        </SfDialog>
+    }
+
+    @code {
+            [Parameter] public MessageModel MessageModel { get; set; } = new();
+            [Parameter] public EventCallback<string> AnswerResult { get; set; }
+
+            private bool Visibility { get; set; } = true;
+
+            private void OnBtnClick()
+            {
+                Visibility = false;
+                if (AnswerResult.HasDelegate)
+                {
+                    AnswerResult.InvokeAsync("OK");
+                }
+            }
+
+            private void CancelClick()
+            {
+                Visibility = false;
+                if (AnswerResult.HasDelegate)
+                {
+                    AnswerResult.InvokeAsync("Cancel");
+                }
+            }
+
+            protected override Task OnAfterRenderAsync(bool firstRender)
+            {
+                Visibility = true;
+                return base.OnAfterRenderAsync(firstRender);
+            }
+
+        }
+    }
+    

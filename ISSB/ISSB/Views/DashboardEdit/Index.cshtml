@@ -1,0 +1,228 @@
+﻿@using Infragistics.Web.Mvc
+@model IQueryable<Data.Models.UserDashboardModel>
+@{
+    ViewData["Title"] = "My Dashboards";
+}
+
+
+<div class="content-header">
+    <h2>@ViewData["Title"]</h2>
+    <h3>@ViewData["Message"]</h3>
+</div>
+
+<style type="text/css">
+
+    .edit-button {
+        width: 100%;
+        font-size: 1em;
+        border: solid 1px #777;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        color: #ffffff;
+        background-color: #174cf8;
+    }
+
+        .edit-button:hover {
+            background-color: #022185;
+        }
+
+    .delete-button {
+        width: 100%;
+        font-size: 1em;
+        border: solid 1px #777;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        color: #ffffff;
+        background-color: #e90404;
+    }
+
+    .run-button {
+        width: 100%;
+        font-size: 1em;
+        border: solid 1px #777;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        color: #ffffff;
+        background-color: #e90404;
+    }
+
+    .delete-button:hover {
+        background-color: #9e0404;
+    }
+
+    .optionContainer {
+        display: inline-block;
+    }
+
+    .item {
+        display: inline-block;
+        height: 30px;
+    }
+
+        .item ~ .item {
+            margin-left: 15px;
+        }
+
+    .item-label {
+        display: block;
+        float: right;
+        margin-left: 5px;
+        line-height: 21px;
+    }
+
+    .exporting-overlay {
+        position: absolute;
+        background-color: rgba(181, 181, 181, 0.9);
+        top: 0;
+        left: 0;
+        z-index: 100000;
+        text-align: center;
+        vertical-align: top;
+        padding-top: 100px;
+    }
+
+        .exporting-overlay:after {
+            content: "";
+            display: inline-block;
+            vertical-align: middle;
+            height: 100%;
+        }
+
+    .exporting-text {
+        font-size: 46px;
+        font-weight: bold;
+        vertical-align: top;
+    }
+</style>
+<div>
+
+    @(Html.Infragistics().Grid(Model)
+                                            .ID("grid")
+                                            .Width("100%")
+                                            .Height("600px")
+                                            .DataBind()
+                                            .PrimaryKey("_id")
+                                            .AutoGenerateColumns(false)
+                                            .AutoGenerateLayouts(false)
+                                            .Columns(column =>
+                                            {
+                                                column.For(x => x._id).HeaderText("_id").Width("15%").Hidden(true);
+
+                                                column.For(x => x.Date).HeaderText("Last Updated").Width("20%").DataType("date").Format("dd-MM-yyyy");
+                                                column.For(x => x.DashBoardName).HeaderText("Report Name").Width("60%");
+                                                column.For(x => x._id).HeaderText("").Width("10%").Template("<input type='button' onclick='runRow(\"${_id}\")'  value='Run Report' class='btn bg-gradient-green btn-sm run-button'/>");
+                                                column.For(x => x._id).HeaderText("").Width("10%").Template("<input type='button' onclick='editRow(\"${_id}\")' value='Edit' class='btn bg-gradient-primary btn-sm edit-button'/>");
+                                                column.For(x => x._id).HeaderText("").Width("10%").Template("<input type='button' onclick='deleteRow(\"${_id}\")' value='Delete' class='btn bg-gradient-danger btn-sm delete-button'/>");
+
+                                            })
+                                            .Features(features =>
+                                            {
+                                                features.Sorting().Type(OpType.Local).Mode(SortingMode.Multiple);
+                                                features.Sorting().Type(OpType.Local);
+                                                features.Paging().Type(OpType.Local);
+                                                features.Filtering().Type(OpType.Local);
+                                                features.Hiding().ColumnSettings(settings => settings.ColumnSetting().ColumnKey("Id").Hidden(true).AllowHiding(false));
+
+
+                                                features.Selection().MultipleSelection(false);
+                                                features.Selection().Mode(SelectionMode.Row);
+                                    //features.GroupBy().Type(OpType.Local);
+                                    features.RowSelectors().EnableRowNumbering(true);
+
+
+                                            })
+
+                                          .Render())
+
+
+
+    <hr />
+    <div class="form-group row">
+        <div class="col-md-5">
+            <button id="addBtn" class="btn btn-outline-primary btn-md">Add Dashboard &nbsp;<span><i class="fas fa-folder-plus"></i></span></button>
+            <button id="exportButton" class="btn btn-outline-success btn-md">Export to Excel &nbsp;<span><i class="fas fa-file-export"></i></span></button>            
+        </div>
+    </div>
+
+    <script>function editRow(RecordID) {
+
+        var url = "/DashboardCreator/Index?RecordID=" + RecordID;
+
+        $(location).attr('href', url);
+
+    }
+    function runRow(Id) {
+
+        // var url = "/PipeLineBuilder/Index?=" + Id + "&iType=" + 1;
+        // $(location).attr('href', url);
+        alert("Still to be implemented")
+
+    }
+    function deleteRow(_id) {
+
+        if (confirm('Delete Report?')) {
+            var grid = $("#grid").data("igGrid");
+            grid.dataSource.deleteRow(_id);
+            grid.commit();
+
+            var url = "/DashboardEdit/Delete?=" + _id;
+            $(location).attr('href', url);
+        }
+    }</script>
+
+    <script>$(function () {
+
+        $("#exportButton").on("click", function () {
+            var exportingOverlay = $('<div>');
+            $.ig.GridExcelExporter.exportGrid($("#grid"), {
+                columnsToSkip: ["_id"],
+                fileName: "DashboardCreatorData",
+                worksheetName: "DashboardCreator",
+
+                gridFeatureOptions: { sorting: "applied", filtering: "applied" },
+            },
+                {
+                    exportStarting: function (e, args) {
+                        showOverlay(args.grid, exportingOverlay);
+                    },
+                    success: function () {
+                        hideOverlay(exportingOverlay);
+                    },
+                    cellExported: function (e, args) {
+                        if (args.xlRow.index() == 0) {
+                            return;
+                        }
+
+                    },
+                    exportEnding: function (e, args) {
+                        //args.worksheet.columns().item(2).cellFormat().formatString("dd-MM-yyyy");
+                        //args.worksheet.columns().item(3).cellFormat().formatString("dd-MM-yyyy");
+                    },
+                });
+
+        });
+
+        $("#addBtn").on("click", function () {
+            var url = "/DashboardCreator/Index";
+            $(location).attr('href', url);
+        });
+
+        function showOverlay(grid, exportingOverlay) {
+            var $gridContainer = $('#' + grid.attr('id') + '_container');
+
+            exportingOverlay.css({
+                "width": $gridContainer.outerWidth(),
+                "height": $gridContainer.outerHeight()
+            }).html('<span class="exporting-text">Exporting...</span>');
+            exportingOverlay.addClass("exporting-overlay");
+
+            $gridContainer.append(exportingOverlay);
+        }
+        function hideOverlay(exportingOverlay) {
+            exportingOverlay.remove();
+        }
+
+    });</script>
+
+</div>
+
+
+
+

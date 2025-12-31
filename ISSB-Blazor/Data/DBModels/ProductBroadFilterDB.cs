@@ -1,0 +1,20 @@
+﻿using MongoDB.Bson;
+
+namespace Data.DBModels;
+
+public class ProductBroadFilterDB
+{
+    public BsonObjectId _id { get; set; }
+    public int Idx { get; set; }
+    public int SortOrder { get; set; }
+    public string Name { get; set; }
+
+    public List<ProductBroadFilterItemDB> Items { get; set; }
+}
+
+public class ProductBroadFilterItemDB
+{
+    public int Sort { get; set; }
+    public string TariffCode { get; set; }
+    public string Name { get; set; }
+}

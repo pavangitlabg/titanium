@@ -1,0 +1,903 @@
+@using ISSB_Prod_Blazor.Pages
+@using ISSB_Prod_Blazor.Pages.DataImport
+@using ISSB_Prod_Blazor.Pages.User
+@using Index = Index
+@inherits LayoutComponentBase
+@inject NavigationManager NavManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<AuthorizeView>
+    <Authorized>
+
+        <div class="col-lg-12 col-sm-12 col-md-12">
+            <div class="main-header" id="header-section">
+                <ul class="header-list">
+                    <li class="float-left header-style icon-menu" id="hamburger" @onclick="@Toggle"></li>
+                    <li class="float-left header-style nav-pane">
+                        <b>
+                            <a class="ISSB-Title"  href="/">ISSB Trade Enquiry Portal</a>
+                        </b>
+                    </li>
+                    <li class="header-style float-right support border-left" style="cursor:pointer" @onclick="@Logout">
+                        <b>Hello, @context.User.Identity.Name - Logout</b>
+                    </li>
+                </ul>
+            </div>
+            <!-- end of header-section -->
+            <!-- sidebar element declaration -->
+            <SfSidebar HtmlAttributes="@HtmlAttribute" Width="200px" EnableDock="true" DockSize="80px"
+                       Target=".main-content" @ref="Sidebar" MediaQuery="(min-width:600px)"
+                       @bind-IsOpen="SidebarToggle">
+                <ChildContent>
+                    <div class="main-menu">
+                        <div>
+                            <SfTreeView CssClass="main-treeview" @ref="TreeView" ExpandOn="ExpandAction.Click"
+                                        TValue="TreeData">
+                                <TreeViewEvents TValue="TreeData" NodeSelected="nodeSelect"></TreeViewEvents>
+                                <TreeViewFieldsSettings Id="nodeId" Text="nodeText" IconCss="iconCss"
+                                                        DataSource="treedata" HasChildren="hasChild" ParentID="pid">
+                                </TreeViewFieldsSettings>
+                            </SfTreeView>
+                        </div>
+                    </div>
+                </ChildContent>
+            </SfSidebar>
+            <div class="main-content" id="main-text">
+                <div class="sidebar-content">
+
+                    @if (context.User.Identity.IsAuthenticated)
+                    {
+                        var userClaims = context.User.Claims.ToList();
+
+                        if (string.IsNullOrEmpty(Node_Id))
+                        {
+                        }
+                        else
+                        {
+                            switch (Node_Id)
+                            {
+                                case "01-01":
+                                    <UsersIndex/>
+                                    Node_Id = string.Empty;
+                                    break;
+                                case "01-02":
+                                    <CustomerRecords/>
+                                    break;
+                                case "01-03":
+                                    <SourceCountries/>
+                                    break;
+                                case "01-04":
+                                    <MarketCountries/>
+                                    break;
+                                case "01-05":
+                                    <Ports/>
+                                    break;
+                                case "01-06":
+                                    <ProductTariffCodes/>
+                                    break;
+                                case "01-07":
+                                    <ExchangeRates/>
+                                    break;
+                                case "01-08":
+                                    <GEOCodes/>
+                                    break;
+                                    
+                                case "02":
+                                case "02-01":
+                                    <QueryIndex/>
+                                    break;
+                                case "02-02":
+                                    <ComponentTest/>
+                                    break;
+                                    
+                                case "03-01":
+                                    <DatabasePage/>
+                                    break;
+                                case "03-02":
+                                    <ComponentTest/>
+                                    break;
+                                case "04-01":
+                                    <Index/>
+                                    break;
+                                    
+                                case "05-01":
+                                    <ImportFileTupes/>
+                                    break;
+                                case "05-02":
+                                    <ImportClients/>
+                                    break;
+                                case "05-03":
+                                    <FileImport/>
+                                    break;
+                                case "05-04":
+                                    <UpsertData/>
+                                    break;
+                                case "05-05":
+                                    <PostedImports/>
+                                    break;
+                                case "05-06":
+                                    <DataEdit/>
+                                    break;
+                                default:
+                                    <Index/>
+                                    break;
+                            }
+                        }
+                    }
+                </div>
+            </div>
+            <div class="footer">
+                <div>
+                    <a href="https://www.linkedin.com/company/issb-ltd/">
+                        @* <img src="userimages/LinkedIn-Logo.wine.png" alt="LinkedIn Logo" class="social-icon"> *@
+                        <img src="userimages/LinkedInMinimal.png" class="linkedin-icon">
+                    </a>
+                </div>
+                <div class="footer-content">
+                    <a href="" class="footer-link">About ISBB</a>
+                    <a href="" class="footer-link">Menu</a>
+                    <a href="" class="footer-link">Utilites</a>
+                </div>
+                <div class="copyright">
+                    Copyright © 2025 All rights reserved - ISBB
+                </div>
+                <div>
+                    <a href="https://issb.nathan-software.com/" target="_blank" class="privacy-button">Privacy Policy</a>
+                </div>
+            </div>
+        </div>
+
+        <!--<div class="page">-->
+        @*@if (menuControl.IsMenu)
+            {
+                <main>
+                    <article class="main-content">
+                        @Body
+                    </article>
+                </main>
+            }
+            else
+            {
+                <TreeMenu />
+            }*@
+
+        <!--<TreeMenu />
+        </div>-->
+
+    </Authorized>
+    <NotAuthorized>
+        <div id="wrapper">
+            <div class="col-lg-12 col-sm-12 col-md-12">
+                <div class="main-header" id="header-section">
+                    <ul class="header-list">
+                        <li class="float-left header-style icon-menu" id="hamburger"></li>
+                        <li class="float-left header-style nav-pane">
+                            <b>ISSB Trade Enquiry Portal</b>
+                        </li>
+                        <li class="header-style float-right support border-left" style="cursor: pointer"
+                            @onclick="@Login">
+                            <b>Login</b>
+                        </li>
+                    </ul>
+                </div>
+                <div class="main-content" id="main-text">
+                    <div class="sidebar-content">
+                        <iframe class="sub-iframe" style="margin-top:-15px!important"
+                                src="https://www.issb.co.uk/"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+
+    public string HeaderText = "Header";
+    public string MainContent = "Appication Content";
+    SfTreeView<TreeData> TreeView;
+    SfSidebar Sidebar;
+   
+    public bool SidebarToggle;
+    public static string Node_Id { get; set; } = string.Empty;
+
+    public class TreeData
+    {
+        public string nodeId { get; set; }
+        public string nodeText { get; set; }
+        public string iconCss { get; set; }
+        public bool hasChild { get; set; }
+        public string pid { get; set; }
+    }
+
+    readonly Dictionary<string, object> HtmlAttribute = new()
+    {
+        { "class", "sidebar-treeview" }
+    };
+
+    public void nodeSelect(NodeSelectEventArgs args)
+    {
+        Node_Id = args.NodeData.Id;
+        //await InvokeAsync(() =>
+        //{
+        //    StateHasChanged();
+        //});
+    }
+
+    public void Toggle()
+    {
+        SidebarToggle = !SidebarToggle;
+    }
+
+    private AuthenticationState context;
+    private bool isAuthenticated;
+    private readonly List<TreeData> treedata = new();
+
+    protected override async void OnInitialized()
+    {
+        base.OnInitialized();
+        // Get the authentication state
+        var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        context = auth;
+        // Extract user info
+        //var user = authState.User;
+
+        //context = user.Identity?.Name ?? "Anonymous";
+        // isAuthenticated = context.Identity?.IsAuthenticated ?? false;
+        isAuthenticated = auth.User.Identity.IsAuthenticated;
+
+        treedata.Add(new TreeData { nodeId = "01", nodeText = "Menu", iconCss = "icon-microchip icon", hasChild = true });
+        treedata.Add(new TreeData { nodeId = "01-01", nodeText = "User Accounts", iconCss = "icon-microchip icon", pid = "01" });
+        treedata.Add(new TreeData { nodeId = "01-02", nodeText = "Customer Record", iconCss = "icon-microchip icon", pid = "01" });
+        treedata.Add(new TreeData { nodeId = "01-03", nodeText = "Source Countries", iconCss = "icon-microchip icon", pid = "01" });
+        treedata.Add(new TreeData { nodeId = "01-04", nodeText = "Market Countries", iconCss = "icon-microchip icon", pid = "01" });
+        treedata.Add(new TreeData { nodeId = "01-05", nodeText = "Ports", iconCss = "icon-microchip icon", pid = "01" });
+        treedata.Add(new TreeData { nodeId = "01-06", nodeText = "Product Tariff Codes", iconCss = "icon-microchip icon", pid = "01" });
+        treedata.Add(new TreeData { nodeId = "01-07", nodeText = "Exchange Rates", iconCss = "icon-microchip icon", pid = "01" });
+        treedata.Add(new TreeData { nodeId = "01-08", nodeText = "GEO Locations", iconCss = "icon-microchip icon", pid = "01" });
+        
+        treedata.Add(new TreeData { nodeId = "02", nodeText = "Queries", iconCss = "icon-microchip icon", hasChild = true });
+        treedata.Add(new TreeData { nodeId = "02-01", nodeText = "Existing Queries", iconCss = "icon-microchip icon", pid = "02" });
+        treedata.Add(new TreeData { nodeId = "02-02", nodeText = "Downloads", iconCss = "icon-microchip icon", pid = "02" });
+        
+        treedata.Add(new TreeData { nodeId = "03", nodeText = "Utilites", iconCss = "icon-microchip icon", hasChild = true });
+        treedata.Add(new TreeData { nodeId = "03-01", nodeText = "Database Stats", iconCss = "icon-microchip icon", pid = "03" });
+        treedata.Add(new TreeData { nodeId = "03-02", nodeText = "Component Test Page", iconCss = "icon-microchip icon", pid = "03" });
+        
+        treedata.Add(new TreeData { nodeId = "04", nodeText = "About", iconCss = "icon-microchip icon", hasChild = false });
+      
+        treedata.Add(new TreeData { nodeId = "05", nodeText = "Data Import", iconCss = "icon-microchip icon", hasChild = true });
+        treedata.Add(new TreeData { nodeId = "05-01", nodeText = "Import File Types", iconCss = "icon-microchip icon", pid = "05" });
+        treedata.Add(new TreeData { nodeId = "05-02", nodeText = "Data Clients", iconCss = "icon-microchip icon", pid = "05" });
+        treedata.Add(new TreeData { nodeId = "05-03", nodeText = "Data File Imports", iconCss = "icon-microchip icon", pid = "05" });
+        treedata.Add(new TreeData { nodeId = "05-04", nodeText = "Update Import", iconCss = "icon-microchip icon", pid = "05" });
+        treedata.Add(new TreeData { nodeId = "05-05", nodeText = "Posted Import", iconCss = "icon-microchip icon", pid = "05" });
+        treedata.Add(new TreeData { nodeId = "05-06", nodeText = "Data Edit", iconCss = "icon-microchip icon", pid = "05" });
+    }
+
+    //protected override async Task OnAfterRenderAsync(bool firstRender)
+    //{
+
+    //    if (firstRender)
+    //    {
+    //        menuControl = ModelService.CurrentMenuModel;
+    //        if (menuControl is null)
+    //            menuControl = new();
+
+    //        await InvokeAsync(() =>
+    //        {
+    //            StateHasChanged();
+    //        });
+    //    }
+    //}
+
+
+    public void Login()
+    {
+        
+        NavManager.NavigateTo("Identity/Account/UserLogin", true);
+    }
+
+    public void Logout()
+    {
+      
+        NavManager.NavigateTo("Identity/Account/Logout", true);
+    }
+
+}
+
+<style>
+    /* header-section styles */
+    /*NavBar Style:*/
+    #header-section.main-header {
+        border-bottom: 1px solid #d2d6de;
+        height: 55px;
+        min-height: 55px;
+        max-height: 55px;
+        background-color: white;
+        /*background: #faf8f8;*/
+        color: #34568B;
+        /*background: #1c86c8;*/
+        /*color: #fff;*/
+    }
+
+    .ISSB-Title{
+        color: #34568B;
+        text-decoration: none;
+    }
+    .sidebar-treeview.e-sidebar.e-dock.e-open .icon-microchip, .sidebar-treeview.e-sidebar.e-dock.e-open .icon-microchip::before, .sidebar-treeview.e-sidebar.e-dock.e-open .admin, .sidebar-treeview.e-sidebar.e-dock.e-open .admin::before {
+        display: none;
+    }
+
+    .sidebar-treeview.e-sidebar.e-dock.e-close .icon-microchip, .sidebar-treeview.e-sidebar.e-dock.e-close .admin, .sidebar-treeview.e-sidebar.e-dock.e-close .icon-microchip::before, .sidebar-treeview.e-sidebar.e-dock.e-close .admin::before {
+        display: block;
+    }
+
+    .sidebar-treeview.e-sidebar.e-dock.e-close .main-treeview.e-treeview .e-list-text {
+        padding-left: 25px;
+    }
+
+    .sidebar-treeview.e-sidebar.e-dock .main-treeview.e-treeview {
+        padding-top: 20px;
+    }
+
+    .sidebar-treeview.e-sidebar.e-dock.e-close .e-icons.e-icon-expandable {
+        display: none;
+    }
+
+    .sidebar-treeview.e-sidebar.e-dock.e-close .e-list-parent.e-ul {
+        overflow-x: hidden;
+    }
+
+    .admin::before {
+        content: '\e424' !important;
+    }
+
+    #header-section .header-style {
+        line-height: 40px;
+        height: 55px;
+        padding: 8px;
+        padding-left: 18px;
+        list-style: none;
+        text-align: center;
+        font-size: 18px;
+    }
+
+    #header-section .border-left {
+        border-left: 1px solid #d2d6de;
+        width: 15em;
+    }
+
+    #header-section .float-left {
+        float: left;
+    }
+
+    #header-section .float-right {
+        float: right;
+    }
+
+    #header-section .icon-menu {
+        width: 40px;
+        cursor: pointer;
+    }
+
+    /* custom code start */
+    .center {
+        text-align: center;
+        display: none;
+        font-size: 13px;
+        font-weight: 400;
+        margin-top: 20px;
+    }
+
+    .sb-content-tab .center {
+        display: block;
+    }
+
+    #header-section .header-list,
+    .sidebar-treeview .e-treeview,
+    .sidebar-treeview .e-treeview .e-ul {
+        padding: 0;
+        margin: 0;
+    }
+
+    @@media (max-width: 800px) {
+        #header-section .support {
+            display: none;
+            cursor: pointer;
+        }
+
+        #header-section .nav-pane {
+            width: 50%;
+        }
+    }
+
+    /* custom code end */
+    /*end of header-section styles */
+    /*main-menu-header  styles */
+    .sidebar-treeview .main-menu .main-menu-header {
+        color: #656a70;
+        padding: 15px;
+        font-size: 14px;
+        width: 13em;
+        margin: 0;
+    }
+
+    /*end of main-menu-header styles */
+    /*text input styles */
+    .sidebar-treeview .main-menu .search-icon {
+        text-indent: 10px;
+        height: 30px;
+        width: 19em;
+    }
+
+    /*end of text input styles */
+    /* table of content area styles */
+    .sidebar-treeview .table-content {
+        padding: 20px;
+        height: 8em;
+    }
+
+    /* end of table ofcontent area styles */
+    /* content area styles */
+    #main-text.main-content {
+        /*overflow: hidden;*/
+    }
+
+    #main-text .sidebar-content .line {
+        width: 100%;
+        height: 1px;
+        border-bottom: 1px dashed #ddd;
+        margin: 40px 0;
+    }
+
+    #main-text .sidebar-content {
+        padding: 15px;
+        height: 100vh;
+    }
+
+    #main-text .sidebar-heading {
+        color: #1c86c8;
+        margin: 40px 0;
+        padding: 2px;
+    }
+
+    #main-text .paragraph-content {
+        font-family: 'Poppins', sans-serif;
+        padding: 5px;
+        font-weight: normal;
+        font-size: 14px;
+        color: grey;
+    }
+
+    /* end of content area styles */
+    /* custom code start */
+    /* body and html styles */
+    body {
+        margin: 0;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* end of body and html styles */
+    /* newTab support styles */
+    .sf-new .sb-header,
+    .sf-new .sb-bread-crumb,
+    .sf-new #action-description,
+    .sf-new .sb-action-description,
+    .sf-new .e-tab-header,
+    .sf-new .description-section,
+    .sf-new #description-section,
+    .sf-new #navigation-btn,
+    .sf-new .sb-toolbar-splitter,
+    .sf-new #description, .sf-new #left-sidebar, .sb-component-name {
+        display: none
+    }
+
+    .sf-new .sb-right-pane.e-view {
+        margin-left: 0px !important;
+    }
+
+    .sf-new .container-fluid,
+    .sf-new .container-fluid .control-section,
+    #sidebar-section, body, .col-md-12 {
+        padding: 0;
+    }
+
+    .sf-new .sample-browser > .content.e-view {
+        top: 0;
+        padding: 0;
+        text-align: initial
+    }
+
+    /* end of newTab support styles */
+    /* custom code end */
+    /* icon styles */
+    @@font-face {
+        font-family: 'fontello';
+        src: url('data:application/octet-stream;base64,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') format('truetype');
+    }
+
+    .sidebar-treeview .main-treeview .icon {
+        font-family: 'fontello';
+        font-size: 16px;
+        margin-top: -4px;
+        background-color: wheat;
+    }
+
+    #header-section.main-header .icon-menu::before {
+        content: '\e801';
+        font-family: 'fontello';
+        font-size: 27px;
+    }
+
+    .sidebar-treeview .main-treeview .icon-microchip::before {
+        content: '\e806';
+    }
+
+    .sidebar-treeview .main-treeview .icon-thumbs-up-alt::before {
+        content: '\e805';
+    }
+
+    .sidebar-treeview .main-treeview .icon-docs::before {
+        content: '\e802';
+    }
+
+    .sidebar-treeview .main-treeview .icon-th::before {
+        content: '\e803';
+    }
+
+    .sidebar-treeview .main-treeview .icon-code::before {
+        content: '\e804';
+    }
+
+    .sidebar-treeview .main-treeview .icon-chrome::before {
+        content: '\e807';
+    }
+
+    .sidebar-treeview .main-treeview .icon-up-hand::before {
+        content: '\e810';
+    }
+
+    .sidebar-treeview .main-treeview .icon-bookmark-empty::before {
+        content: '\e811';
+    }
+
+    .sidebar-treeview .main-treeview .icon-help-circled::before {
+        content: '\e813';
+    }
+
+    .sidebar-treeview .main-treeview .icon-doc-text::before {
+        content: '\e812';
+    }
+
+    .sidebar-treeview .main-treeview .icon-circle-thin::before {
+        content: '\e808';
+    }
+
+    /* custom code start */
+    /* end of icon styles */
+    .sf-new .sb-header,
+    .sf-new .sb-bread-crumb,
+    .sf-new #action-description,
+    .sf-new #description-section,
+    .sf-new #description,
+    .sf-new .sb-footer {
+        display: none
+    }
+
+    .sb-action-description.sb-rightpane-padding {
+        padding-bottom: 0;
+    }
+
+    #content-tab.sb-content-tab {
+        height: 100% !important;
+    }
+
+    #sb-content-header {
+        display: none
+    }
+
+    .sf-new .container-fluid,
+    .sf-new .container-fluid .control-section,
+    #sidebar-section, description-section sb-rightpane-padding {
+        padding: 0;
+    }
+
+    .sb-component-name.sb-rightpane-padding {
+        margin-top: -56px;
+    }
+
+    .sb-right-pane.e-view {
+        left: 0;
+        padding-left: 0;
+        padding-right: 0;
+        top: 0;
+        /*overflow-y: hidden;*/
+    }
+
+    .sb-desktop-wrapper {
+        height: 100%;
+        cursor: default;
+    }
+
+    .sb-component-name h1 {
+        padding-top: 0;
+    }
+
+    .sf-new .sb-content.e-view {
+        top: 0;
+    }
+
+    /* end of newTab support */
+    /* end of custom generated icons styles */
+    /* custom code end */
+    iframe {
+        display: block; /* iframes are inline by default */
+        height: 100vh; /* Set height to 100% of the viewport height */
+        width: 75vw; /* Set width to 100% of the viewport width */
+        border: none; /* Remove default border */
+        background: white; /* Just for styling */
+    }
+
+    .sub-iframe {
+        display: block; /* iframes are inline by default */
+        height: 100vh; /* Set height to 100% of the viewport height */
+        width: 100vw; /* Set width to 100% of the viewport width */
+        border: none; /* Remove default border */
+        background: white;
+        margin-left: -15px !important;
+        /*        margin-right: -50px !important;*/
+    }
+    
+    .footer  {
+        text-align: center;
+        border-top: 5px solid #34568b;
+        height: auto;
+        margin-top: 50px;
+        min-height: 55px;
+        /*max-height: 55px;*/
+        /*background-color: #BCBDBF;*/
+        /*color: #079CAC;*/
+        position:relative;
+        background-color: white;
+    }
+    /*.social-icon {*/
+    /*    border: 4px solid white;*/
+    /*    border-radius: 50%;*/
+    /*    font-size: 18px;*/
+    /*    background-color: #ABC6CD;*/
+    /*    width: 50px;*/
+    /*    height: 50px;*/
+    /*    align-items: center;*/
+    /*    justify-content: center;*/
+    /*    margin-top: 20px;*/
+    /*    text-decoration: none;*/
+    /*}*/
+    .linkedin-icon{
+        border: none;
+        font-size: 18px;
+        /*background-color: #ABC6CD;*/
+        width: 30px;
+        height: 30px;
+        align-items: center;
+        justify-content: center;
+        margin-top: 20px;
+        text-decoration: none;
+    }
+    
+    .footer-content{
+        padding-top: 10px;
+        padding-bottom: 10px;
+        font-size: 15px;
+        text-align: center;
+        color: #34568B!important;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    
+    .footer-link{
+        text-decoration: none!important;
+        color: #34568B!important;
+        padding: 30px;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        font-weight: bold;
+    }
+
+    .privacy-button {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        color: black; 
+        text-align: center; /* Center text */
+        text-decoration: none; /* Remove underline */
+        display: inline-block; /* Make it a button */
+        font-size: 10px; /* Text size */
+        margin-top: 8px;
+        margin-bottom: 8px;
+    }
+
+    .privacy-button:hover {
+        color: black;
+    }
+    
+    .copyright {
+        color: black;
+        font-size: 12px;
+        text-align: center;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+
+    .bar-horizontal {
+        display: flex;
+        align-items: center;
+        width: 90%;
+        margin: 0 auto; /* Centers the div horizontally */
+    }
+
+    .e-card {
+        border: 1px solid #dbe6f6 !important;
+        border-radius: 12px !important;
+        box-shadow: 0 4px 12px rgba(52, 86, 139, .15) !important;
+        background: #fff !important;
+    }
+
+    .e-card-header {
+        background: #f1f5fb !important;
+        color: #34568B !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 1px !important;
+        padding: 10px 14px !important;
+        border-bottom: 1px solid #dbe6f6 !important;
+    }
+
+    .e-card-content {
+        padding: 12px 14px !important;
+        background: #fff !important;
+    }
+
+
+    /* Calendar title (Month Year) */
+    .e-calendar .e-header .e-title {
+        color: #34568B;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+
+    /* Navigation arrows */
+    .e-calendar .e-header span {
+        color: #34568B;
+        transition: all 0.2s ease-in-out;
+    }
+    .e-calendar .e-header span:hover {
+        background-color: #E9ECEF !important;
+        color: #34568B !important;
+        border-radius: 6px;
+    }
+
+    /* Weekday labels (Mo, Tu, We...) */
+    .e-calendar .e-content thead th {
+        color: #6C757D;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    /* Default day cells */
+    .e-calendar .e-content td span.e-day {
+        color: #444;
+    }
+
+    /* Hover day */
+    .e-calendar .e-content td:hover span.e-day {
+        background-color: #E9ECEF !important;
+        color: #fff !important;
+        border-radius: 6px;
+    }
+
+    /* Selected day */
+    .e-calendar .e-content td.e-selected span.e-day {
+        background-color: #34568B !important;
+        color: #fff !important;
+        border-radius: 6px;
+    }
+
+    /* Today button (footer) */
+    .e-calendar .e-btn.e-today.e-flat.e-primary {
+        background-color: #fff !important;
+        color: #34568B !important;
+        border: 2px solid #34568B !important;
+        font-weight: bold;
+        border-radius: 20px;
+        padding: 4px 14px;
+        transition: all 0.2s ease-in-out;
+    }
+
+    /* Today button hover */
+    .e-calendar .e-btn.e-today.e-flat.e-primary:hover {
+        background-color: #34568B !important;
+        color: #fff !important;
+    }
+
+    
+    /*alt rows*/
+    .e-row {
+        background-color: #ffffff;
+    }
+
+    .e-row.e-altrow {
+        background-color: #f1f3f6;
+    }
+
+    /* Excel Export button */
+    .e-toolbar .e-tbar-btn .e-tbar-btn-text {
+        background: transparent;     /* no background box */
+        color: #34568B;              /* navy text to match headers */
+        font-weight: 600;
+        font-family: 'Assistant-Regular', sans-serif;
+        padding: 6px 10px;
+        border-radius: 6px;          /* just a tiny soften */
+        transition: all 0.2s ease-in-out;
+    }
+
+    /*bar at top of table where search is*/
+    .e-toolbar.e-spacer-toolbar .e-toolbar-items:not(.e-toolbar-multirow){
+        background: #f5f9ff;    /* very light blue */
+        color: #34568B;         /* your navy */
+        font-weight: 700;
+    }
+
+    .e-grid .e-gridheader  th:not(.e-freezeleftborder,.e-freezerightborder) {
+        background: #ffffff;        /* plain white */
+        border-bottom: 1px solid #e6edf6; /* soft divider */
+    }
+
+    /*edit button on main grid*/
+    .e-btn.e-success{
+        background-color: #fff;
+        color: #34568B;
+        border: 1px solid #34568B;
+        border-radius: 1px;
+        font-weight: bold;
+        font-family: 'Assistant-Regular', sans-serif;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+        padding-left: 13px;
+        padding-right: 13px;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        margin-bottom: 10px;
+        margin-right: 10px;
+        box-shadow: rgba(50, 50, 93, 0.2) 0px 40px 80px -20px, rgba(0, 0, 0, 0.25) 0px 20px 50px -30px, rgba(10, 37, 64, 0.3) 0px -2px 4px 0px inset;
+    }
+
+    /*delete button*/
+    .e-btn.e-danger{
+        background-color: #fff;
+        color: #34568B;
+        border: 1px solid #34568B;
+        border-radius: 1px;
+        font-weight: bold;
+        font-family: 'Assistant-Regular', sans-serif;
+        transition: all 0.2s ease-in-out;
+        cursor: pointer;
+        padding: 8px;
+        /*float: right;*/
+        margin-bottom: 10px;
+        margin-right: 10px;
+        box-shadow: rgba(50, 50, 93, 0.2) 0px 40px 80px -20px, rgba(0, 0, 0, 0.25) 0px 20px 50px -30px, rgba(10, 37, 64, 0.3) 0px -2px 4px 0px inset;
+    }
+
+    .e-btn.e-success:hover,.e-btn.e-danger:hover {
+        background-color: rgba(52, 86, 139, 0.1);
+        color: #34568B;
+        box-shadow: none;
+        border: 1px solid #34568B;
+    }
+
+    .e-btn.e-danger:focus,
+    .e-btn.e-danger:active {
+        border: none !important;
+        transform: translateY(0);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+</style>

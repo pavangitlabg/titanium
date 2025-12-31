@@ -1,0 +1,103 @@
+﻿@page
+@model ISSB.Import.Areas.Identity.Pages.Account.LoginModel;
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="frame-margin">
+    <div class="container">
+
+        <div class="container-fluid">
+            <div class="login-box">
+                <div class="card" style="color:black">
+                    <div class="card-header">
+                        <div class="content-header">
+                            <h2>@ViewData["Title"]</h2>
+                            <h4 style="color:red">@ViewData["Message"]</h4>
+                            <hr />
+                            @Html.HiddenFor(x => x.Input.IsChange, new { id = "IsChange" })
+                            @using (Html.BeginForm("OnPost"))
+                            {
+
+                                <div class="form-horizontal" style="color:black">
+
+                                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                    <div style="width: 50%; margin-top:5%; margin-left:25%; margin-right:25%" class="needs-validation">
+                                        <fieldset>
+
+                                            <div class="form-group">
+                                                <div class="editor-label">
+                                                    @Html.LabelFor(u => u.Input.Email, htmlAttributes: new { @class = "control-label" })
+                                                </div>
+
+                                                <div class="editor-field">
+
+                                                    @Html.TextBoxFor(u => u.Input.Email, htmlAttributes: new { @class = "form-control", autocomplete = "off" })
+                                                    @Html.ValidationMessageFor(u => u.Input.Email, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <div class="editor-label">
+                                                    @Html.LabelFor(u => u.Input.Password, htmlAttributes: new { @class = "control-label" })
+                                                </div>
+                                                <div class="editor-field">
+                                                    @Html.TextBoxFor(u => u.Input.Password, htmlAttributes: new { @class = "form-control", @type = "password", autocomplete = "off" })
+                                                    @Html.ValidationMessageFor(u => u.Input.Password, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                          
+
+                                            @if (Model.Input.IsChange.Equals("Y"))
+                                            {
+                                                <div class="form-group">
+                                                    <div class="editor-label">
+                                                        @Html.LabelFor(u => u.Input.OldPassword, htmlAttributes: new { @class = "control-label" })
+                                                    </div>
+                                                    <div class="editor-field">
+                                                        @Html.TextBoxFor(u => u.Input.OldPassword, htmlAttributes: new { @class = "form-control", @type = "password", autocomplete = "off" })
+                                                        @Html.ValidationMessageFor(u => u.Input.OldPassword, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="editor-label">
+                                                        @Html.LabelFor(u => u.Input.NewPassword, htmlAttributes: new { @class = "control-label" })
+                                                    </div>
+                                                    <div class="editor-field">
+                                                        @Html.TextBoxFor(u => u.Input.NewPassword, htmlAttributes: new { @class = "form-control", @type = "password", autocomplete = "off" })
+                                                        @Html.ValidationMessageFor(u => u.Input.NewPassword, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group">
+                                                    <div class="editor-label">
+                                                        @Html.LabelFor(u => u.Input.ConfirmPassword, htmlAttributes: new { @class = "control-label" })
+                                                    </div>
+                                                    <div class="editor-field">
+                                                        @Html.TextBoxFor(u => u.Input.ConfirmPassword, htmlAttributes: new { @class = "form-control", @type = "password", autocomplete = "off" })
+                                                        @Html.ValidationMessageFor(u => u.Input.ConfirmPassword, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                            }
+
+                                            <hr />
+                                            <div class="form-group">
+                                                <button type="submit" class="btn btn-primary px-4">Login</button>
+                                            </div>
+                                        </fieldset>
+                                        <br />
+                                    </div>
+                                </div>
+
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+    </div>
+</div>

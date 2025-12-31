@@ -1,0 +1,68 @@
+
+<div class="form-group">
+    <div class="form-row">
+        <div class="bar-horizontal">
+            <div class="form-group col-md-4">
+                <SfRadioButton Label="Select Tonnes Only" Name="spgroup" Value="SelectTonnesOnly" TChecked="string" @onchange="SelectGroup" @bind-Checked="SelectGroupType"></SfRadioButton>
+            </div>
+            <div class="form-group col-md-4">
+                <SfRadioButton Label="Select Both Tonnes and Values" Name="spgroup" Value="SelectBothTonnesandValues" TChecked="string" @onchange="SelectGroup" @bind-Checked="SelectGroupType"></SfRadioButton>
+            </div>
+            <div class="form-group col-md-4">
+                
+                <SfComboBox TValue="ReportCurrencyModel"
+                            TItem="ReportCurrencyModel"
+                            DataSource="@Data.CurrencyUsed"
+                            Placeholder="Select a region"
+                            Width="40%"
+                            ValueChanged="@(new EventCallback<ReportCurrencyModel>(this, CurrencyChanged))">
+                    <ComboBoxFieldSettings Text="Code"
+                                           Value="Code"></ComboBoxFieldSettings>
+                </SfComboBox>
+              
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public EventCallback<object> OnMessage { get; set; }
+    [Parameter] public QueryModel Data { get; set; }
+    [Parameter] public SavedQueryModel ReportModel { get; set; }
+    
+    private string SelectGroupType { get; set; }
+    private string SelectedCurrency { get; set; }
+
+    private async Task SelectGroup(Microsoft.AspNetCore.Components.ChangeEventArgs args)
+    {
+        
+        await NotifyParent();
+    }
+    
+    private async Task CurrencyChanged(ReportCurrencyModel args)
+    {
+        SelectedCurrency = args.Code;
+        await NotifyParent();
+    }
+
+    private async Task NotifyParent()
+    {
+        var delegateModel = new SelectionQueryModel
+        {
+            Id = "TONNESVALUE",
+            TonnValueGroup = SelectGroupType,
+            Currency = SelectedCurrency
+        };
+
+        if (OnMessage.HasDelegate)
+        {
+            await OnMessage.InvokeAsync(delegateModel);
+        }
+    }
+    protected override async void OnInitialized()
+    {
+        SelectGroupType = ReportModel.TonnesValuesGroup;
+        SelectedCurrency = ReportModel.SelectedCurrency;
+    }
+
+}

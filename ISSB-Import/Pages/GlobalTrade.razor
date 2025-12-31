@@ -1,0 +1,139 @@
+﻿@page "/globaltrade"
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor
+@using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Buttons
+@using Syncfusion.Blazor.Popups
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Navigations
+@using Syncfusion.Blazor.Notifications
+@using Syncfusion.Blazor.Calendars
+@using Syncfusion.Blazor.Spinner
+@using Syncfusion.Blazor.Cards
+@using Services
+@using Data.Models
+
+
+<h1>Global Trade</h1>
+<h6 style="color:red">Token: @token</h6>
+
+<SfTab>
+    <TabItems>
+        <TabItem>
+            <ChildContent>
+                <TabHeader Text="Data">
+                </TabHeader>
+            </ChildContent>
+            <ContentTemplate>
+                <SfGrid @ref="Grid"
+                        DataSource="globalTradeData"
+                        TValue="GlobalTradeTrackerModel"
+                        AllowPaging="true"
+                        AllowSorting="true"
+                        AllowFiltering="true"
+                        AllowExcelExport="true"
+                        AllowPdfExport="true"
+                        AllowSelection="true"
+                        Height="450"
+                        Width="100%">
+                    <GridPageSettings PageCount="10" PageSize="15"></GridPageSettings>
+                    @*<GridSelectionSettings CheckboxOnly="true" PersistSelection="true"></GridSelectionSettings>*@
+                    <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Excel"></GridFilterSettings>
+                    <GridSelectionSettings Type="Syncfusion.Blazor.Grids.SelectionType.Single" CheckboxOnly="false" PersistSelection="true"></GridSelectionSettings>
+                    @*<GridEvents DataBound="OnDataBound" RowSelected="GetSelectedRecords" TValue="EuroImportModel"></GridEvents>*@
+                <GridColumns>
+                    <GridColumn Field=@nameof(GlobalTradeTrackerModel.idx) HeaderText="_id" IsPrimaryKey="true" Visible="true" TextAlign="TextAlign.Left" AutoFit="true" Width="120"></GridColumn>
+                    <GridColumn Field=@nameof(GlobalTradeTrackerModel.flowType) HeaderText="Flow" TextAlign="TextAlign.Left" AutoFit="true" Width="120"></GridColumn>
+                    <GridColumn Field="partner.code" HeaderText="PT Code" Visible="true" TextAlign="TextAlign.Left" AutoFit="true" Width="120"></GridColumn>
+                    <GridColumn Field="partner.isoNumeric3" HeaderText="GEO Code" Visible="true" TextAlign="TextAlign.Left" AutoFit="true" Width="120"></GridColumn>
+                    <GridColumn Field="partner.name" HeaderText="Name" Visible="true" TextAlign="TextAlign.Left" AutoFit="true" Width="120"></GridColumn>
+                    <GridColumn Field="quantity1.unit" HeaderText="Unit" Visible="true" TextAlign="TextAlign.Right" AutoFit="true" Width="120"></GridColumn>
+                    <GridColumn Field="quantity1.number" HeaderText="Weight" Visible="true" TextAlign="TextAlign.Right" AutoFit="true" Width="120"></GridColumn>
+                    <GridColumn Field="quantity2.unit" HeaderText="Type" Visible="true" TextAlign="TextAlign.Right" AutoFit="true" Width="120"></GridColumn>
+                    <GridColumn Field="quantity2.number" HeaderText="Value" Visible="true" TextAlign="TextAlign.Right" AutoFit="true" Width="120"></GridColumn>
+                    <GridColumn Field="value.unit" HeaderText="Currency" Visible="true" TextAlign="TextAlign.Right" AutoFit="true" Width="120"></GridColumn>
+                    <GridColumn Field="value.number" HeaderText="Value" Visible="true" TextAlign="TextAlign.Right" AutoFit="true" Width="120"></GridColumn>
+
+                    <GridColumn Field="commodity.code" HeaderText="Code" Visible="true" TextAlign="TextAlign.Left" AutoFit="true" Width="120"></GridColumn>
+                    <GridColumn Field="commodity.description" HeaderText="Description" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                    <GridColumn Field="reporter.code" HeaderText="Report Code" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                    <GridColumn Field="reporter.description" HeaderText="Report Description" TextAlign="TextAlign.Left" AutoFit="true" AllowEditing="false" Type="Syncfusion.Blazor.Grids.ColumnType.String"></GridColumn>
+                </GridColumns>
+                </SfGrid>
+            </ContentTemplate>
+        </TabItem>
+        <TabItem>
+            <ChildContent>
+                <TabHeader Text="Credentials">
+                </TabHeader>
+            </ChildContent>
+            <ContentTemplate>
+                <div class="row">
+                    <div class="column">
+                        <div class="form-row">
+                            <SfCard Title="Batch">
+                                <CardHeader Title="Login Credentials">
+                                </CardHeader>
+                                <CardContent>
+                                    <SfTextBox ID="User" Placeholder="User" @bind-Value="@(uModel.user)" Enabled="true" FloatLabelType="FloatLabelType.Always" Width="500px"></SfTextBox>
+                                    <SfTextBox ID="Password" Placeholder="Password" @bind-Value="@(uModel.password)" Enabled="true" Type="InputType.Password" FloatLabelType="FloatLabelType.Always" Width="300px"></SfTextBox>
+                                </CardContent>
+                                <CardFooter>
+                                    <CardFooterContent>
+                                        <SfButton CssClass="e-btn e-outline e-primary" OnClick="@Update">Update</SfButton>
+                                        <SfButton CssClass="e-btn e-outline e-primary" OnClick="@Test">Test Connection</SfButton>
+                                    </CardFooterContent>
+                                </CardFooter>
+                            </SfCard>
+                        </div>
+                    </div>
+                </div>
+            </ContentTemplate>
+        </TabItem>
+    </TabItems>
+</SfTab>
+
+@code {
+
+    SfGrid<GlobalTradeTrackerModel> Grid;
+    private string token { get; set; } = string.Empty;
+    private GlobalTradeUserModel uModel { get; set; } = new();
+    private List<GlobalTradeTrackerModel> globalTradeData { get; set; } = new();
+    private GlobalTradeTrackerModel globalTradeTrackerModel { get; set; }
+    async Task Update()
+    {
+        var tSrv = new GlobalTradeService();
+        await tSrv.UpdateUser(uModel);
+
+    }
+
+    async Task Test()
+    {
+        var tSrv = new GlobalTradeService();
+        uModel = await tSrv.GetUser();
+        token = await tSrv.GetToken(uModel.user, uModel.password);
+
+        await InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var tSrv = new GlobalTradeService();
+            uModel = await tSrv.GetUser();
+            token = await tSrv.GetToken(uModel.user, uModel.password);
+
+            globalTradeData = await tSrv.GetData(uModel.user, uModel.password,token);
+
+            await InvokeAsync(() =>
+            {
+                StateHasChanged();
+            });
+        }
+    }
+}
+

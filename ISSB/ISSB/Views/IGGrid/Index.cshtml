@@ -1,0 +1,46 @@
+﻿
+<!DOCTYPE html>
+@using Infragistics.Web.Mvc
+@model IQueryable<Data.Models.PortsModel>
+@{
+    Layout = "~/Views/Shared/_LayoutWidgit.cshtml";
+}
+<html>
+<head>
+
+
+</head>
+<body>
+
+
+    @(Html.Infragistics().Grid(Model)
+                                        .ID("ig_grid")
+                                        .Width("100%")
+                                       // .Height("500px")
+                                       
+                                        .DataBind()
+                                        .PrimaryKey("PortID")
+                                        .AutoGenerateColumns(true)
+                                        .AutoGenerateLayouts(false)
+                                        
+                                        .Features(features =>
+                                        {
+                                            features.Sorting().Type(OpType.Local).Mode(SortingMode.Multiple);
+                                            features.Sorting().Type(OpType.Local);
+                                            features.Paging().PageSize(10).Type(OpType.Local);
+                                            features.Filtering().Type(OpType.Local);
+                                            
+                                            features.Selection().MultipleSelection(true);
+                                            features.Selection().Mode(SelectionMode.Row);
+                                           // features.GroupBy().Type(OpType.Local);
+
+                        
+                                        })
+
+                                      .Render())
+
+
+   
+
+</body>
+</html>

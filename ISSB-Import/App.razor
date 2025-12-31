@@ -1,0 +1,22 @@
+﻿<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <PageTitle>ISSB EU Import</PageTitle>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <AuthorizeView>
+                    <Authorized>
+                        <a type="button" href="/identity/account/logout" class="btn btn-danger">Hello, @context.User.Identity.Name Logout</a>
+                    </Authorized>
+                    <NotAuthorized>
+                        <a type="button" href="/identity/account/login" class="btn btn-success">Login</a>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>
+

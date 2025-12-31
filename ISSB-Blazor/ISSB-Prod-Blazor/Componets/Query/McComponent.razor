@@ -1,0 +1,177 @@
+@using AngleSharp.Common
+@using FilterType = Syncfusion.Blazor.Grids.FilterType
+
+<div class="card-body">
+    <div class="form-group">
+        <div id="SourceForm">
+            <div class="form-row">
+                <div class="bar-horizontal">
+                    <div class="form-group col-md-3">
+                        <SfRadioButton Label="Group Countries
+                            Together" Name="mcgroup" Value="GroupCountriesTogether" TChecked="string" @onchange="SelectGroup" @bind-Checked="SelectGroupType"></SfRadioButton>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <SfRadioButton Label="View Countries
+                            Separately" Name="mcgroup" Value="ViewCountriesSeparately" TChecked="string" @onchange="SelectGroup" @bind-Checked="SelectGroupType"></SfRadioButton>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <SfGrid ID="SCGrid"
+                @ref="Grid"
+                TValue="MarketCountryModel"
+                Toolbar="@_toolBar"
+                DataSource="@_mcData"
+                AllowPaging="false"
+                AllowSorting="true"
+                AllowSelection="true"
+                AllowFiltering="true"
+                AllowExcelExport="true"
+                AllowPdfExport="false"
+                Height="300"
+                Width="Auto">
+            @* <GridPageSettings PageCount="10" PageSize="@_pageSize"></GridPageSettings> *@
+            <GridFilterSettings
+                Type="FilterType.Excel"></GridFilterSettings>
+            <GridEditSettings Mode="EditMode.Normal" AllowEditing="true"></GridEditSettings>
+            <GridEvents RowSelected="OnMCRowSelected" RowDeselected="OnMCRowDeselected"
+                        TValue="MarketCountryModel"></GridEvents>
+            <GridColumns>
+                <GridColumn Type="ColumnType.CheckBox" Width="50"></GridColumn>
+                <GridColumn Field=@nameof(MarketCountryModel.GEO_CODE) HeaderText="Code"
+                            IsPrimaryKey="true"
+                            TextAlign="TextAlign.Left"
+                            Width="10%"
+                            Type="ColumnType.String"></GridColumn>
+
+                <GridColumn Field=@nameof(MarketCountryModel.NAME) HeaderText="Name"
+                            TextAlign="TextAlign.Left"
+                            Width="80%" AllowEditing="false"
+                            Type="ColumnType.Date"></GridColumn>
+                
+
+            </GridColumns>
+            <SfSpinner @bind-Visible="IsLoading">
+            </SfSpinner>
+        </SfGrid>
+    </div>
+</div>
+
+@code {
+    [Parameter] public EventCallback<object> OnMessage { get; set; }
+    [Parameter] public QueryModel Data { get; set; }
+    [Parameter] public SavedQueryModel ReportModel { get; set; }
+
+    private List<object> _toolBar = new() { "Search" };
+    SfGrid<MarketCountryModel> Grid { get; set; }
+    private MarketCountryModel SelectedScRow { get; set; }
+    private IEnumerable<MarketCountryModel> _mcData;
+   
+    private int[] _indexMcArray;
+    private bool IsLoading { get; set; } = true;
+    private bool IsBusy { get; set; } = false;
+    
+    private async Task SelectGroup(Microsoft.AspNetCore.Components.ChangeEventArgs args)
+    {
+        await NotifyParent();
+    }
+    
+     private string SelectGroupType { get; set; }
+    
+    private async Task NotifyParent()
+    {
+        GetSelectedRows();
+        var delegateModel = new SelectionQueryModel
+        {
+            Id = "MC",
+            SelectedSourceCountries = new List<SaveQuerySourceCountriesModel>(),
+            SelectedMarketCountries = ReportModel.MarketCountryGEOs,
+            Selection = SelectGroupType
+        };
+        
+        if (OnMessage.HasDelegate)
+        {
+            await OnMessage.InvokeAsync(delegateModel);
+        }
+    }
+
+    private void OnMCRowSelected(RowSelectEventArgs<MarketCountryModel> args)
+    {
+        if(IsBusy)
+            return;
+        
+        Task.Run(async () =>
+        {
+            SelectedScRow = args.Data;
+            await NotifyParent();
+        });
+    }
+
+    private void OnMCRowDeselected(RowDeselectEventArgs<MarketCountryModel> args)
+    {
+        Task.Run(async () =>
+        {
+            await NotifyParent();
+        });
+    }
+
+    protected override async void OnInitialized()
+    {
+        SelectGroupType = ReportModel.MarketCountryGroup;
+        _mcData = Data.MarketCountries;
+
+        InitSelectedRows();
+        IsLoading = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            IsBusy = true;
+            if (_indexMcArray is not null)
+                await Grid.SelectRowsAsync(_indexMcArray);
+
+            IsBusy = false;
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void InitSelectedRows()
+    {
+        List<int> sCindexes = new();
+        foreach (var countriesModel in ReportModel.MarketCountryGEOs)
+        {
+            var index = Data.MarketCountries.FindIndex(sc => sc.GEO_CODE.Equals(countriesModel.GeoCode));
+            if (index != -1)
+            {
+                sCindexes.Add(index);
+            }
+        }
+        
+        sCindexes = sCindexes.OrderBy(x => x).ToList();
+        _indexMcArray = sCindexes.ToArray();
+    }
+    
+    private void GetSelectedRows()
+    {
+        ReportModel.MarketCountryGEOs = new();
+        
+        foreach (var item in Grid.SelectedRecords)
+        {
+            var model = Data.MarketCountries.FirstOrDefault(mc => mc.GEO_CODE.Equals(item.GEO_CODE));
+            if (model is not null)
+            {
+                var sqModel = new SaveQueryMarketCountriesModel
+                {
+                    GeoCode = model.GEO_CODE
+                };
+                ReportModel.MarketCountryGEOs.Add(sqModel);
+            }
+        }
+    }
+
+}

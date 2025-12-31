@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 25.0.1706.7
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISSB", "ISSB.csproj", "{96205E34-2A42-4EBF-9BC4-217EE7C30FD7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{96205E34-2A42-4EBF-9BC4-217EE7C30FD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96205E34-2A42-4EBF-9BC4-217EE7C30FD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96205E34-2A42-4EBF-9BC4-217EE7C30FD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96205E34-2A42-4EBF-9BC4-217EE7C30FD7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6FC5B5E8-6AF4-458A-8985-A85C3D7D744C}
+	EndGlobalSection
+EndGlobal

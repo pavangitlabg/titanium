@@ -1,0 +1,45 @@
+# Visual Studio-specific
+.vscode/
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build output
+bin/
+obj/
+out/
+*.exe
+*.dll
+*.pdb
+*.app/
+*.ipa
+*.dSYM/
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
+
+# Dependencies
+node_modules/
+packages/
+TestResults/
+logs/
+
+# ASP.NET-specific
+appsettings*.json
+app.config
+web.config
+
+# Entity Framework / Migrations
+migrations/
+*.mdf
+*.log
+*.ldb
+
+# Other system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
